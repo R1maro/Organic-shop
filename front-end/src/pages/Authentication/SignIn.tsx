@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from "../../AuthContext";
-import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import LogoDark from '../../images/logo/logo-dark.svg';
 import Logo from '../../images/logo/logo.svg';
 
@@ -42,10 +41,9 @@ const SignIn: React.FC = () => {
   };
   return (
     <>
-      <Breadcrumb pageName="Sign In" />
 
-      <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-        <div className="flex flex-wrap items-center">
+      <div className="my-auto border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+        <div className="flex flex-row justify-center items-center min-h-screen">
           <div className="hidden w-full xl:block xl:w-1/2">
             <div className="py-17.5 px-26 text-center">
               <Link className="mb-5.5 inline-block" to="/">
