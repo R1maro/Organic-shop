@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react';
-import {Route, Routes, useLocation,Navigate} from 'react-router-dom';
+import {Route, Routes, useLocation} from 'react-router-dom';
 
 import Loader from './common/Loader';
 import PageTitle from './components/PageTitle';
@@ -31,7 +31,7 @@ function App() {
     }, [pathname]);
 
     useEffect(() => {
-        setTimeout(() => setLoading(false), 500);
+        setTimeout(() => setLoading(false), 1000);
     }, []);
 
     if (loading) {
@@ -70,7 +70,7 @@ function App() {
                             </>
                         }
                     />
-                    <Route path="*" element={<Navigate to="/" />} />
+                    {/*<Route path="*" element={<Navigate to="/" />} />*/}
                 </>
             ) : (
                 <>

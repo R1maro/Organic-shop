@@ -1,25 +1,48 @@
-import {useState, useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 import {toast} from 'react-hot-toast';
 import Breadcrumb from '../../../components/Breadcrumbs/Breadcrumb';
 import {categoryService} from '../../../services/categoryService';
 import Loader from '../../../common/Loader';
 
+interface Category {
+    id: number;
+    name: string;
+}
+
 const CategoryForm = () => {
     const navigate = useNavigate();
     const {id} = useParams();
     const [loading, setLoading] = useState(false);
-    const [formData, setFormData] = useState({
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [formData, setFormData] = useState<{
+        name: string;
+        description: string | null;
+        parent_id: number | null;
+        is_active: boolean;
+    }>({
         name: '',
-        description: '',
+        description: null,
+        parent_id: null,
         is_active: true,
     });
 
     useEffect(() => {
+        fetchCategories(); // Fetch all categories for parent dropdown
         if (id) {
             fetchCategory();
         }
     }, [id]);
+
+    const fetchCategories = async () => {
+        try {
+            const response = await categoryService.getAll();
+            // @ts-ignore
+            setCategories(response.data);
+        } catch (error) {
+            toast.error('Failed to fetch categories');
+        }
+    };
 
     const fetchCategory = async () => {
         try {
@@ -28,6 +51,7 @@ const CategoryForm = () => {
             setFormData({
                 name: response.name,
                 description: response.description || '',
+                parent_id: response.parent_id,
                 is_active: response.is_active,
             });
         } catch (error) {
@@ -58,18 +82,17 @@ const CategoryForm = () => {
         }
     };
 
-    const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-    ) => {
-        const {name, value, type} = e.target;
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
         setFormData((prev) => ({
             ...prev,
-            [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
+            [name]: value,
         }));
     };
 
     if (loading) return <Loader/>;
 
+    // @ts-ignore
     return (
         <>
             <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
@@ -105,12 +128,31 @@ const CategoryForm = () => {
                                 </label>
                                 <textarea
                                     name="description"
-                                    value={formData.description}
+                                    value={formData.description === null ? '' : formData.description}
                                     onChange={handleChange}
                                     rows={4}
                                     placeholder="Enter category description"
                                     className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                                 />
+                            </div>
+
+                            <div className="mb-4.5">
+                                <label className="mb-2.5 block text-black dark:text-white">
+                                    Parent Category
+                                </label>
+                                <select
+                                    name="parent_id"
+                                    value={formData.parent_id || ''}
+                                    onChange={handleChange}
+                                    className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                >
+                                    <option value="">None</option>
+                                    {categories.map((category) => (
+                                        <option key={category.id} value={category.id}>
+                                            {category.name}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
 
                             <div className="mb-6">

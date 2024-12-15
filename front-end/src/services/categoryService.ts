@@ -12,7 +12,7 @@ interface Category {
 
 interface CategoryInput {
     name: string;
-    description?: string;
+    description?: string | null;
     parent_id?: number | null;
     is_active?: boolean;
 }
