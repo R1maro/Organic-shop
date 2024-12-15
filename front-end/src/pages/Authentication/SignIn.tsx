@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from "../../AuthContext";
-import LogoDark from '../../images/logo/logo-dark.svg';
-import Logo from '../../images/logo/logo.svg';
+import Logo from '../../images/logo/logo.png';
 
 
 const SignIn: React.FC = () => {
@@ -22,6 +21,7 @@ const SignIn: React.FC = () => {
         password,
       });
 
+      // @ts-ignore
       const { access_token } = response.data;
 
       // Save the token in localStorage
@@ -29,7 +29,7 @@ const SignIn: React.FC = () => {
       setIsAuthenticated(true);
 
       // Redirect to the dashboard or home page
-      navigate('/');
+      navigate('/dashboard');
     } catch (err: any) {
       // Handle errors
       if (err.response) {
@@ -48,7 +48,7 @@ const SignIn: React.FC = () => {
             <div className="py-17.5 px-26 text-center">
               <Link className="mb-5.5 inline-block" to="/">
                 <img className="hidden dark:block" src={Logo} alt="Logo" />
-                <img className="dark:hidden" src={LogoDark} alt="Logo" />
+                <img className="dark:hidden" src={Logo} alt="Logo" />
               </Link>
 
               <p className="2xl:px-20">
