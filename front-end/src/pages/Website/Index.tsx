@@ -22,15 +22,30 @@
 //         </div>
 //     );
 // };
-import Navbar from '../../components/Navbar/Index';
+import Navbar from '../../components/Navbar/Navbar';
+import Slider from '../../components/Hero/Slider';
+import Cover from '../../images/cover/cover-01.png';
+import Organic from '../../images/cover/organic.jpg';
+
+const slides = [
+    Cover,
+    Organic,
+    'https://via.placeholder.com/800x400/3357FF/FFFFFF?text=Slide+3',
+];
 
 const HomePage = () => {
     return (
-        <div>
+        <div dir="rtl">
             <Navbar/>
             <main>
-                {/* Add your page content here */}
-                <h1>Welcome to Thunder-dev!</h1>
+                <div>
+                    <Slider slides={slides}/>
+                </div>
+                <div className="container">
+                    <span className="flex justify-end font-bold">
+                        محصولات پرفروش
+                    </span>
+                </div>
             </main>
         </div>
     );
