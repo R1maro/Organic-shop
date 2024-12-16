@@ -19,7 +19,8 @@ import DefaultLayout from './layout/DefaultLayout';
 import {useAuth} from './AuthContext';
 import CategoryList from './pages/Dashboard/Category/CategoryList.tsx';
 import CategoryForm from './pages/Dashboard/Category/CategoryForm.tsx';
-import Index from "./pages/Website/Index.tsx";
+import Index from "./pages/Website/Index";
+
 
 function App() {
     const [loading, setLoading] = useState<boolean>(true);
