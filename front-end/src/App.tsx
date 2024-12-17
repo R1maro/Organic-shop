@@ -19,9 +19,7 @@ import DefaultLayout from './layout/DefaultLayout';
 import {useAuth} from './AuthContext';
 import CategoryList from './pages/Dashboard/Category/CategoryList.tsx';
 import CategoryForm from './pages/Dashboard/Category/CategoryForm.tsx';
-import ProductList from "./pages/Dashboard/Product/ProductList.tsx";
 import Index from "./pages/Website/Index.tsx";
-import ProductForm from "./pages/Dashboard/Product/ProductForm.tsx";
 
 function App() {
     const [loading, setLoading] = useState<boolean>(true);
@@ -134,33 +132,6 @@ function App() {
                                             <>
                                                 <PageTitle title="Edit Category | TailAdmin" />
                                                 <CategoryForm />
-                                            </>
-                                        }
-                                    />
-                                    <Route
-                                        path="/products"
-                                        element={
-                                            <>
-                                                <PageTitle title="Products | TailAdmin" />
-                                                <ProductList/>
-                                            </>
-                                        }
-                                    />
-                                    <Route
-                                        path="/products/create"
-                                        element={
-                                            <>
-                                                <PageTitle title="Create Product | TailAdmin" />
-                                                <ProductForm />
-                                            </>
-                                        }
-                                    />
-                                    <Route
-                                        path="/products/edit/:id"
-                                        element={
-                                            <>
-                                                <PageTitle title="Edit Product | TailAdmin" />
-                                                <ProductForm />
                                             </>
                                         }
                                     />
