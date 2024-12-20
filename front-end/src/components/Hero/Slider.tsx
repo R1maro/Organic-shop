@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 
-
 interface SliderProps {
     slides: string[];
 }
@@ -17,7 +16,7 @@ const Slider: React.FC<SliderProps> = ({slides}) => {
     };
 
     return (
-        <div className="relative w-4/5 mx-auto h-90 rounded overflow-hidden">
+        <div className="relative w-4/5 mx-auto mt-4 h-90 rounded overflow-hidden">
             {/* Slides */}
             <div
                 className="w-full h-full flex items-center justify-center bg-gray-200"
