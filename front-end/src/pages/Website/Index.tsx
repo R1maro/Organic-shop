@@ -27,6 +27,7 @@ import Slider from '../../components/Hero/Slider';
 import Cover from '../../images/cover/cover-01.png';
 import Organic from '../../images/cover/organic.jpg';
 import Card from "../../components/CardsSection/Card.tsx";
+import Footer from "../../components/Footer/Footer.tsx";
 
 
 const slides = [
@@ -48,8 +49,9 @@ const HomePage = () => {
                 <div>
                     <Card/>
                 </div>
-                <div>
-                    <Slider slides={slides}/>
+
+                <div dir="rtl">
+                    <Footer/>
                 </div>
             </main>
         </div>
