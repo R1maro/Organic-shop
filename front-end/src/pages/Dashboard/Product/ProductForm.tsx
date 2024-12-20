@@ -70,12 +70,14 @@ const ProductForm = () => {
                 discount: response.discount || null,
                 quantity: response.quantity,
                 sku: response.sku,
-                image: null,
+                image: response.image ? response.image : null,
                 category_id: response.category_id,
                 status: response.status,
             });
             if (response.image) {
-                setPreviewImage(`${config.API_URL}/storage/${response.image}`);
+                setPreviewImage(`${config.PUBLIC_URL}/storage/${response.image}`);
+            } else {
+                setPreviewImage(null); // Clear preview if no image is available
             }
         } catch (error) {
             toast.error('Failed to fetch product');
@@ -100,7 +102,8 @@ const ProductForm = () => {
         }
         formDataToSend.append('quantity', formData.quantity.toString());
         formDataToSend.append('sku', formData.sku);
-        if (formData.image) {
+
+        if (formData.image instanceof File) {
             formDataToSend.append('image', formData.image);
         }
         formDataToSend.append('category_id', formData.category_id?.toString() || '');
