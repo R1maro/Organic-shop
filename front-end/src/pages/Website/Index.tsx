@@ -26,7 +26,8 @@ import Navbar from '../../components/Navbar/Navbar';
 import Slider from '../../components/Hero/Slider';
 import Cover from '../../images/cover/cover-01.png';
 import Organic from '../../images/cover/organic.jpg';
-import Card from "../../components/CardsSection/Card.tsx";
+import Card from "../../components/Section-One/Card.tsx";
+import CategorySale from "../../components/Section-Two/Category-Sale.tsx"
 import Footer from "../../components/Footer/Footer.tsx";
 
 
@@ -45,9 +46,11 @@ const HomePage = () => {
                 <div>
                     <Slider slides={slides}/>
                 </div>
-
                 <div>
                     <Card/>
+                </div>
+                <div>
+                    <CategorySale/>
                 </div>
 
                 <div dir="rtl">
