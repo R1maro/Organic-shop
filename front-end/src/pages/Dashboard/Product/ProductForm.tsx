@@ -5,7 +5,8 @@ import Breadcrumb from '../../../components/Breadcrumbs/Breadcrumb';
 import { productService } from '../../../services/productService';
 import { categoryService } from '../../../services/categoryService';
 import Loader from '../../../common/Loader';
-import config from '../../../config';
+import config from "../../../config";
+
 
 interface Category {
     id: number;
@@ -46,6 +47,9 @@ const ProductForm = () => {
         fetchCategories();
         if (id) {
             fetchProduct();
+        } else {
+
+            setPreviewImage(null);
         }
     }, [id]);
 
@@ -74,10 +78,15 @@ const ProductForm = () => {
                 category_id: response.category_id,
                 status: response.status,
             });
-            if (response.image) {
-                setPreviewImage(`${config.PUBLIC_URL}/storage/${response.image}`);
+            if (response.media && response.media.length > 0) {
+                const mediaUrl = response.media[0].original_url;
+                setPreviewImage(
+                    mediaUrl.startsWith('http')
+                        ? mediaUrl
+                        : `${config.PUBLIC_URL}${mediaUrl}`
+                );
             } else {
-                setPreviewImage(null); // Clear preview if no image is available
+                setPreviewImage(null);
             }
         } catch (error) {
             toast.error('Failed to fetch product');
@@ -137,16 +146,15 @@ const ProductForm = () => {
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
     ) => {
-        const { name, value, type } = e.target;
+        const { name, type } = e.target;
         if (type === 'file' && e.target instanceof HTMLInputElement && e.target.files) {
             const file = e.target.files[0];
             setFormData((prev) => ({
                 ...prev,
                 image: file,
             }));
-            // Create preview URL
             const previewUrl = URL.createObjectURL(file);
-            setPreviewImage(previewUrl);
+            setPreviewImage(previewUrl); // Update preview for the new image
         } else if (type === 'checkbox') {
             const checked = (e.target as HTMLInputElement).checked;
             setFormData((prev) => ({
@@ -156,11 +164,9 @@ const ProductForm = () => {
         } else {
             setFormData((prev) => ({
                 ...prev,
-                [name]: value,
+                [name]: e.target.value,
             }));
         }
-        console.log('Form Data:', formData);
-
     };
 
     if (loading) return <Loader />;
