@@ -19,7 +19,6 @@ return new class extends Migration {
             $table->decimal('discount', 10, 2)->default(0);
             $table->unsignedInteger('quantity')->default(0);
             $table->string('sku')->unique();
-            $table->string('image')->nullable();
             $table->boolean('status')->default(1);
             $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
             $table->timestamps();
