@@ -12,7 +12,7 @@ interface Product {
     quantity:number;
     category_id: number;
     status: boolean;
-    image?:File;
+    image: string | null;
 }
 
 interface ProductInput {
@@ -24,7 +24,7 @@ interface ProductInput {
     quantity:number;
     category_id: number;
     status?: boolean;
-    image?:File;
+    image: string | null;
 }
 
 export const productService = {
@@ -59,10 +59,16 @@ export const productService = {
 
     update: async (id: number, data: ProductInput | FormData): Promise<Product> => {
         try {
-            const response = await axios.put(`${config.API_URL}/admin/products/${id}`, data, {
-                headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : {},
-            });
-            return response.data as Product;
+            if (data instanceof FormData) {
+                data.append('_method', 'PUT'); // Add this line
+                const response = await axios.post(`${config.API_URL}/admin/products/${id}`, data, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+                return response.data as Product;
+            } else {
+                const response = await axios.put(`${config.API_URL}/admin/products/${id}`, data);
+                return response.data as Product;
+            }
         } catch (error) {
             throw error;
         }

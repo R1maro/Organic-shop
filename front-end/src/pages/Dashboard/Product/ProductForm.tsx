@@ -70,7 +70,7 @@ const ProductForm = () => {
                 discount: response.discount || null,
                 quantity: response.quantity,
                 sku: response.sku,
-                image: response.image ? response.image : null,
+                image:  null,
                 category_id: response.category_id,
                 status: response.status,
             });
