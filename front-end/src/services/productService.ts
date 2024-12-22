@@ -1,6 +1,12 @@
 import axios from 'axios';
 import config from '../config';
 
+interface Media {
+    id: number;
+    original_url: string;
+    preview_url?: string;
+}
+
 interface Product {
     id: number;
     name: string;
@@ -12,7 +18,7 @@ interface Product {
     quantity:number;
     category_id: number;
     status: boolean;
-    image: string | null;
+    media: Media[];
 }
 
 interface ProductInput {
@@ -24,7 +30,7 @@ interface ProductInput {
     quantity:number;
     category_id: number;
     status?: boolean;
-    image: string | null;
+
 }
 
 export const productService = {

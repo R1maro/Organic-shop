@@ -4,6 +4,7 @@ import { toast } from 'react-hot-toast';
 import Breadcrumb from '../../../components/Breadcrumbs/Breadcrumb';
 import { productService } from '../../../services/productService';
 import Loader from '../../../common/Loader';
+import config from "../../../config";
 
 const ProductList = () => {
     const [products, setProducts] = useState([]);
@@ -17,7 +18,22 @@ const ProductList = () => {
         try {
             const response = await productService.getAll();
             //@ts-ignore
-            setProducts(response.data);
+            const productsWithImages = response.data.map((product: any) => {
+                // Check if media exists and has a thumbnail conversion
+                const mediaUrl = product.media && product.media.length > 0
+                    ? `${config.PUBLIC_URL}${product.media[0].original_url.replace(
+                        product.media[0].file_name,
+                        `conversions/${product.media[0].name}-thumb.${product.media[0].mime_type.split('/')[1]}`
+                    )}`
+                    : null;
+
+                return {
+                    ...product,
+                    image_url: mediaUrl, // Set the image_url to the thumbnail URL
+                };
+            });
+
+            setProducts(productsWithImages);
         } catch (error) {
             toast.error('Failed to fetch products');
         } finally {
@@ -59,6 +75,9 @@ const ProductList = () => {
                         <table className="w-full table-auto">
                             <thead>
                             <tr className="bg-gray-2 text-left dark:bg-meta-4">
+                                <th className="min-w-[80px] py-4 px-4 font-medium text-black dark:text-white">
+                                    Thumbnail
+                                </th>
                                 <th className="min-w-[220px] py-4 px-4 font-medium text-black dark:text-white xl:pl-11">
                                     Name
                                 </th>
@@ -76,6 +95,18 @@ const ProductList = () => {
                             <tbody>
                             {products.map((product: any) => (
                                 <tr key={product.id}>
+                                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                        {product.image_url ? (
+                                            <img
+                                                src={product.image_url}
+                                                alt={product.name}
+                                                className=" object-cover rounded-md"
+
+                                            />
+                                        ) : (
+                                            <span>No Image</span>
+                                        )}
+                                    </td>
                                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark xl:pl-11">
                                         {product.name}
                                     </td>
