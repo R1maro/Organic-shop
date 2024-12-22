@@ -6,10 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class Product extends Model
+class Product extends Model implements HasMedia
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, InteractsWithMedia;
 
     //
 
@@ -21,7 +24,6 @@ class Product extends Model
         'discount',
         'quantity',
         'sku',
-        'image',
         'status',
         'category_id',
     ];
@@ -40,11 +42,33 @@ class Product extends Model
         });
     }
 
-    public function category(){
+    public function registerMediaConversions(Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->width(100)
+            ->height(100)
+            ->sharpen(10)
+            ->nonQueued();
+
+        $this->addMediaConversion('medium')
+            ->width(800)
+            ->height(600)
+            ->sharpen(10);
+    }
+
+    // Add an accessor for the image URL
+    public function getImageUrlAttribute()
+    {
+        return $this->getFirstMediaUrl('product_image', 'thumb') ?: $this->getFirstMediaUrl('product_image');
+    }
+
+    public function category()
+    {
         return $this->belongsTo(Category::class);
     }
 
-    public function scopeActive($query){
+    public function scopeActive($query)
+    {
         return $query->where('status', 1);
     }
 

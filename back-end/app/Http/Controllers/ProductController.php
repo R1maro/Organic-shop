@@ -4,13 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $products = Product::with('category')
+        $products = Product::with(['category', 'media'])
             ->when($request->category_id, fn($q) => $q->byCategory($request->category_id))
             ->active()
             ->paginate(10);
@@ -33,22 +32,27 @@ class ProductController extends Controller
             'status' => 'boolean',
         ]);
 
-        if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('products', 'public');
-        }
-
         $product = Product::create($validated);
 
-        return response()->json($product, 201);
+        if ($request->hasFile('image')) {
+            $product->clearMediaCollection('product_image');
+            $product->addMedia($request->file('image'))
+                ->withResponsiveImages()
+                ->toMediaCollection('product_image');
+
+        }
+
+        return response()->json($product->load(['category', 'media']), 201);
     }
 
     public function show(Product $product)
     {
-        return response()->json($product->load('category'));
+        return response()->json($product->load(['category', 'media']));
     }
 
     public function update(Request $request, Product $product)
     {
+
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
             'description' => 'nullable|string',
@@ -61,16 +65,20 @@ class ProductController extends Controller
             'status' => 'boolean',
         ]);
 
-        if ($request->hasFile('image')) {
-            if ($product->image) {
-                Storage::disk('public')->delete($product->image);
-            }
-            $validated['image'] = $request->file('image')->store('products', 'public');
-        }
-
         $product->update($validated);
 
-        return response()->json($product);
+
+        if ($request->hasFile('image')) {
+            $product->clearMediaCollection('product_image');
+            $product->addMedia($request->file('image'))
+                ->withResponsiveImages()
+                ->toMediaCollection('product_image');
+
+
+        }
+
+        return response()->json($product->load(['category', 'media']));
+
     }
 
     public function destroy(Product $product)
