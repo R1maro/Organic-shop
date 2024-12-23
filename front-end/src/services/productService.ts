@@ -15,6 +15,7 @@ interface Product {
     description: string | null;
     price: number;
     discount:number | null;
+    final_price: number,
     quantity:number;
     category_id: number;
     status: boolean;
