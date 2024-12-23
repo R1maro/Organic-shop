@@ -11,7 +11,7 @@ const CardsSection = () => {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
                 {/* Card 1 */}
-                <div className="bg-whiten rounded-lg shadow-md p-4 text-center">
+                <div className="bg-whiten rounded-lg border shadow-md p-4 text-center">
                     <img
                         src={Product}
                         alt="Product 1"
@@ -26,7 +26,7 @@ const CardsSection = () => {
                 </div>
 
                 {/* Card 2 */}
-                <div className="bg-whiten rounded-lg shadow-md p-4 text-center">
+                <div className="bg-whiten rounded-lg border shadow-md p-4 text-center">
                     <img
                         src={Product}
                         alt="Product 2"
@@ -41,7 +41,7 @@ const CardsSection = () => {
                 </div>
 
                 {/* Card 3 */}
-                <div className="bg-whiten rounded-lg shadow-md p-4 text-center">
+                <div className="bg-whiten rounded-lg border shadow-md p-4 text-center">
                     <img
                         src={Product}
                         alt="Product 3"
@@ -56,7 +56,7 @@ const CardsSection = () => {
                 </div>
 
                 {/* Card 4 */}
-                <div className="bg-whiten rounded-lg shadow-md p-4 text-center">
+                <div className="bg-whiten rounded-lg border shadow-md p-4 text-center">
                     <img
                         src={Product}
                         alt="Product 4"
@@ -70,7 +70,7 @@ const CardsSection = () => {
                     </p>
                 </div>
                 {/* Card 5 */}
-                <div className="bg-whiten rounded-lg shadow-md p-4 text-center">
+                <div className="bg-whiten rounded-lg border shadow-md p-4 text-center">
                     <img
                         src={Product}
                         alt="Product 4"
@@ -84,7 +84,7 @@ const CardsSection = () => {
                     </p>
                 </div>
                 {/* Card 6 */}
-                <div className="bg-whiten rounded-lg shadow-md p-4 text-center">
+                <div className="bg-whiten rounded-lg border shadow-md p-4 text-center">
                     <img
                         src={Product}
                         alt="Product 4"
@@ -98,7 +98,7 @@ const CardsSection = () => {
                     </p>
                 </div>
                 {/* Card 7 */}
-                <div className="bg-whiten rounded-lg shadow-md p-4 text-center">
+                <div className="bg-whiten rounded-lg border shadow-md p-4 text-center">
                     <img
                         src={Product}
                         alt="Product 4"
@@ -112,7 +112,7 @@ const CardsSection = () => {
                     </p>
                 </div>
                 {/* Card 8 */}
-                <div className="bg-whiten rounded-lg shadow-md p-4 text-center">
+                <div className="bg-whiten rounded-lg border shadow-md p-4 text-center">
                     <img
                         src={Product}
                         alt="Product 4"
