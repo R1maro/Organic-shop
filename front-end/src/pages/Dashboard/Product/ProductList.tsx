@@ -29,7 +29,7 @@ const ProductList = () => {
 
                 return {
                     ...product,
-                    image_url: mediaUrl, // Set the image_url to the thumbnail URL
+                    image_url: mediaUrl,
                 };
             });
 
