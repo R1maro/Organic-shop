@@ -23,13 +23,13 @@ const ProductList = () => {
                 const mediaUrl = product.media && product.media.length > 0
                     ? `${config.PUBLIC_URL}${product.media[0].original_url.replace(
                         product.media[0].file_name,
-                        `conversions/${product.media[0].name}-thumb.${product.media[0].mime_type.split('/')[1]}`
+                        `conversions/${product.media[0].name}-thumb.jpg`
                     )}`
                     : null;
 
                 return {
                     ...product,
-                    image_url: mediaUrl, // Set the image_url to the thumbnail URL
+                    image_url: mediaUrl,
                 };
             });
 
@@ -76,7 +76,7 @@ const ProductList = () => {
                             <thead>
                             <tr className="bg-gray-2 text-left dark:bg-meta-4">
                                 <th className="min-w-[80px] py-4 px-4 font-medium text-black dark:text-white">
-                                    Thumbnail
+                                    Image
                                 </th>
                                 <th className="min-w-[220px] py-4 px-4 font-medium text-black dark:text-white xl:pl-11">
                                     Name
