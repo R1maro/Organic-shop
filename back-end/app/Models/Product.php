@@ -14,7 +14,6 @@ class Product extends Model implements HasMedia
 {
     use HasFactory, SoftDeletes, InteractsWithMedia;
 
-    //
 
     protected $fillable = [
         'name',
@@ -22,24 +21,35 @@ class Product extends Model implements HasMedia
         'description',
         'price',
         'discount',
+        'final_price',
         'quantity',
         'sku',
         'status',
         'category_id',
     ];
 
+    protected $appends = ['formatted_price' , 'formatted_final_price'];
+
     protected static function boot()
     {
         parent::boot();
         static::creating(function ($product) {
             $product->slug = Str::slug($product->name . ' ' . uniqid(), '-');
+            $product->final_price = $product->calculateFinalPrice();
         });
 
         static::updating(function ($product) {
             if ($product->isDirty('name')) {
                 $product->slug = Str::slug($product->name . ' ' . uniqid(), '-');
             }
+            if ($product->isDirty('price') || $product->isDirty('discount')) {
+                $product->final_price = $product->calculateFinalPrice();
+            }
         });
+    }
+    private function calculateFinalPrice()
+    {
+        return max(0, $this->price - $this->discount);
     }
 
     public function registerMediaConversions(Media $media = null): void
@@ -52,7 +62,6 @@ class Product extends Model implements HasMedia
 
     }
 
-    // Add an accessor for the image URL
     public function getImageUrlAttribute()
     {
         return $this->getFirstMediaUrl('product_image', 'thumb') ?: $this->getFirstMediaUrl('product_image');
@@ -75,6 +84,10 @@ class Product extends Model implements HasMedia
 
     public function getFormattedPriceAttribute()
     {
-        return '$' . number_format($this->price, 2);
+        return number_format($this->price, 0, '.', ',') . ' ریال';
+    }
+    public function getFormattedFinalPriceAttribute()
+    {
+        return number_format($this->final_price, 0, '.', ',') . ' ریال';
     }
 }

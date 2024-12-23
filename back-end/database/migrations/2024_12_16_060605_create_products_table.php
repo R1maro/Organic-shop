@@ -15,8 +15,9 @@ return new class extends Migration {
             $table->string('name')->index();
             $table->string('slug')->unique();
             $table->text('description')->nullable();
-            $table->decimal('price', 10, 2)->default(0);
-            $table->decimal('discount', 10, 2)->default(0);
+            $table->unsignedInteger('price')->default(0);
+            $table->unsignedInteger('discount')->default(0);
+            $table->unsignedInteger('final_price')->default(0);
             $table->unsignedInteger('quantity')->default(0);
             $table->string('sku')->unique();
             $table->boolean('status')->default(1);
