@@ -143,6 +143,17 @@ const ProductForm = () => {
         }
     };
 
+    const formatPrice = (value: string) => {
+        // Remove all commas before parsing
+        const numericValue = value.replace(/,/g, '');
+        // Check if it's a valid number
+        if (!isNaN(Number(numericValue))) {
+            // Format with commas
+            return new Intl.NumberFormat('en-US').format(Number(numericValue));
+        }
+        return value;
+    };
+
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
     ) => {
@@ -154,14 +165,22 @@ const ProductForm = () => {
                 image: file,
             }));
             const previewUrl = URL.createObjectURL(file);
-            setPreviewImage(previewUrl); // Update preview for the new image
+            setPreviewImage(previewUrl);
+
         } else if (type === 'checkbox') {
             const checked = (e.target as HTMLInputElement).checked;
             setFormData((prev) => ({
                 ...prev,
                 [name]: checked,
             }));
-        } else {
+        }
+        else if (name === 'price'|| name === 'discount') {
+            const formattedValue = formatPrice(e.target.value);
+            setFormData((prev) => ({
+                ...prev,
+                [name]: Number(formattedValue.replace(/,/g, '')), // Store numeric value
+            }));
+        }else {
             setFormData((prev) => ({
                 ...prev,
                 [name]: e.target.value,
@@ -219,9 +238,9 @@ const ProductForm = () => {
                                         Price <span className="text-meta-1">*</span>
                                     </label>
                                     <input
-                                        type="number"
+                                        type="text"
                                         name="price"
-                                        value={formData.price}
+                                        value={formatPrice(formData.price.toString())}
                                         onChange={handleChange}
                                         step="0.01"
                                         min="0"
@@ -234,9 +253,9 @@ const ProductForm = () => {
                                         Discount
                                     </label>
                                     <input
-                                        type="number"
+                                        type="text"
                                         name="discount"
-                                        value={formData.discount || ''}
+                                        value={formatPrice((formData.discount ?? 0).toString())}
                                         onChange={handleChange}
                                         step="0.01"
                                         min="0"

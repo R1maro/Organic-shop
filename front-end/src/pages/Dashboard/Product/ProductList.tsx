@@ -111,7 +111,7 @@ const ProductList = () => {
                                         {product.name}
                                     </td>
                                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                        ${product.price}
+                                        {product.formatted_final_price}
                                     </td>
                                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                             <span
