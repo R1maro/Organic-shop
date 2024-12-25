@@ -30,8 +30,7 @@ const OrderList = () => {
     const fetchOrders = async () => {
         try {
             const response = await orderService.getAll();
-            //@ts-ignore
-            setOrders(response.data);
+            setOrders(response);
         } catch (error) {
             toast.error('Failed to fetch orders');
         } finally {
@@ -167,8 +166,8 @@ const OrderList = () => {
                                             >
                                                 <svg
                                                     className="fill-current"
-                                                    width="18"
-                                                    height="18"
+                                                    width="20"
+                                                    height="20"
                                                     viewBox="0 0 18 18"
                                                     fill="none"
                                                     xmlns="http://www.w3.org/2000/svg"
@@ -189,8 +188,8 @@ const OrderList = () => {
                                             >
                                                 <svg
                                                     className="fill-current"
-                                                    width="18"
-                                                    height="18"
+                                                    width="20"
+                                                    height="20"
                                                     viewBox="0 0 18 18"
                                                     fill="none"
                                                     xmlns="http://www.w3.org/2000/svg"
