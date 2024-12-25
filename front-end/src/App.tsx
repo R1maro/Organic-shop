@@ -23,6 +23,7 @@ import Index from "./pages/Website/Index";
 import ProductList from "./pages/Dashboard/Product/ProductList.tsx";
 import ProductForm from "./pages/Dashboard/Product/ProductForm.tsx";
 import OrderList from "./pages/Dashboard/Order/OrderList.tsx";
+import OrderForm from "./pages/Dashboard/Order/OrderForm.tsx";
 
 function App() {
     const [loading, setLoading] = useState<boolean>(true);
@@ -174,24 +175,24 @@ function App() {
                                             </>
                                         }
                                     />
-                                    {/*<Route*/}
-                                    {/*    path="/orders/create"*/}
-                                    {/*    element={*/}
-                                    {/*        <>*/}
-                                    {/*            <PageTitle title="Create Order | TailAdmin" />*/}
-                                    {/*            <OrderForm />*/}
-                                    {/*        </>*/}
-                                    {/*    }*/}
-                                    {/*/>*/}
-                                    {/*<Route*/}
-                                    {/*    path="/orders/edit/:id"*/}
-                                    {/*    element={*/}
-                                    {/*        <>*/}
-                                    {/*            <PageTitle title="Edit Order | TailAdmin" />*/}
-                                    {/*            <OrderForm />*/}
-                                    {/*        </>*/}
-                                    {/*    }*/}
-                                    {/*/>*/}
+                                    <Route
+                                        path="/orders/create"
+                                        element={
+                                            <>
+                                                <PageTitle title="Create Order | TailAdmin" />
+                                                <OrderForm />
+                                            </>
+                                        }
+                                    />
+                                    <Route
+                                        path="/orders/edit/:id"
+                                        element={
+                                            <>
+                                                <PageTitle title="Edit Order | TailAdmin" />
+                                                <OrderForm />
+                                            </>
+                                        }
+                                    />
                                     <Route
                                         path="/profile"
                                         element={
