@@ -13,7 +13,8 @@ class OrderController extends Controller
 
     public function index(Request $request)
     {
-        $orders = Order::with(['item.product' , 'user'])
+        $orders = Order::with(['items.product', 'user'])
+
             ->when($request->status, function ($query, $status) {
                 return $query->where('status', $status);
             })
@@ -61,11 +62,15 @@ class OrderController extends Controller
                 ];
             }
 
-            $userId = auth()->id() ?? $request->user_id;
 
+
+            $userId = $request->user_id ?? auth('sanctum')->id();
 
             if (!$userId) {
-                return response()->json(['message' => 'User ID is required'], 422);
+                return response()->json([
+                    'message' => 'User ID is required',
+                    'userId' => $userId
+                ], 422);
             }
 
             $order = Order::create([
