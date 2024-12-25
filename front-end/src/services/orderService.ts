@@ -1,7 +1,7 @@
 import axios from 'axios';
 import config from '../config';
 
-interface OrderItem {
+interface OrderItems {
     id: number;
     product_id: number;
     quantity: number;
@@ -24,7 +24,7 @@ interface Order {
     shipping_address: string;
     billing_address?: string;
     notes?: string;
-    items: OrderItem[];
+    items: OrderItems[];
     created_at: string;
     user: {
         name: string;
@@ -46,8 +46,8 @@ interface OrderInput {
 export const orderService = {
     getAll: async (): Promise<Order[]> => {
         try {
-            const response = await axios.get(`${config.API_URL}/admin/orders`);
-            return response.data as Order[];
+            const response = await axios.get<{ data: Order[] }>(`${config.API_URL}/admin/orders`);
+            return response.data.data;
         } catch (error) {
             throw error;
         }
@@ -55,8 +55,8 @@ export const orderService = {
 
     getById: async (id: number): Promise<Order> => {
         try {
-            const response = await axios.get(`${config.API_URL}/admin/orders/${id}`);
-            return response.data as Order;
+            const response = await axios.get<{ data: Order }>(`${config.API_URL}/admin/orders/${id}`);
+            return response.data.data;
         } catch (error) {
             throw error;
         }
@@ -64,8 +64,8 @@ export const orderService = {
 
     create: async (data: OrderInput): Promise<Order> => {
         try {
-            const response = await axios.post(`${config.API_URL}/admin/orders`, data);
-            return response.data as Order;
+            const response = await axios.post<{ data: Order }>(`${config.API_URL}/admin/orders`, data);
+            return response.data.data;
         } catch (error) {
             throw error;
         }
@@ -73,8 +73,8 @@ export const orderService = {
 
     update: async (id: number, data: Partial<Order>): Promise<Order> => {
         try {
-            const response = await axios.put(`${config.API_URL}/admin/orders/${id}`, data);
-            return response.data as Order;
+            const response = await axios.put<{ data: Order }>(`${config.API_URL}/admin/orders/${id}`, data);
+            return response.data.data;
         } catch (error) {
             throw error;
         }
