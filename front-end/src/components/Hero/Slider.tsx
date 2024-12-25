@@ -1,18 +1,26 @@
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface SliderProps {
     slides: string[];
 }
 
-const Slider: React.FC<SliderProps> = ({slides}) => {
+const Slider: React.FC<SliderProps> = ({ slides }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
 
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentIndex((prevIndex) => (prevIndex + 1) % slides.length);
+        }, 2000);
+
+        return () => clearInterval(interval);
+    }, [slides.length]);
+
     const goToPrevious = () => {
-        setCurrentIndex((prevIndex) => (prevIndex === slides.length - 1 ? 0 : prevIndex + 1));
+        setCurrentIndex((prevIndex) => (prevIndex === 0 ? slides.length - 1 : prevIndex - 1));
     };
 
     const goToNext = () => {
-        setCurrentIndex((prevIndex) => (prevIndex === 0 ? slides.length - 1 : prevIndex - 1));
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % slides.length);
     };
 
     return (
@@ -45,6 +53,7 @@ const Slider: React.FC<SliderProps> = ({slides}) => {
             >
                 ❯
             </button>
+
             {/* Slide Indicators */}
             <div className="absolute bottom-4 text-center right-1/2 flex space-x-2">
                 {slides.map((_, index) => (
@@ -62,4 +71,3 @@ const Slider: React.FC<SliderProps> = ({slides}) => {
 };
 
 export default Slider;
-
