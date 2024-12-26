@@ -4,25 +4,13 @@ import { toast } from 'react-hot-toast';
 import Breadcrumb from '../../../components/Breadcrumbs/Breadcrumb';
 import Loader from '../../../common/Loader';
 import { orderService } from '../../../services/orderService';
-
-interface OrderItem {
-    product_id: number;
-    quantity: number;
-}
-
-interface OrderFormData {
-    items: OrderItem[];
-    shipping_address: string;
-    billing_address: string | null;
-    payment_method: string;
-    notes: string | null;
-}
+import type { Order, OrderInput } from '../../../services/orderService'; // Import the types
 
 const OrderForm = () => {
     const navigate = useNavigate();
     const { id } = useParams();
     const [loading, setLoading] = useState(false);
-    const [formData, setFormData] = useState<OrderFormData>({
+    const [formData, setFormData] = useState<OrderInput>({
         items: [{ product_id: 0, quantity: 1 }],
         shipping_address: '',
         billing_address: null,
@@ -40,10 +28,11 @@ const OrderForm = () => {
         try {
             setLoading(true);
             const response = await orderService.getById(Number(id));
+
             setFormData({
-                items: response.items.map((item: any) => ({
+                items: response.items.map(item => ({
                     product_id: item.product_id,
-                    quantity: item.quantity,
+                    quantity: item.quantity
                 })),
                 shipping_address: response.shipping_address,
                 billing_address: response.billing_address,
@@ -52,6 +41,7 @@ const OrderForm = () => {
             });
         } catch (error) {
             toast.error('Failed to fetch order');
+            console.log('Error fetching order:', error);
             navigate('/orders');
         } finally {
             setLoading(false);
@@ -63,9 +53,26 @@ const OrderForm = () => {
         setLoading(true);
 
         try {
-
             if (id) {
-                await orderService.update(Number(id), formData);
+                const updateData: Partial<Order> = {
+                    items: formData.items.map(item => ({
+                        id: 0,
+                        product_id: item.product_id,
+                        quantity: item.quantity,
+                        unit_price: 0,
+                        subtotal: 0,
+                        product: {
+                            name: '',
+                            sku: ''
+                        }
+                    })),
+                    shipping_address: formData.shipping_address,
+                    billing_address: formData.billing_address,
+                    payment_method: formData.payment_method,
+                    notes: formData.notes,
+                };
+                console.log('Sending update data:', updateData);
+                await orderService.update(Number(id), updateData);
                 toast.success('Order updated successfully');
             } else {
                 await orderService.create(formData);
@@ -73,6 +80,7 @@ const OrderForm = () => {
             }
             navigate('/orders');
         } catch (error) {
+            console.error('Update error:', error);
             toast.error(id ? 'Failed to update order' : 'Failed to create order');
         } finally {
             setLoading(false);
@@ -134,7 +142,6 @@ const OrderForm = () => {
                                         required
                                     >
                                         <option value="">Select Product</option>
-                                        {/* Replace with dynamic product options */}
                                         <option value="1">Product 1</option>
                                         <option value="2">Product 2</option>
                                     </select>
