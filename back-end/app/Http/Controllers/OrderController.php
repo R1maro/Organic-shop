@@ -109,18 +109,49 @@ class OrderController extends Controller
             'payment_status' => 'sometimes|required|in:pending,paid,failed,refunded',
             'shipping_address' => 'sometimes|required|string',
             'notes' => 'nullable|string',
+            'payment_method' => 'sometimes|required|string',
+            'billing_address' => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error', $validator->errors()], 422);
         }
 
-        $order->update([
+        // Get only the fillable data from the request
+        $updateData = $request->only([
             'status',
             'payment_status',
             'shipping_address',
             'notes',
+            'payment_method',
+            'billing_address'
         ]);
+
+
+        $order->update($updateData);
+
+
+        if ($request->has('items')) {
+
+            $order->items()->delete();
+
+            // Create new items
+            foreach ($request->items as $item) {
+
+                $product = Product::findOrFail($item['product_id']);
+
+                $order->items()->create([
+                    'product_id' => $item['product_id'],
+                    'quantity' => $item['quantity'],
+                    'unit_price' => $product->price,
+                    'subtotal' => $product->price * $item['quantity']
+                ]);
+            }
+
+            $order->update([
+                'total_price' => $order->items()->sum('subtotal')
+            ]);
+        }
 
         if ($request->status == 'shipped') {
             $order->markAsShipped();
