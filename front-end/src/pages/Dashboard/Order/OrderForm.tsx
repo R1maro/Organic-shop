@@ -1,17 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { toast } from 'react-hot-toast';
+import React, {useState, useEffect} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
+import {toast} from 'react-hot-toast';
 import Breadcrumb from '../../../components/Breadcrumbs/Breadcrumb';
 import Loader from '../../../common/Loader';
-import { orderService } from '../../../services/orderService';
-import type { Order, OrderInput } from '../../../services/orderService'; // Import the types
+
+import {orderService} from '../../../services/orderService';
+import type {Order, OrderInput} from '../../../services/orderService';
+import {productService} from "../../../services/productService.ts";
+
+
+interface Product {
+    id: number;
+    name: string;
+    price: number;
+}
+
 
 const OrderForm = () => {
     const navigate = useNavigate();
-    const { id } = useParams();
+    const {id} = useParams();
     const [loading, setLoading] = useState(false);
+
+    const [products, setProducts] = useState<Product[]>([]);
+    const [productsLoading, setProductsLoading] = useState(true);
     const [formData, setFormData] = useState<OrderInput>({
-        items: [{ product_id: 0, quantity: 1 }],
+        items: [{product_id: 0, quantity: 1}],
+
         shipping_address: '',
         billing_address: null,
         payment_method: '',
@@ -19,10 +33,23 @@ const OrderForm = () => {
     });
 
     useEffect(() => {
+        fetchProducts();
         if (id) {
             fetchOrder();
         }
     }, [id]);
+
+    const fetchProducts = async () => {
+        setProductsLoading(true);
+        try {
+            const response = await productService.getAll();
+            setProducts(response);
+        } catch (error) {
+            toast.error('Failed to fetch products');
+        } finally {
+            setProductsLoading(false);
+        }
+    };
 
     const fetchOrder = async () => {
         try {
@@ -71,7 +98,8 @@ const OrderForm = () => {
                     payment_method: formData.payment_method,
                     notes: formData.notes,
                 };
-                console.log('Sending update data:', updateData);
+
+
                 await orderService.update(Number(id), updateData);
                 toast.success('Order updated successfully');
             } else {
@@ -90,7 +118,7 @@ const OrderForm = () => {
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
     ) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
         setFormData((prev) => ({
             ...prev,
             [name]: value,
@@ -99,14 +127,14 @@ const OrderForm = () => {
 
     const handleItemChange = (index: number, field: string, value: string | number) => {
         const items = [...formData.items];
-        items[index] = { ...items[index], [field]: value };
-        setFormData((prev) => ({ ...prev, items }));
+        items[index] = {...items[index], [field]: value};
+        setFormData((prev) => ({...prev, items}));
     };
 
     const addItem = () => {
         setFormData((prev) => ({
             ...prev,
-            items: [...prev.items, { product_id: 0, quantity: 1 }],
+            items: [...prev.items, {product_id: 0, quantity: 1}],
         }));
     };
 
@@ -117,14 +145,15 @@ const OrderForm = () => {
         }));
     };
 
-    if (loading) return <Loader />;
+    if (loading) return <Loader/>;
 
     return (
         <>
             <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
-                <Breadcrumb pageName={id ? 'Edit Order' : 'Create Order'} />
+                <Breadcrumb pageName={id ? 'Edit Order' : 'Create Order'}/>
 
-                <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                <div
+                    className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
                     <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
                         <h3 className="font-medium text-black dark:text-white">
                             {id ? 'Edit Order' : 'Create New Order'}
@@ -140,10 +169,23 @@ const OrderForm = () => {
                                         onChange={(e) => handleItemChange(index, 'product_id', Number(e.target.value))}
                                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                                         required
+                                        disabled={productsLoading}
                                     >
-                                        <option value="">Select Product</option>
-                                        <option value="1">Product 1</option>
-                                        <option value="2">Product 2</option>
+
+                                        <option
+                                            value="">{productsLoading ? 'Loading products...' : 'Select Product'}</option>
+                                        {!productsLoading && products.map((product) => (
+                                            <option
+                                                key={product.id}
+                                                value={product.id}
+                                                disabled={formData.items.some(
+                                                    (i, idx) => i.product_id === product.id && idx !== index
+                                                )}
+                                            >
+                                                {product.name} - ${product.price}
+                                            </option>
+                                        ))}
+
                                     </select>
                                     <input
                                         type="number"
