@@ -3,11 +3,17 @@ import { Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import Breadcrumb from '../../../components/Breadcrumbs/Breadcrumb';
 import { productService } from '../../../services/productService';
+import type { Product } from '../../../services/productService';
 import Loader from '../../../common/Loader';
 import config from "../../../config";
 
+interface ProductWithImageUrl extends Product {
+    image_url: string | null;
+    formatted_final_price?: string;
+}
+
 const ProductList = () => {
-    const [products, setProducts] = useState([]);
+    const [products, setProducts] = useState<ProductWithImageUrl[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -17,19 +23,22 @@ const ProductList = () => {
     const fetchProducts = async () => {
         try {
             const response = await productService.getAll();
-            //@ts-ignore
-            const productsWithImages = response.data.map((product: any) => {
+            const productsWithImages = response.map((product: Product) => {
                 // Check if media exists and has a thumbnail conversion
                 const mediaUrl = product.media && product.media.length > 0
                     ? `${config.PUBLIC_URL}${product.media[0].original_url.replace(
-                        product.media[0].file_name,
-                        `conversions/${product.media[0].name}-thumb.jpg`
+                        product.media[0].original_url.split('/').pop() || '',
+                        `conversions/${product.media[0].original_url.split('/').pop()?.split('.')[0]}-thumb.jpg`
                     )}`
                     : null;
 
                 return {
                     ...product,
                     image_url: mediaUrl,
+                    formatted_final_price: new Intl.NumberFormat('en-US', {
+                        style: 'currency',
+                        currency: 'USD'
+                    }).format(product.final_price)
                 };
             });
 
@@ -68,9 +77,7 @@ const ProductList = () => {
                     </Link>
                 </div>
 
-                <div
-                    className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1"
-                >
+                <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
                     <div className="max-w-full overflow-x-auto">
                         <table className="w-full table-auto">
                             <thead>
@@ -93,15 +100,14 @@ const ProductList = () => {
                             </tr>
                             </thead>
                             <tbody>
-                            {products.map((product: any) => (
+                            {products.map((product) => (
                                 <tr key={product.id}>
                                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                         {product.image_url ? (
                                             <img
                                                 src={product.image_url}
                                                 alt={product.name}
-                                                className=" object-cover rounded-md"
-
+                                                className="h-20 w-20 object-cover rounded-md"
                                             />
                                         ) : (
                                             <span>No Image</span>
