@@ -14,10 +14,10 @@ axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem(
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <React.StrictMode>
-        <AuthProvider>
-            <Router>
+        <Router>
+            <AuthProvider>
                 <App/>
-            </Router>
-        </AuthProvider>
+            </AuthProvider>
+        </Router>
     </React.StrictMode>,
 );
