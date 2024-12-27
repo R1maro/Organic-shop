@@ -1,13 +1,17 @@
 import axios from 'axios';
 import config from '../config';
 
-interface Media {
+interface ApiResponse<T> {
+    data: T;
+}
+
+export interface Media {
     id: number;
     original_url: string;
     preview_url?: string;
 }
 
-interface Product {
+export interface Product {
     id: number;
     name: string;
     slug: string;
@@ -22,7 +26,7 @@ interface Product {
     media: Media[];
 }
 
-interface ProductInput {
+export interface ProductInput {
     name: string;
     description?: string | null;
     price: number;
@@ -37,7 +41,7 @@ interface ProductInput {
 export const productService = {
     getAll: async (): Promise<Product[]> => {
         try {
-            const response = await axios.get<{ data: Product[] }>(`${config.API_URL}/admin/products`);
+            const response = await axios.get< ApiResponse<Product[] >>(`${config.API_URL}/admin/products`);
             return response.data.data;
         } catch (error) {
             throw error;
@@ -46,8 +50,8 @@ export const productService = {
 
     getById: async (id: number): Promise<Product> => {
         try {
-            const response = await axios.get<{ data: Product }>(`${config.API_URL}/admin/products/${id}`);
-            return response.data.data;
+            const response = await axios.get<Product>(`${config.API_URL}/admin/products/${id}`);
+            return response.data;
         } catch (error) {
             throw error;
         }
@@ -55,7 +59,7 @@ export const productService = {
 
     create: async (data: ProductInput | FormData): Promise<Product> => {
         try {
-            const response = await axios.post<{ data: Product }>(`${config.API_URL}/admin/products`, data, {
+            const response = await axios.post<ApiResponse<Product>>(`${config.API_URL}/admin/products`, data, {
                 headers: data instanceof FormData ? {'Content-Type': 'multipart/form-data'} : {},
             });
             return response.data.data;
@@ -68,13 +72,13 @@ export const productService = {
         try {
             if (data instanceof FormData) {
                 data.append('_method', 'PUT');
-                const response = await axios.post<{ data: Product }>(`${config.API_URL}/admin/products/${id}`, data, {
+                const response = await axios.post<{ message: string , product: Product }>(`${config.API_URL}/admin/products/${id}`, data, {
                     headers: {'Content-Type': 'multipart/form-data'},
                 });
-                return response.data.data;
+                return response.data.product;
             } else {
-                const response = await axios.put<{ data: Product }>(`${config.API_URL}/admin/products/${id}`, data);
-                return response.data.data;
+                const response = await axios.put<{ message: string, product: Product }>(`${config.API_URL}/admin/products/${id}`, data);
+                return response.data.product;
             }
         } catch (error) {
             throw error;

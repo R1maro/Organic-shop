@@ -4,25 +4,18 @@ import { toast } from 'react-hot-toast';
 import Breadcrumb from '../../../components/Breadcrumbs/Breadcrumb';
 import { productService } from '../../../services/productService';
 import { categoryService } from '../../../services/categoryService';
+import type { ProductInput } from '../../../services/productService';
 import Loader from '../../../common/Loader';
 import config from "../../../config";
-
 
 interface Category {
     id: number;
     name: string;
 }
 
-interface ProductFormData {
-    name: string;
-    description: string | null;
-    price: number;
-    discount: number | null;
-    quantity: number;
-    sku: string;
+
+interface ProductFormData extends ProductInput {
     image: File | null;
-    category_id: number | null;
-    status: boolean;
 }
 
 const ProductForm = () => {
@@ -32,13 +25,13 @@ const ProductForm = () => {
     const [categories, setCategories] = useState<Category[]>([]);
     const [formData, setFormData] = useState<ProductFormData>({
         name: '',
-        description: null,
+        description: '',
         price: 0,
-        discount: null,
+        discount: 0,
         quantity: 0,
         sku: '',
         image: null,
-        category_id: null,
+        category_id: 0,
         status: true,
     });
     const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -48,7 +41,6 @@ const ProductForm = () => {
         if (id) {
             fetchProduct();
         } else {
-
             setPreviewImage(null);
         }
     }, [id]);
@@ -69,15 +61,16 @@ const ProductForm = () => {
             const response = await productService.getById(Number(id));
             setFormData({
                 name: response.name,
-                description: response.description || '',
+                description: response.description ?? '',
                 price: response.price,
-                discount: response.discount || null,
+                discount: response.discount ?? 0,
                 quantity: response.quantity,
                 sku: response.sku,
-                image:  null,
+                image: null,
                 category_id: response.category_id,
                 status: response.status,
             });
+
             if (response.media && response.media.length > 0) {
                 const mediaUrl = response.media[0].original_url;
                 setPreviewImage(
@@ -103,20 +96,15 @@ const ProductForm = () => {
         const formDataToSend = new FormData();
 
         // Convert and append form fields
-        formDataToSend.append('name', formData.name);
-        formDataToSend.append('description', formData.description || '');
-        formDataToSend.append('price', formData.price.toString());
-        if (formData.discount !== null) {
-            formDataToSend.append('discount', formData.discount.toString());
-        }
-        formDataToSend.append('quantity', formData.quantity.toString());
-        formDataToSend.append('sku', formData.sku);
-
-        if (formData.image instanceof File) {
-            formDataToSend.append('image', formData.image);
-        }
-        formDataToSend.append('category_id', formData.category_id?.toString() || '');
-        formDataToSend.append('status', formData.status ? '1' : '0');
+        Object.entries(formData).forEach(([key, value]) => {
+            if (key === 'image' && value instanceof File) {
+                formDataToSend.append('image', value);
+            } else if (key === 'status') {
+                formDataToSend.append(key, value ? '1' : '0');
+            } else if (value !== null && value !== undefined) {
+                formDataToSend.append(key, value.toString());
+            }
+        });
 
         try {
             if (id) {
@@ -127,64 +115,57 @@ const ProductForm = () => {
                 toast.success('Product created successfully');
             }
             navigate('/products');
-        } catch (error: any) {
-            // Display validation errors if available
-            if (error.response?.data?.errors) {
-                Object.values(error.response.data.errors).forEach((errorMessages: any) => {
-                    errorMessages.forEach((message: string) => {
-                        toast.error(message);
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                const axiosError = error as any;
+                if (axiosError.response?.data?.errors) {
+                    Object.values(axiosError.response.data.errors).forEach((errorMessages: unknown) => {
+                        if (Array.isArray(errorMessages)) {
+                            errorMessages.forEach((message: string) => {
+                                toast.error(message);
+                            });
+                        }
                     });
-                });
-            } else {
-                toast.error(id ? 'Failed to update product' : 'Failed to create product');
+                } else {
+                    toast.error(id ? 'Failed to update product' : 'Failed to create product');
+                }
             }
         } finally {
             setLoading(false);
         }
     };
 
-    const formatPrice = (value: string) => {
-        // Remove all commas before parsing
+    const formatPrice = (value: string): string => {
         const numericValue = value.replace(/,/g, '');
-        // Check if it's a valid number
-        if (!isNaN(Number(numericValue))) {
-            // Format with commas
-            return new Intl.NumberFormat('en-US').format(Number(numericValue));
-        }
-        return value;
+        return !isNaN(Number(numericValue))
+            ? new Intl.NumberFormat('en-US').format(Number(numericValue))
+            : value;
     };
 
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
     ) => {
         const { name, type } = e.target;
+
         if (type === 'file' && e.target instanceof HTMLInputElement && e.target.files) {
             const file = e.target.files[0];
-            setFormData((prev) => ({
-                ...prev,
-                image: file,
-            }));
-            const previewUrl = URL.createObjectURL(file);
-            setPreviewImage(previewUrl);
-
-        } else if (type === 'checkbox') {
-            const checked = (e.target as HTMLInputElement).checked;
-            setFormData((prev) => ({
-                ...prev,
-                [name]: checked,
-            }));
-        }
-        else if (name === 'price'|| name === 'discount') {
+            setFormData(prev => ({ ...prev, image: file }));
+            setPreviewImage(URL.createObjectURL(file));
+        } else if (type === 'checkbox' && e.target instanceof HTMLInputElement) {
+            setFormData(prev => ({ ...prev, [name]: e.target.checked }));
+        } else if (name === 'price' || name === 'discount') {
             const formattedValue = formatPrice(e.target.value);
-            setFormData((prev) => ({
+            setFormData(prev => ({
                 ...prev,
-                [name]: Number(formattedValue.replace(/,/g, '')), // Store numeric value
+                [name]: Number(formattedValue.replace(/,/g, '')),
             }));
-        }else {
-            setFormData((prev) => ({
+        } else if (name === 'category_id') {
+            setFormData(prev => ({
                 ...prev,
-                [name]: e.target.value,
+                [name]: Number(e.target.value),
             }));
+        } else {
+            setFormData(prev => ({ ...prev, [name]: e.target.value }));
         }
     };
 
