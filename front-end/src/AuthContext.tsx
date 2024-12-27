@@ -1,6 +1,9 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import axios from "axios";
+import axios,{AxiosResponse} from "axios";
 
+interface AuthResponse {
+    authenticated: boolean;
+}
 interface AuthContextProps {
     isAuthenticated: boolean;
     setIsAuthenticated: (value: boolean) => void;
@@ -13,35 +16,57 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
-        const token = localStorage.getItem('authToken');
-        if (token) {
-            axios.get("http://localhost:8000/api/auth-check", {
-                headers: { Authorization: `Bearer ${token}` },
-                withCredentials: true
-            })
-                .then((response) => {
-                    setIsAuthenticated(response.data.authenticated);
-                })
-                .catch((error) => {
-                    console.error("Error checking authentication:", error);
-                    setIsAuthenticated(false);
-                });
-        } else {
-            setIsAuthenticated(false);
-        }
+        const checkAuth = async () => {
+            const token = localStorage.getItem('authToken');
+
+            if (!token) {
+                setIsAuthenticated(false);
+                return;
+            }
+
+            try {
+                const response: AxiosResponse<AuthResponse> = await axios.get(
+                    "http://localhost:8000/api/auth-check",
+                    {
+                        headers: { Authorization: `Bearer ${token}` },
+                        withCredentials: true
+                    }
+                );
+
+                setIsAuthenticated(response.data.authenticated);
+            } catch (error) {
+                console.error("Error checking authentication:", error);
+                setIsAuthenticated(false);
+                localStorage.removeItem('authToken');
+            }
+        };
+
+        checkAuth();
     }, []);
 
-    const logout = () => {
-        localStorage.removeItem('authToken'); // Clear the token
-        setIsAuthenticated(false); // Update state
-        axios.post("http://localhost:8000/api/logout", {}, {
-            withCredentials: true,
-        })
-            .catch(error => console.error("Error logging out:", error));
+    const logout = async () => {
+        try {
+            await axios.post(
+                "http://localhost:8000/api/logout",
+                {},
+                { withCredentials: true }
+            );
+        } catch (error) {
+            console.error("Error logging out:", error);
+        } finally {
+            localStorage.removeItem('authToken');
+            setIsAuthenticated(false);
+        }
+    };
+
+    const authContextValue: AuthContextProps = {
+        isAuthenticated,
+        setIsAuthenticated,
+        logout
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated , logout }}>
+        <AuthContext.Provider value={authContextValue}>
             {children}
         </AuthContext.Provider>
     );
