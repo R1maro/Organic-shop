@@ -10,7 +10,7 @@ const Slider: React.FC<SliderProps> = ({ slides }) => {
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrentIndex((prevIndex) => (prevIndex + 1) % slides.length);
-        }, 2000);
+        }, 6000);
 
         return () => clearInterval(interval);
     }, [slides.length]);
@@ -24,8 +24,7 @@ const Slider: React.FC<SliderProps> = ({ slides }) => {
     };
 
     return (
-        <div className="relative w-4/5 mx-auto mt-4 h-90 rounded overflow-hidden">
-            {/* Slides */}
+        <div className="relative w-full h-[500px] rounded-lg overflow-hidden mx-4">
             <div
                 className="w-full h-full flex items-center justify-center bg-gray-200"
                 style={{
@@ -34,33 +33,33 @@ const Slider: React.FC<SliderProps> = ({ slides }) => {
                     backgroundPosition: 'center',
                 }}
             >
-                <div className="absolute bottom-12 text-center pr-10 w-full text-white">
-                    <h2 className="text-4xl font-bold drop-shadow-md">Slide {currentIndex + 1}</h2>
-                    <p className="text-lg drop-shadow-md">Caption for slide {currentIndex + 1}.</p>
+                <div className="absolute bottom-12 text-center w-full text-white px-4">
+                    <h2 className="text-5xl font-bold drop-shadow-md"></h2>
+                    <p className="text-xl drop-shadow-md"> پیشنهاد ویژه {currentIndex + 1}</p>
                 </div>
             </div>
 
             {/* Navigation Buttons */}
             <button
-                onClick={goToNext}
+                onClick={goToPrevious}
                 className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-gray-800 bg-opacity-60 text-white p-4 rounded-full shadow-md hover:bg-gray-600"
             >
                 ❮
             </button>
             <button
-                onClick={goToPrevious}
+                onClick={goToNext}
                 className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-gray-800 bg-opacity-60 text-white p-4 rounded-full shadow-md hover:bg-gray-600"
             >
                 ❯
             </button>
 
             {/* Slide Indicators */}
-            <div className="absolute bottom-4 text-center right-1/2 flex space-x-2">
+            <div className="absolute bottom-4 flex justify-center space-x-2 gap-2 w-full">
                 {slides.map((_, index) => (
                     <button
                         key={index}
                         onClick={() => setCurrentIndex(index)}
-                        className={`w-3 h-3 rounded-full me-2.5 ${
+                        className={`w-4 h-4 rounded-full ${
                             index === currentIndex ? 'bg-white' : 'bg-gray-400'
                         }`}
                     ></button>
