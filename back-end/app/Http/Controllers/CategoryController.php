@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -12,7 +13,11 @@ class CategoryController extends Controller
 
     public function index()
     {
-        $categories = Category::with('parent', 'children')->whereNull('parent_id')->paginate(10);
+        $cacheKey = 'categories_paginated';
+        $categories = Cache::remember($cacheKey, 3600, function () {
+            return Category::with('parent', 'children')->whereNull('parent_id')->paginate(10);
+        });
+
         return response()->json($categories);
     }
 
@@ -29,13 +34,19 @@ class CategoryController extends Controller
         $validated['slug'] = Str::slug($validated['name']);
 
         $category = Category::create($validated);
+        Cache::forget('categories_paginated');
 
         return response()->json($category);
     }
 
     public function show(Category $category)
     {
-        return response()->json($category->load('parent', 'children'));
+        $cacheKey = 'category_' . $category->id;
+        $cachedCategory = Cache::remember($cacheKey, 3600, function () use ($category) {
+            return $category->load('parent', 'children');
+        });
+
+        return response()->json($cachedCategory);
     }
 
 
@@ -57,12 +68,17 @@ class CategoryController extends Controller
         }
         $category->update($validated);
 
+        Cache::forget('category_' . $category->id);
+        Cache::forget('categories_paginated');
+
         return response()->json($category);
     }
 
     public function destroy(Category $category)
     {
         $category->delete();
+        Cache::forget('category_' . $category->id);
+        Cache::forget('categories_paginated');
         return response()->json([
             'message' => 'Category deleted successfully!'
         ],200);
