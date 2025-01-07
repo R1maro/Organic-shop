@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -13,16 +14,18 @@ class OrderController extends Controller
 
     public function index(Request $request)
     {
-        $orders = Order::with(['items.product', 'user'])
-
-            ->when($request->status, function ($query, $status) {
-                return $query->where('status', $status);
-            })
-            ->when($request->payment_status, function ($query, $payment_status) {
-                return $query->where('payment_status', $payment_status);
-            })
-            ->latest()
-            ->paginate($request->per_page ?? 15);
+        $cacheKey = 'orders_' . md5(json_encode($request->all()));
+        $orders = Cache::remember($cacheKey, 3600, function () use ($request) {
+            return Order::with(['items.product', 'user'])
+                ->when($request->status, function ($query, $status) {
+                    return $query->where('status', $status);
+                })
+                ->when($request->payment_status, function ($query, $payment_status) {
+                    return $query->where('payment_status', $payment_status);
+                })
+                ->latest()
+                ->paginate($request->per_page ?? 15);
+        });
 
         return response()->json($orders);
     }
@@ -84,6 +87,7 @@ class OrderController extends Controller
 
             $order->items()->createMany($order_items);
             DB::commit();
+            Cache::forget('orders_*');
 
             return response()->json([
                 'message' => 'Order created successfully.',
@@ -98,7 +102,12 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
-        return response()->json($order->load(['items.product', 'user']));
+        $cacheKey = 'order_' . $order->id;
+        $cachedOrder = Cache::remember($cacheKey, 3600, function () use ($order) {
+            return $order->load(['items.product', 'user']);
+        });
+
+        return response()->json($cachedOrder);
     }
 
 
@@ -163,6 +172,9 @@ class OrderController extends Controller
             $order->markAsPaid();
         }
 
+        Cache::forget('order_' . $order->id);
+        Cache::forget('orders_*');
+
         return response()->json([
             'message' => 'Order updated successfully.',
             'order' => $order->fresh()->load('items.product'),
@@ -173,6 +185,8 @@ class OrderController extends Controller
     public function destroy(Order $order)
     {
         $order->delete();
+        Cache::forget('order_' . $order->id);
+        Cache::forget('orders_*');
         return response()->json([
             'message' => 'Order deleted successfully.',
         ]);

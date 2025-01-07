@@ -4,16 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 
 class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $products = Product::with(['category', 'media'])
-            ->when($request->category_id, fn($q) => $q->byCategory($request->category_id))
-            ->active()
-            ->paginate(10);
+        $cacheKey = 'products_' . md5(json_encode($request->all()));
+        $products = Cache::remember($cacheKey, 3600, function () use ($request) {
+            return Product::with(['category', 'media'])
+                ->when($request->category_id, fn($q) => $q->byCategory($request->category_id))
+                ->active()
+                ->paginate(10);
+        });
 
         return response()->json($products);
     }
@@ -43,6 +46,7 @@ class ProductController extends Controller
                     ->toMediaCollection('product_image');
 
             }
+            Cache::forget('products_*');
 
             return response()->json($product->load(['category', 'media']), 201);
         } catch (\Exception $e) {
@@ -52,7 +56,12 @@ class ProductController extends Controller
 
     public function show(Product $product)
     {
-        return response()->json($product->load(['category', 'media']));
+        $cacheKey = 'product_' . $product->id;
+        $cachedProduct = Cache::remember($cacheKey, 3600, function () use ($product) {
+            return $product->load(['category', 'media']);
+        });
+
+        return response()->json($cachedProduct);
     }
 
     public function update(Request $request, Product $product)
@@ -83,6 +92,8 @@ class ProductController extends Controller
 
             }
 
+            Cache::forget('product_' . $product->id);
+            Cache::forget('products_*');
             return response()->json($product->load(['category', 'media']));
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
@@ -94,6 +105,11 @@ class ProductController extends Controller
     {
         $product->delete();
         $product->clearMediaCollection('product_image');
+
+
+        Cache::forget('product_' . $product->id);
+        Cache::forget('products_*');
+
         return response()->json(['message' => 'Product deleted successfully.']);
     }
 
