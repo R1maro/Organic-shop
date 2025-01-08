@@ -5,29 +5,38 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 
 class OrderController extends Controller
 {
 
+    private const CACHE_TTL = 24; // hours
+
     public function index(Request $request)
     {
-        $cacheKey = 'orders_' . md5(json_encode($request->all()));
-        $orders = Cache::remember($cacheKey, 3600, function () use ($request) {
-            return Order::with(['items.product', 'user'])
-                ->when($request->status, function ($query, $status) {
-                    return $query->where('status', $status);
-                })
-                ->when($request->payment_status, function ($query, $payment_status) {
-                    return $query->where('payment_status', $payment_status);
-                })
-                ->latest()
-                ->paginate($request->per_page ?? 15);
-        });
+        $cacheKey = sprintf(
+            'orders_status_%s_payment_%s_page_%s_perpage_%s',
+            $request->status ?? 'all',
+            $request->payment_status ?? 'all',
+            $request->get('page', 1),
+            $request->per_page ?? 15
+        );
 
-        return response()->json($orders);
+        return Cache::remember($cacheKey, now()->addHours(self::CACHE_TTL), function () use ($request) {
+            return response()->json(
+                Order::with(['items.product', 'user'])
+                    ->when($request->status, function ($query, $status) {
+                        return $query->where('status', $status);
+                    })
+                    ->when($request->payment_status, function ($query, $payment_status) {
+                        return $query->where('payment_status', $payment_status);
+                    })
+                    ->latest()
+                    ->paginate($request->per_page ?? 15)
+            );
+        });
     }
 
 
@@ -87,8 +96,8 @@ class OrderController extends Controller
 
             $order->items()->createMany($order_items);
             DB::commit();
-            Cache::forget('orders_*');
 
+            $this->clearOrderCaches($userId);
             return response()->json([
                 'message' => 'Order created successfully.',
                 'order' => $order->fresh()->load('items.product'),
@@ -102,14 +111,12 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
-        $cacheKey = 'order_' . $order->id;
-        $cachedOrder = Cache::remember($cacheKey, 3600, function () use ($order) {
-            return $order->load(['items.product', 'user']);
+        $cacheKey = "order_{$order->id}";
+
+        return Cache::remember($cacheKey, now()->addHours(self::CACHE_TTL), function () use ($order) {
+            return response()->json($order->load(['items.product', 'user']));
         });
-
-        return response()->json($cachedOrder);
     }
-
 
     public function update(Request $request, Order $order)
     {
@@ -126,7 +133,7 @@ class OrderController extends Controller
             return response()->json(['error', $validator->errors()], 422);
         }
 
-        // Get only the fillable data from the request
+
         $updateData = $request->only([
             'status',
             'payment_status',
@@ -172,8 +179,8 @@ class OrderController extends Controller
             $order->markAsPaid();
         }
 
-        Cache::forget('order_' . $order->id);
-        Cache::forget('orders_*');
+        $this->clearOrderCaches($order->user_id);
+        Cache::forget("order_{$order->id}");
 
         return response()->json([
             'message' => 'Order updated successfully.',
@@ -184,11 +191,44 @@ class OrderController extends Controller
 
     public function destroy(Order $order)
     {
+        $userId = $order->user_id;
+
         $order->delete();
-        Cache::forget('order_' . $order->id);
-        Cache::forget('orders_*');
+
+
+        $this->clearOrderCaches($userId);
+        Cache::forget("order_{$order->id}");
         return response()->json([
             'message' => 'Order deleted successfully.',
         ]);
     }
+
+    private function clearOrderCaches($userId = null)
+    {
+
+        Cache::forget('orders_status_all_payment_all_page_1_perpage_10');
+
+
+        for ($page = 1; $page <= 5; $page++) {
+            Cache::forget("orders_status_all_payment_all_page_{$page}_perpage_10");
+        }
+
+
+        $statuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+        $paymentStatuses = ['pending', 'paid', 'failed', 'refunded'];
+
+        foreach ($statuses as $status) {
+            foreach ($paymentStatuses as $paymentStatus) {
+                for ($page = 1; $page <= 5; $page++) {
+                    Cache::forget("orders_status_{$status}_payment_{$paymentStatus}_page_{$page}_perpage_10");
+                }
+            }
+        }
+
+
+        if ($userId) {
+            Cache::forget("user_orders_{$userId}_page_1");
+        }
+    }
+
 }
