@@ -37,12 +37,27 @@ export interface ProductInput {
     status?: boolean;
 
 }
+interface PaginatedResponse<T> {
+    data: T[];
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+}
 
 export const productService = {
-    getAll: async (): Promise<Product[]> => {
+    getAll: async (page: number = 1): Promise<PaginatedResponse<Product>> => {
         try {
-            const response = await axios.get< ApiResponse<Product[] >>(`${config.API_URL}/admin/products`);
-            return response.data.data;
+            const response = await axios.get<PaginatedResponse<Product>>(
+                `${config.API_URL}/admin/products`,
+                {
+                    params: {
+                        page,
+                        per_page: 10,
+                    },
+                }
+            );
+            return response.data;
         } catch (error) {
             throw error;
         }

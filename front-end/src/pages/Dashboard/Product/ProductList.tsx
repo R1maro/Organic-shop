@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { toast } from 'react-hot-toast';
+import {useState, useEffect} from 'react';
+import {Link} from 'react-router-dom';
+import {toast} from 'react-hot-toast';
 import Breadcrumb from '../../../components/Breadcrumbs/Breadcrumb';
-import { productService } from '../../../services/productService';
-import type { Product } from '../../../services/productService';
+import {productService} from '../../../services/productService';
+import type {Product} from '../../../services/productService';
 import Loader from '../../../common/Loader';
 import config from "../../../config";
 
@@ -15,15 +15,21 @@ interface ProductWithImageUrl extends Product {
 const ProductList = () => {
     const [products, setProducts] = useState<ProductWithImageUrl[]>([]);
     const [loading, setLoading] = useState(true);
+    const [pagination, setPagination] = useState({
+        current_page: 1,
+        last_page: 1,
+        per_page: 10,
+        total: 0,
+    });
 
     useEffect(() => {
-        fetchProducts();
+        fetchProducts(1);
     }, []);
 
-    const fetchProducts = async () => {
+    const fetchProducts = async (page: number) => {
         try {
-            const response = await productService.getAll();
-            const productsWithImages = response.map((product: Product) => {
+            const response = await productService.getAll(page);
+            const productsWithImages = response.data.map((product: Product) => {
                 // Check if media exists and has a thumbnail conversion
                 const mediaUrl = product.media && product.media.length > 0
                     ? `${config.PUBLIC_URL}${product.media[0].original_url.replace(
@@ -43,6 +49,12 @@ const ProductList = () => {
             });
 
             setProducts(productsWithImages);
+            setPagination({
+                current_page: response.current_page,
+                last_page: response.last_page,
+                per_page: response.per_page,
+                total: response.total,
+            });
         } catch (error) {
             toast.error('Failed to fetch products');
         } finally {
@@ -55,20 +67,39 @@ const ProductList = () => {
             try {
                 await productService.delete(id);
                 toast.success('Product deleted successfully');
-                fetchProducts();
+                fetchProducts(1);
             } catch (error) {
                 toast.error('Failed to delete product');
             }
         }
     };
+    const renderPagination = () => {
+        const pages = [];
+        for (let i = 1; i <= pagination.last_page; i++) {
+            pages.push(
+                <button
+                    key={i}
+                    onClick={() => fetchProducts(i)}
+                    className={`px-3 py-1 rounded-md ${
+                        pagination.current_page === i
+                            ? 'bg-primary text-white'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                >
+                    {i}
+                </button>
+            );
+        }
+        return pages;
+    };
 
-    if (loading) return <Loader />;
+    if (loading) return <Loader/>;
 
     return (
         <>
             <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
                 <div className="mb-6 flex flex-col gap-3">
-                    <Breadcrumb pageName="Products" />
+                    <Breadcrumb pageName="Products"/>
                     <Link
                         to="/products/create"
                         className="inline-flex items-center justify-center gap-2.5 rounded-md bg-primary py-4 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
@@ -77,7 +108,8 @@ const ProductList = () => {
                     </Link>
                 </div>
 
-                <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+                <div
+                    className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
                     <div className="max-w-full overflow-x-auto">
                         <table className="w-full table-auto">
                             <thead>
@@ -175,10 +207,48 @@ const ProductList = () => {
                             </tbody>
                         </table>
                     </div>
+                    <div
+                        className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-4">
+                        <div className="flex flex-1 justify-between sm:hidden">
+                            <button
+                                onClick={() => fetchProducts(pagination.current_page - 1)}
+                                disabled={pagination.current_page === 1}
+                                className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                            >
+                                Previous
+                            </button>
+                            <button
+                                onClick={() => fetchProducts(pagination.current_page + 1)}
+                                disabled={pagination.current_page === pagination.last_page}
+                                className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                            >
+                                Next
+                            </button>
+                        </div>
+                        <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                            <div>
+                                <p className="text-sm text-gray-700">
+                                    Showing{' '}
+                                    <span className="font-medium">
+                                        {(pagination.current_page - 1) * pagination.per_page + 1}
+                                    </span>{' '}
+                                    to{' '}
+                                    <span className="font-medium">
+                                        {Math.min(pagination.current_page * pagination.per_page, pagination.total)}
+                                    </span>{' '}
+                                    of{' '}
+                                    <span className="font-medium">{pagination.total}</span>{' '}
+                                    results
+                                </p>
+                            </div>
+                            <div className="flex gap-2">{renderPagination()}</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </>
-    );
+    )
+        ;
 };
 
 export default ProductList;
