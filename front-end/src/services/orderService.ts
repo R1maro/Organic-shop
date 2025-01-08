@@ -47,11 +47,26 @@ export interface OrderInput {
     notes: string | null;
 }
 
+interface PaginatedResponse<T> {
+    data: T[];
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+}
+
 export const orderService = {
-    getAll: async (): Promise<Order[]> => {
+    getAll: async (page: number = 1, status?: string, payment_status?: string): Promise<PaginatedResponse<Order>> => {
         try {
-            const response = await axios.get<ApiResponse<Order[]>>(`${config.API_URL}/admin/orders`);
-            return response.data.data;
+            const response = await axios.get<PaginatedResponse<Order>>(`${config.API_URL}/admin/orders`, {
+                params: {
+                    page,
+                    status,
+                    payment_status,
+                    per_page: 10
+                }
+            });
+            return response.data;
         } catch (error) {
             throw error;
         }
