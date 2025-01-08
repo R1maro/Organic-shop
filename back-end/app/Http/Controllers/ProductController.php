@@ -10,15 +10,16 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $cacheKey = 'products_' . md5(json_encode($request->all()));
-        $products = Cache::remember($cacheKey, 3600, function () use ($request) {
-            return Product::with(['category', 'media'])
-                ->when($request->category_id, fn($q) => $q->byCategory($request->category_id))
-                ->active()
-                ->paginate(10);
-        });
+        $cacheKey = 'products_' . ($request->category_id ?? 'all') . '_page_' . ($request->get('page', 1));
 
-        return response()->json($products);
+        return Cache::remember($cacheKey, now()->addHours(24), function () use ($request) {
+            return response()->json(
+                Product::with(['category', 'media'])
+                    ->when($request->category_id, fn($q) => $q->byCategory($request->category_id))
+                    ->active()
+                    ->paginate(10)
+            );
+        });
     }
 
 
@@ -46,7 +47,7 @@ class ProductController extends Controller
                     ->toMediaCollection('product_image');
 
             }
-            Cache::forget('products_*');
+            $this->clearProductCaches($product->category_id);
 
             return response()->json($product->load(['category', 'media']), 201);
         } catch (\Exception $e) {
@@ -57,11 +58,10 @@ class ProductController extends Controller
     public function show(Product $product)
     {
         $cacheKey = 'product_' . $product->id;
-        $cachedProduct = Cache::remember($cacheKey, 3600, function () use ($product) {
-            return $product->load(['category', 'media']);
-        });
 
-        return response()->json($cachedProduct);
+        return Cache::remember($cacheKey, now()->addHours(24), function () use ($product) {
+            return response()->json($product->load(['category', 'media']));
+        });
     }
 
     public function update(Request $request, Product $product)
@@ -80,6 +80,7 @@ class ProductController extends Controller
                 'status' => 'boolean',
             ]);
 
+            $oldCategoryId = $product->category_id;
             $product->update($validated);
 
 
@@ -92,8 +93,12 @@ class ProductController extends Controller
 
             }
 
+            $this->clearProductCaches($oldCategoryId);
+            if ($oldCategoryId !== $product->category_id) {
+                $this->clearProductCaches($product->category_id);
+            }
             Cache::forget('product_' . $product->id);
-            Cache::forget('products_*');
+
             return response()->json($product->load(['category', 'media']));
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
@@ -103,14 +108,30 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
+        $categoryId = $product->category_id;
+
         $product->delete();
         $product->clearMediaCollection('product_image');
 
 
+        $this->clearProductCaches($categoryId);
         Cache::forget('product_' . $product->id);
-        Cache::forget('products_*');
-
         return response()->json(['message' => 'Product deleted successfully.']);
+    }
+
+    private function clearProductCaches($categoryId)
+    {
+        // Clear category-specific product listings
+        Cache::forget('products_' . $categoryId . '_page_1');
+
+        // Clear all products listing
+        Cache::forget('products_all_page_1');
+
+        // You might want to clear multiple pages if your application uses pagination
+        for ($i = 1; $i <= 5; $i++) { // Adjust the number based on your needs
+            Cache::forget('products_' . $categoryId . '_page_' . $i);
+            Cache::forget('products_all_page_' . $i);
+        }
     }
 
 }
