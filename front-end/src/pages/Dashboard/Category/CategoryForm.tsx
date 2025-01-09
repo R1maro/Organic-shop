@@ -37,7 +37,6 @@ const CategoryForm = () => {
     const fetchCategories = async () => {
         try {
             const response = await categoryService.getAll();
-            // @ts-ignore
             setCategories(response.data);
         } catch (error) {
             toast.error('Failed to fetch categories');
