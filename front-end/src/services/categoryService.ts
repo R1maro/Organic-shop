@@ -1,27 +1,42 @@
 import axios from 'axios';
 import config from '../config';
 
-interface Category {
+interface ApiResponse<T> {
+    data: T;
+}
+
+export interface Category {
     id: number;
     name: string;
     slug: string;
     description: string | null;
     parent_id: number | null;
     is_active: boolean;
+    children?: Category[];
 }
 
-interface CategoryInput {
+export interface CategoryInput {
     name: string;
     description?: string | null;
     parent_id?: number | null;
     is_active?: boolean;
 }
 
+interface PaginatedResponse<T> {
+    data: T[];
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+}
+
 export const categoryService = {
-    getAll: async (): Promise<Category[]> => {
+    getAll: async (page: number = 1): Promise<PaginatedResponse<Category>> => {
         try {
-            const response = await axios.get(`${config.API_URL}/admin/categories`);
-            return response.data as Category[];
+            const response = await axios.get<PaginatedResponse<Category>>(`${config.API_URL}/admin/categories`, {
+                params: { page },
+            });
+            return response.data;
         } catch (error) {
             throw error;
         }
@@ -29,8 +44,8 @@ export const categoryService = {
 
     getById: async (id: number): Promise<Category> => {
         try {
-            const response = await axios.get(`${config.API_URL}/admin/categories/${id}`);
-            return response.data as Category;
+            const response = await axios.get<Category>(`${config.API_URL}/admin/categories/${id}`);
+            return response.data;
         } catch (error) {
             throw error;
         }
@@ -38,17 +53,17 @@ export const categoryService = {
 
     create: async (data: CategoryInput): Promise<Category> => {
         try {
-            const response = await axios.post(`${config.API_URL}/admin/categories`, data);
-            return response.data as Category;
+            const response = await axios.post<ApiResponse<Category>>(`${config.API_URL}/admin/categories`, data);
+            return response.data.data;
         } catch (error) {
             throw error;
         }
     },
 
-    update: async (id: number, data: CategoryInput): Promise<Category> => {
+    update: async (id: number, data: Partial<CategoryInput>): Promise<Category> => {
         try {
-            const response = await axios.put(`${config.API_URL}/admin/categories/${id}`, data);
-            return response.data as Category;
+            const response = await axios.put<ApiResponse<Category>>(`${config.API_URL}/admin/categories/${id}`, data);
+            return response.data.data;
         } catch (error) {
             throw error;
         }
@@ -60,5 +75,5 @@ export const categoryService = {
         } catch (error) {
             throw error;
         }
-    }
+    },
 };

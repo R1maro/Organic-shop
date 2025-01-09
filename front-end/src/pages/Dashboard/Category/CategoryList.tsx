@@ -2,22 +2,41 @@ import {useState, useEffect} from 'react';
 import {Link} from 'react-router-dom';
 import {toast} from 'react-hot-toast';
 import Breadcrumb from '../../../components/Breadcrumbs/Breadcrumb';
-import {categoryService} from '../../../services/categoryService';
+import {categoryService, Category} from '../../../services/categoryService';
 import Loader from '../../../common/Loader';
 
+
+interface PaginationData {
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+}
+
 const CategoryList = () => {
-    const [categories, setCategories] = useState([]);
+    const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
+    const [pagination, setPagination] = useState<PaginationData>({
+        current_page: 1,
+        last_page: 1,
+        per_page: 10,
+        total: 0
+    });
 
     useEffect(() => {
-        fetchCategories();
+        fetchCategories(1);
     }, []);
 
-    const fetchCategories = async () => {
+    const fetchCategories = async (page: number) => {
         try {
-            const response = await categoryService.getAll();
-            // @ts-ignore
+            const response = await categoryService.getAll(page);
             setCategories(response.data);
+            setPagination({
+                current_page: response.current_page,
+                last_page: response.last_page,
+                per_page: response.per_page,
+                total: response.total
+            });
         } catch (error) {
             toast.error('Failed to fetch categories');
         } finally {
@@ -30,7 +49,7 @@ const CategoryList = () => {
             try {
                 await categoryService.delete(id);
                 toast.success('Category deleted successfully');
-                fetchCategories();
+                fetchCategories(pagination.current_page);
             } catch (error) {
                 toast.error('Failed to delete category');
             }
@@ -116,6 +135,26 @@ const CategoryList = () => {
         );
     };
 
+    const renderPagination = () => {
+        const pages = [];
+        for (let i = 1; i <= pagination.last_page; i++) {
+            pages.push(
+                <button
+                    key={i}
+                    onClick={() => fetchCategories(i)}
+                    className={`px-3 py-1 rounded-md ${
+                        pagination.current_page === i
+                            ? 'bg-primary text-white'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                >
+                    {i}
+                </button>
+            );
+        }
+        return pages;
+    };
+
     if (loading) return <Loader/>;
 
     return (
@@ -136,7 +175,7 @@ const CategoryList = () => {
                     className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
                     <div className="max-w-full overflow-x-auto">
                         <table className="w-full table-auto">
-                        <thead>
+                            <thead>
                             <tr className="bg-gray-2 text-left dark:bg-meta-4">
                                 <th className="min-w-[220px] py-4 px-4 font-medium text-black dark:text-white xl:pl-11">
                                     Name
@@ -157,6 +196,45 @@ const CategoryList = () => {
                             </tbody>
 
                         </table>
+                    </div>
+                    <div
+                        className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-4">
+                        <div className="flex flex-1 justify-between sm:hidden">
+                            <button
+                                onClick={() => fetchCategories(pagination.current_page - 1)}
+                                disabled={pagination.current_page === 1}
+                                className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                            >
+                                Previous
+                            </button>
+                            <button
+                                onClick={() => fetchCategories(pagination.current_page + 1)}
+                                disabled={pagination.current_page === pagination.last_page}
+                                className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                            >
+                                Next
+                            </button>
+                        </div>
+                        <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                            <div>
+                                <p className="text-sm text-gray-700">
+                                    Showing{' '}
+                                    <span className="font-medium">
+                                        {(pagination.current_page - 1) * pagination.per_page + 1}
+                                    </span>{' '}
+                                    to{' '}
+                                    <span className="font-medium">
+                                        {Math.min(pagination.current_page * pagination.per_page, pagination.total)}
+                                    </span>{' '}
+                                    of{' '}
+                                    <span className="font-medium">{pagination.total}</span>{' '}
+                                    results
+                                </p>
+                            </div>
+                            <div className="flex gap-2">
+                                {renderPagination()}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
