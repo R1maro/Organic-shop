@@ -3,9 +3,9 @@ import {useNavigate, useParams} from 'react-router-dom';
 import {toast} from 'react-hot-toast';
 import Breadcrumb from '../../../components/Breadcrumbs/Breadcrumb';
 import Loader from '../../../common/Loader';
-import {orderService} from '../../../services/orderService';
-import type {Order, OrderInput} from '../../../services/orderService';
-import {productService} from "../../../services/productService.ts";
+import {orderService} from '../../../services/dashboard/orderService.ts';
+import type {Order, OrderInput} from '../../../services/dashboard/orderService.ts';
+import {productService} from "../../../services/dashboard/productService.ts";
 
 
 interface Product {

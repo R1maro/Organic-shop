@@ -2,8 +2,8 @@ import React, {useState, useEffect} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 import {toast} from 'react-hot-toast';
 import Loader from '../../../common/Loader';
-import {invoiceService, InvoiceInput} from '../../../services/invoiceService';
-import {orderService, Order} from '../../../services/orderService';
+import {invoiceService, InvoiceInput} from '../../../services/dashboard/invoiceService.ts';
+import {orderService, Order} from '../../../services/dashboard/orderService.ts';
 
 
 const InvoiceForm = () => {

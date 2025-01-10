@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import Breadcrumb from '../../../components/Breadcrumbs/Breadcrumb';
-import { productService } from '../../../services/productService';
-import { categoryService } from '../../../services/categoryService';
-import type { ProductInput } from '../../../services/productService';
+import { productService } from '../../../services/dashboard/productService.ts';
+import { categoryService } from '../../../services/dashboard/categoryService.ts';
+import type { ProductInput } from '../../../services/dashboard/productService.ts';
 import Loader from '../../../common/Loader';
 import config from "../../../config";
 
