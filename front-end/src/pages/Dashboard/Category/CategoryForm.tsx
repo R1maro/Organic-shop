@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 import {toast} from 'react-hot-toast';
 import Breadcrumb from '../../../components/Breadcrumbs/Breadcrumb';
-import {categoryService} from '../../../services/categoryService';
+import {categoryService} from '../../../services/dashboard/categoryService.ts';
 import Loader from '../../../common/Loader';
 
 interface Category {
