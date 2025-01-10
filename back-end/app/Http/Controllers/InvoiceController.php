@@ -38,7 +38,6 @@ class InvoiceController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'order_id' => 'required|exists:orders,id',
-            'user_id' => 'required|exists:users,id',
             'due_date' => 'nullable|date|after:today',
             'notes' => 'nullable|string',
             'payment_method' => 'required|string',
@@ -99,6 +98,7 @@ class InvoiceController extends Controller
     public function update(Request $request, Invoice $invoice)
     {
         $validator = Validator::make($request->all(), [
+            'order_id' => 'required|exists:orders,id',
             'status' => 'sometimes|required|in:pending,paid,cancelled,refunded',
             'payment_method' => 'sometimes|required|string',
             'due_date' => 'nullable|date',
