@@ -1,7 +1,7 @@
 import {useState} from 'react';
 import {Link} from 'react-router-dom';
 import ClickOutside from '../ClickOutside';
-import UserOne from '../../images/user/user-01.png';
+import UserPic from '../../images/user/user.png';
 import {useAuth} from '../../AuthContext';
 
 const DropdownUser = () => {
@@ -23,7 +23,7 @@ const DropdownUser = () => {
         </span>
 
                 <span className="h-12 w-12 rounded-full">
-          <img src={UserOne} alt="User"/>
+          <img src={UserPic} alt="User"/>
         </span>
 
                 <svg
