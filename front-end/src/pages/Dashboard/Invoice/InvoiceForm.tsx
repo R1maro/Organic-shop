@@ -6,7 +6,7 @@ import {invoiceService, InvoiceInput} from '../../../services/invoiceService';
 import {orderService, Order} from '../../../services/orderService';
 
 
-const InvoiceForm: React.FC = () => {
+const InvoiceForm = () => {
     const navigate = useNavigate();
     const {id} = useParams<{ id?: string }>();
     const [loading, setLoading] = useState(false);
@@ -110,7 +110,7 @@ const InvoiceForm: React.FC = () => {
                         onChange={handleChange}
                         className="w-full border rounded px-3 py-2"
                         required
-                        disabled={loadingOrders} // Disable select when orders are loading
+                        disabled={loadingOrders}
                     >
                         <option value="">
                             {loadingOrders ? 'Loading orders...' : 'Select an Order'}
