@@ -1,20 +1,39 @@
-import Product from '../../images/product/mahsol.png';
+import { useEffect, useState } from 'react';
+import { productService, Product } from '../../services/website/productService'; // Adjust the path accordingly
 
 const CardsSection = () => {
-    const products = [
-        { id: 1, name: 'محصول 1', price: '120,000 تومان', discount: '10%' },
-        { id: 2, name: 'محصول 2', price: '150,000 تومان', discount: '15%' },
-        { id: 3, name: 'محصول 3', price: '90,000 تومان', discount: '5%' },
-        { id: 4, name: 'محصول 4', price: '200,000 تومان', discount: '20%' },
-        { id: 5, name: 'محصول 5', price: '170,000 تومان', discount: '10%' },
-        { id: 6, name: 'محصول 6', price: '300,000 تومان', discount: '25%' },
-        { id: 7, name: 'محصول 7', price: '110,000 تومان', discount: '15%' },
-        { id: 8, name: 'محصول 8', price: '250,000 تومان', discount: '10%' },
-    ];
+    const [products, setProducts] = useState<Product[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+
+    // Fetch the products from the API using the service
+    const fetchProducts = async () => {
+        try {
+            setLoading(true);
+            const productsData = await productService.getAllProducts();
+            console.log(productsData)
+            setProducts(productsData);
+        } catch (error) {
+            setError('Failed to load products');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchProducts(); // Call this function when the component mounts
+    }, []);
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    if (error) {
+        return <div>{error}</div>;
+    }
 
     return (
         <div className="container mx-auto px-4 py-8">
-            {/* Top Section: Product Cards */}
             <div className="text-center">
                 <h2 className="text-2xl font-bold mb-6 text-gray-800">
                     محصولات پرفروش
@@ -26,18 +45,18 @@ const CardsSection = () => {
                         key={product.id}
                         className="bg-white rounded-lg border shadow-md p-4 text-center transform transition-transform duration-300 hover:scale-105 hover:shadow-lg relative">
                         <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                            {product.discount}
+                            {product.discount ? `${product.discount}%` : 'No Discount'}
                         </div>
                         <img
-                            src={Product}
+                            src={product.image_url || '/images/default-product.png'}
                             alt={product.name}
-                            className="mx-auto w-32 h-32 object-cover"
+                            className="mx-auto w-55 h-45 object-cover"
                         />
                         <h3 className="text-lg font-semibold mt-4 text-gray-800">
                             {product.name}
                         </h3>
                         <p className="text-gray-800 mt-2 text-sm font-bold">
-                            {product.price}
+                            {product.price.toLocaleString()} تومان
                         </p>
                         <button className="mt-4 bg-green-400 text-white px-4 py-2 rounded-lg hover:bg-gray-600">
                             افزودن به سبد خرید

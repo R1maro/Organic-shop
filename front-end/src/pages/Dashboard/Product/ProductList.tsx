@@ -2,8 +2,8 @@ import {useState, useEffect} from 'react';
 import {Link} from 'react-router-dom';
 import {toast} from 'react-hot-toast';
 import Breadcrumb from '../../../components/Breadcrumbs/Breadcrumb';
-import {productService} from '../../../services/productService';
-import type {Product} from '../../../services/productService';
+import {productService} from '../../../services/dashboard/productService.ts';
+import type {Product} from '../../../services/dashboard/productService.ts';
 import Loader from '../../../common/Loader';
 import config from "../../../config";
 

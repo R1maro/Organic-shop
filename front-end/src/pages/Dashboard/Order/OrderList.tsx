@@ -2,7 +2,7 @@ import {useState, useEffect} from 'react';
 import {Link} from 'react-router-dom';
 import {toast} from 'react-hot-toast';
 import Breadcrumb from '../../../components/Breadcrumbs/Breadcrumb';
-import {orderService} from '../../../services/orderService';
+import {orderService} from '../../../services/dashboard/orderService.ts';
 import Loader from '../../../common/Loader';
 
 
