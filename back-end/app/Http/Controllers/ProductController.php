@@ -16,7 +16,6 @@ class ProductController extends Controller
             return response()->json(
                 Product::with(['category', 'media'])
                     ->when($request->category_id, fn($q) => $q->byCategory($request->category_id))
-                    ->active()
                     ->paginate(10)
             );
         });
