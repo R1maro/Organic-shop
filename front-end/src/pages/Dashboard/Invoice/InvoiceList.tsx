@@ -2,26 +2,9 @@ import {useState, useEffect} from 'react';
 import {Link} from 'react-router-dom';
 import {toast} from 'react-hot-toast';
 import Breadcrumb from '../../../components/Breadcrumbs/Breadcrumb';
-import {invoiceService} from '../../../services/invoiceService';
+import {invoiceService , Invoice} from '../../../services/invoiceService';
 import Loader from '../../../common/Loader';
 
-interface Invoice {
-    id: number;
-    invoice_number: string;
-    order_id: number;
-    user: {
-        name: string;
-        email: string;
-    };
-    subtotal: number;
-    tax: number;
-    shipping_cost: number;
-    total: number;
-    status: 'pending' | 'paid' | 'cancelled' | 'refunded';
-    payment_method: string;
-    due_date: string;
-    created_at: string;
-}
 
 interface PaginationData {
     current_page: number;

@@ -39,7 +39,7 @@ const OrderForm = () => {
         setProductsLoading(true);
         try {
             const response = await productService.getAll();
-            setProducts(response);
+            setProducts(response.data);
         } catch (error) {
             toast.error('Failed to fetch products');
         } finally {
