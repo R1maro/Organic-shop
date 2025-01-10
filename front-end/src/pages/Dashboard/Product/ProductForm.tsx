@@ -48,7 +48,6 @@ const ProductForm = () => {
     const fetchCategories = async () => {
         try {
             const response = await categoryService.getAll();
-            //@ts-ignore
             setCategories(response.data);
         } catch (error) {
             toast.error('Failed to fetch categories');
@@ -145,29 +144,40 @@ const ProductForm = () => {
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
     ) => {
-        const { name, type } = e.target;
+        const { name, type, value } = e.target;
 
-        if (type === 'file' && e.target instanceof HTMLInputElement && e.target.files) {
+        // Type guard for input[type="checkbox"]
+        if (type === 'checkbox') {
+            const inputElement = e.target as HTMLInputElement; // Narrowing type to HTMLInputElement
+            setFormData(prev => ({ ...prev, [name]: inputElement.checked }));
+        }
+        // Handle file input
+        else if (type === 'file' && e.target instanceof HTMLInputElement && e.target.files) {
             const file = e.target.files[0];
             setFormData(prev => ({ ...prev, image: file }));
             setPreviewImage(URL.createObjectURL(file));
-        } else if (type === 'checkbox' && e.target instanceof HTMLInputElement) {
-            setFormData(prev => ({ ...prev, [name]: e.target.checked }));
-        } else if (name === 'price' || name === 'discount') {
-            const formattedValue = formatPrice(e.target.value);
+        }
+        // Handle number and text inputs (like price, discount, etc.)
+        else if (name === 'price' || name === 'discount') {
+            const formattedValue = formatPrice(value);
             setFormData(prev => ({
                 ...prev,
                 [name]: Number(formattedValue.replace(/,/g, '')),
             }));
-        } else if (name === 'category_id') {
+        }
+        // Handle select elements
+        else if (name === 'category_id') {
             setFormData(prev => ({
                 ...prev,
-                [name]: Number(e.target.value),
+                [name]: Number(value),
             }));
-        } else {
-            setFormData(prev => ({ ...prev, [name]: e.target.value }));
+        }
+        // Handle other input types (like text, textarea, etc.)
+        else {
+            setFormData(prev => ({ ...prev, [name]: value }));
         }
     };
+
 
     if (loading) return <Loader />;
 
