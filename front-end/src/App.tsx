@@ -24,6 +24,8 @@ import ProductList from "./pages/Dashboard/Product/ProductList.tsx";
 import ProductForm from "./pages/Dashboard/Product/ProductForm.tsx";
 import OrderList from "./pages/Dashboard/Order/OrderList.tsx";
 import OrderForm from "./pages/Dashboard/Order/OrderForm.tsx";
+import InvoiceList from "./pages/Dashboard/Invoice/InvoiceList.tsx";
+import InvoiceForm from "./pages/Dashboard/Invoice/InvoiceForm.tsx";
 
 function App() {
     const [loading, setLoading] = useState<boolean>(true);
@@ -190,6 +192,33 @@ function App() {
                                             <>
                                                 <PageTitle title="Edit Order | TailAdmin" />
                                                 <OrderForm />
+                                            </>
+                                        }
+                                    />
+                                    <Route
+                                        path="/invoices"
+                                        element={
+                                            <>
+                                                <PageTitle title="Invoices | TailAdmin" />
+                                                <InvoiceList />
+                                            </>
+                                        }
+                                    />
+                                    <Route
+                                        path="/invoices/create"
+                                        element={
+                                            <>
+                                                <PageTitle title="Create Invoices | TailAdmin" />
+                                                <InvoiceForm />
+                                            </>
+                                        }
+                                    />
+                                    <Route
+                                        path="/invoices/edit/:id"
+                                        element={
+                                            <>
+                                                <PageTitle title="Edit Invoices | TailAdmin" />
+                                                <InvoiceForm />
                                             </>
                                         }
                                     />
