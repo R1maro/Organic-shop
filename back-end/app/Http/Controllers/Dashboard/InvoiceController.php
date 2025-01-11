@@ -44,6 +44,7 @@ class InvoiceController extends Controller
             'payment_method' => 'required|string',
             'billing_address' => 'nullable|string',
             'notes' => 'nullable|string',
+
         ]);
 
         if ($validator->fails()) {
@@ -118,8 +119,10 @@ class InvoiceController extends Controller
 
         $updateData = $request->only([
             'status',
+
             'shipping_address',
             'billing_address',
+
             'payment_method',
             'due_date',
             'notes'
@@ -127,15 +130,16 @@ class InvoiceController extends Controller
 
         $invoice->update($updateData);
 
-
         if ($request->status === 'paid') {
             $invoice->markAsPaid();
             $invoice->order->markAsPaid();
         }
 
+
         if ($request->status == 'delivered') {
             $invoice->markAsDelivered();
         }
+
 
         $this->clearInvoiceCaches($invoice->user_id);
         Cache::forget("invoice_{$invoice->id}");

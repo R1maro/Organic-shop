@@ -159,7 +159,6 @@ class OrderController extends Controller
         }
 
 
-
         if ($request->payment_status == 'paid') {
             $order->markAsPaid();
         }
