@@ -17,17 +17,21 @@ class Invoice extends Model
         'subtotal',
         'tax',
         'shipping_cost',
+        'shipping_address',
+        'billing_address',
         'total',
         'status',
         'payment_method',
         'due_date',
         'paid_at',
+        'delivered_at',
         'notes',
     ];
 
     protected $casts = [
         'due_date' => 'datetime',
         'paid_at' => 'datetime',
+        'delivered_at' => 'datetime',
     ];
 
 
@@ -70,6 +74,13 @@ class Invoice extends Model
         ]);
     }
 
+    public function markAsDelivered()
+    {
+        $this->update([
+            'status' => 'delivered',
+            'delivered_at' => now(),
+        ]);
+    }
     public function markAsRefunded(){
         $this->update([
             'status' => 'Refunded',

@@ -16,9 +16,6 @@ class Order extends Model
         'total_price',
         'status',
         'payment_status',
-        'payment_method',
-        'shipping_address',
-        'billing_address',
         'notes',
     ];
 
@@ -52,22 +49,6 @@ class Order extends Model
         $this->update([
             'payment_status' => 'paid',
             'paid_at' => now(),
-        ]);
-    }
-
-    public function markAsShipped()
-    {
-        $this->update([
-            'status' => 'shipped',
-            'shipped_at' => now(),
-        ]);
-    }
-
-    public function markAsDelivered()
-    {
-        $this->update([
-            'status' => 'delivered',
-            'delivered_at' => now(),
         ]);
     }
 

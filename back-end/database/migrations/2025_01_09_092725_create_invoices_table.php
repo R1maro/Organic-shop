@@ -19,11 +19,14 @@ return new class extends Migration
             $table->string('subtotal');
             $table->string('tax')->default(0);
             $table->string('shipping_cost')->default(0);
+            $table->text('shipping_address')->nullable();
+            $table->text('billing_address')->nullable();
             $table->string('total');
             $table->string('status')->default('pending');
             $table->string('payment_method')->nullable();
             $table->timestamp('due_date')->nullable();
             $table->timestamp('paid_at')->nullable();
+            $table->timestamp('delivered_at')->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();
             $table->softDeletes();
