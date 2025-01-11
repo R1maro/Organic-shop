@@ -19,5 +19,6 @@ class DatabaseSeeder extends Seeder
             'phone' => '09054372193',
             'is_admin' => true,
         ]);
+        $this->call(SettingSeeder::class);
     }
 }
