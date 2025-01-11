@@ -22,9 +22,6 @@ const OrderForm = () => {
     const [productsLoading, setProductsLoading] = useState(true);
     const [formData, setFormData] = useState<OrderInput>({
         items: [{product_id: 0, quantity: 1}],
-        shipping_address: '',
-        billing_address: null,
-        payment_method: '',
         notes: null,
     });
 
@@ -55,11 +52,8 @@ const OrderForm = () => {
             setFormData({
                 items: response.items.map(item => ({
                     product_id: item.product_id,
-                    quantity: item.quantity
+                    quantity: item.quantity,
                 })),
-                shipping_address: response.shipping_address,
-                billing_address: response.billing_address,
-                payment_method: response.payment_method,
                 notes: response.notes,
             });
         } catch (error) {
@@ -89,9 +83,6 @@ const OrderForm = () => {
                             sku: ''
                         }
                     })),
-                    shipping_address: formData.shipping_address,
-                    billing_address: formData.billing_address,
-                    payment_method: formData.payment_method,
                     notes: formData.notes,
                 };
                 await orderService.update(Number(id), updateData);
@@ -204,53 +195,6 @@ const OrderForm = () => {
                             >
                                 Add Item
                             </button>
-
-                            <div className="mb-4.5">
-                                <label className="mb-2.5 block text-black dark:text-white">
-                                    Shipping Address <span className="text-meta-1">*</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    name="shipping_address"
-                                    value={formData.shipping_address}
-                                    onChange={handleChange}
-                                    placeholder="Enter shipping address"
-                                    className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                                    required
-                                />
-                            </div>
-
-                            <div className="mb-4.5">
-                                <label className="mb-2.5 block text-black dark:text-white">
-                                    Billing Address
-                                </label>
-                                <input
-                                    type="text"
-                                    name="billing_address"
-                                    value={formData.billing_address || ''}
-                                    onChange={handleChange}
-                                    placeholder="Enter billing address"
-                                    className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                                />
-                            </div>
-
-                            <div className="mb-4.5">
-                                <label className="mb-2.5 block text-black dark:text-white">
-                                    Payment Method <span className="text-meta-1">*</span>
-                                </label>
-                                <select
-                                    name="payment_method"
-                                    value={formData.payment_method}
-                                    onChange={handleChange}
-                                    className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                                    required
-                                >
-                                    <option value="">Select Payment Method</option>
-                                    <option value="credit_card">Credit Card</option>
-                                    <option value="paypal">PayPal</option>
-                                    <option value="bank_transfer">Bank Transfer</option>
-                                </select>
-                            </div>
 
                             <div className="mb-4.5">
                                 <label className="mb-2.5 block text-black dark:text-white">

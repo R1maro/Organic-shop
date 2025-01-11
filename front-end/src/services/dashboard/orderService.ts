@@ -24,9 +24,6 @@ export interface Order {
     total_price: number;
     status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
     payment_status: 'pending' | 'paid' | 'failed' | 'refunded';
-    payment_method: string;
-    shipping_address: string;
-    billing_address: string | null;
     notes: string | null;
     items: OrderItems[];
     created_at: string;
@@ -41,9 +38,6 @@ export interface OrderInput {
         product_id: number;
         quantity: number;
     }[];
-    shipping_address: string;
-    billing_address: string | null;
-    payment_method: string;
     notes: string | null;
 }
 
