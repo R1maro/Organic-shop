@@ -29,6 +29,8 @@ export interface Invoice {
     user_id: number;
     subtotal: number;
     tax: number;
+    shipping_address:string;
+    billing_address:string;
     shipping_cost: number;
     total: number;
     status: 'pending' | 'paid' | 'cancelled' | 'refunded';
@@ -46,6 +48,8 @@ export interface Invoice {
 
 export interface InvoiceInput {
     order_id: number;
+    shipping_address:string;
+    billing_address:string;
     payment_method: string;
     due_date?: string;
     notes?: string;

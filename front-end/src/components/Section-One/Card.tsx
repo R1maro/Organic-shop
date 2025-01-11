@@ -45,7 +45,7 @@ const CardsSection = () => {
                         key={product.id}
                         className="bg-white rounded-lg border shadow-md p-4 text-center transform transition-transform duration-300 hover:scale-105 hover:shadow-lg relative">
                         <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                            {product.discount ? `${product.discount}%` : 'No Discount'}
+                            {product.discount ? `${product.discount}تومان` : 'No Discount'}
                         </div>
                         <img
                             src={product.image_url || '/images/default-product.png'}

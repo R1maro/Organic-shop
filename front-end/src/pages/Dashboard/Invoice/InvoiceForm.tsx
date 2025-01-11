@@ -14,6 +14,8 @@ const InvoiceForm = () => {
     const [orders, setOrders] = useState<Order[]>([]);
     const [formData, setFormData] = useState<InvoiceInput>({
         order_id: 0,
+        shipping_address: '',
+        billing_address: '',
         payment_method: '',
         due_date: '',
         notes: '',
@@ -54,6 +56,8 @@ const InvoiceForm = () => {
             const invoice = await invoiceService.getById(invoiceId);
             setFormData({
                 order_id: invoice.order_id,
+                shipping_address: invoice.shipping_address,
+                billing_address: invoice.billing_address || '',
                 payment_method: invoice.payment_method,
                 due_date: invoice.due_date || '',
                 notes: invoice.notes || '',
@@ -134,6 +138,37 @@ const InvoiceForm = () => {
                         className="w-full border rounded px-3 py-2"
                     />
                 </div>
+
+
+                <div className="mb-4.5">
+                    <label className="block text-sm font-medium mb-2">
+                        Shipping Address <span className="text-meta-1">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        name="shipping_address"
+                        value={formData.shipping_address}
+                        onChange={handleChange}
+                        placeholder="Enter shipping address"
+                        className="w-full border rounded px-3 py-2"
+                        required
+                    />
+                </div>
+
+                <div className="mb-4.5">
+                    <label className="block text-sm font-medium mb-2">
+                        Billing Address
+                    </label>
+                    <input
+                        type="text"
+                        name="billing_address"
+                        value={formData.billing_address || ''}
+                        onChange={handleChange}
+                        placeholder="Enter billing address"
+                        className="w-full border rounded px-3 py-2"
+                    />
+                </div>
+
 
                 {/* Payment Method */}
                 <div className="mb-4">
