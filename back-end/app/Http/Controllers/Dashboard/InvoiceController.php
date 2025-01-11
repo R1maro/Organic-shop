@@ -40,8 +40,11 @@ class InvoiceController extends Controller
         $validator = Validator::make($request->all(), [
             'order_id' => 'required|exists:orders,id',
             'due_date' => 'nullable|date|after:today',
-            'notes' => 'nullable|string',
+            'shipping_address' => 'required|string',
             'payment_method' => 'required|string',
+            'billing_address' => 'nullable|string',
+            'notes' => 'nullable|string',
+
         ]);
 
         if ($validator->fails()) {
@@ -65,6 +68,8 @@ class InvoiceController extends Controller
                 'user_id' => $order->user_id,
                 'subtotal' => $subtotal,
                 'tax' => $tax,
+                'shipping_address' => $request->shipping_address,
+                'billing_address' => $request->billing_address,
                 'shipping_cost' => $shipping_cost,
                 'total' => $subtotal + $tax + $shipping_cost,
                 'due_date' => $request->due_date,
@@ -101,7 +106,9 @@ class InvoiceController extends Controller
         $validator = Validator::make($request->all(), [
             'order_id' => 'required|exists:orders,id',
             'status' => 'sometimes|required|in:pending,paid,cancelled,refunded',
+            'shipping_address' => 'sometimes|required|string',
             'payment_method' => 'sometimes|required|string',
+            'billing_address' => 'nullable|string',
             'due_date' => 'nullable|date',
             'notes' => 'nullable|string',
         ]);
@@ -112,6 +119,10 @@ class InvoiceController extends Controller
 
         $updateData = $request->only([
             'status',
+
+            'shipping_address',
+            'billing_address',
+
             'payment_method',
             'due_date',
             'notes'
@@ -123,6 +134,12 @@ class InvoiceController extends Controller
             $invoice->markAsPaid();
             $invoice->order->markAsPaid();
         }
+
+
+        if ($request->status == 'delivered') {
+            $invoice->markAsDelivered();
+        }
+
 
         $this->clearInvoiceCaches($invoice->user_id);
         Cache::forget("invoice_{$invoice->id}");

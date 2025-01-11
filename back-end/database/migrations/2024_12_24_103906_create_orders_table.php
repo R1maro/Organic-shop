@@ -11,6 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
@@ -18,13 +19,8 @@ return new class extends Migration
             $table->unsignedInteger('total_price');
             $table->string('status')->default('pending');
             $table->string('payment_status')->default('pending');
-            $table->string('payment_method')->nullable();
-            $table->text('shipping_address')->nullable();
-            $table->text('billing_address')->nullable();
             $table->text('notes')->nullable();
             $table->timestamp('paid_at')->nullable();
-            $table->timestamp('shipped_at')->nullable();
-            $table->timestamp('delivered_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -47,5 +43,6 @@ return new class extends Migration
     {
         Schema::dropIfExists('orders');
         Schema::dropIfExists('order_items');
+
     }
 };

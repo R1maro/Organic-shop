@@ -15,17 +15,21 @@ class IndexController extends Controller
         $cacheKey = 'products_main_page';
 
         // Using Cache to avoid multiple queries
-        return Cache::remember($cacheKey, now()->addHours(0.1), function () {
+
+        return Cache::remember($cacheKey, now()->addHours(2), function () {
+
             // Only fetching the necessary fields (name, price, discount, and media)
             return response()->json(
                 Product::with('media')
                     ->select('id', 'name', 'price', 'discount') // Adjust based on the fields you need
                     ->where('status', true) // Only active products
-                    ->get(-9)
+
+                    ->orderBy('id', 'desc')
+                    ->get(9)
                     ->map(function ($product) {
                         // Get the product image URL, if available
                         $imageUrl = $product->media->isNotEmpty()
-                            ? asset( $product->media[0]->original_url)
+                            ? asset($product->media[0]->original_url)
                             : null;
 
                         return [

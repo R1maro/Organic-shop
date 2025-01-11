@@ -47,9 +47,6 @@ class OrderController extends Controller
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|integer|min:1',
-            'shipping_address' => 'required|string',
-            'billing_address' => 'nullable|string',
-            'payment_method' => 'required|string',
             'notes' => 'nullable|string',
         ]);
 
@@ -89,9 +86,6 @@ class OrderController extends Controller
             $order = Order::create([
                 'user_id' => $userId,
                 'total_price' => $total_price,
-                'shipping_address' => $request->shipping_address,
-                'billing_address' => $request->billing_addres,
-                'payment_method' => $request->payment_method,
                 'notes' => $request->notes
             ]);
 
@@ -124,10 +118,7 @@ class OrderController extends Controller
         $validator = Validator::make($request->all(), [
             'status' => 'sometimes|required|in:pending,processing,shipped,delivered,cancelled',
             'payment_status' => 'sometimes|required|in:pending,paid,failed,refunded',
-            'shipping_address' => 'sometimes|required|string',
             'notes' => 'nullable|string',
-            'payment_method' => 'sometimes|required|string',
-            'billing_address' => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
@@ -138,10 +129,7 @@ class OrderController extends Controller
         $updateData = $request->only([
             'status',
             'payment_status',
-            'shipping_address',
             'notes',
-            'payment_method',
-            'billing_address'
         ]);
 
 
@@ -170,11 +158,6 @@ class OrderController extends Controller
             ]);
         }
 
-        if ($request->status == 'shipped') {
-            $order->markAsShipped();
-        } elseif ($request->status == 'delivered') {
-            $order->markAsDelivered();
-        }
 
         if ($request->payment_status == 'paid') {
             $order->markAsPaid();
