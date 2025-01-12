@@ -1,70 +1,90 @@
+// components/Hero/Slider.tsx
 import React, { useState, useEffect } from 'react';
+import { useSettings } from '../../services/website/useSettings';
 
-interface SliderProps {
-    slides: string[];
-}
-
-const Slider: React.FC<SliderProps> = ({ slides }) => {
+const Slider: React.FC = () => {
+    const { getValue, loading, error } = useSettings();
     const [currentIndex, setCurrentIndex] = useState(0);
 
+    // Get slider images
+    const sliderImages = [
+        getValue('slider_image_1'),
+        getValue('slider_image_2'),
+        getValue('slider_image_3'),
+    ].filter(Boolean);
+
+    // Get slider settings
+    const autoplaySpeed = getValue('slider_autoplay_speed', 6000);
+    const showNavigation = getValue('slider_show_navigation', true);
+    const showIndicators = getValue('slider_show_indicators', true);
+
     useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentIndex((prevIndex) => (prevIndex + 1) % slides.length);
-        }, 6000);
+        if (autoplaySpeed > 0) {
+            const interval = setInterval(() => {
+                setCurrentIndex((prevIndex) => (prevIndex + 1) % sliderImages.length);
+            }, autoplaySpeed);
 
-        return () => clearInterval(interval);
-    }, [slides.length]);
+            return () => clearInterval(interval);
+        }
+    }, [sliderImages.length, autoplaySpeed]);
 
-    const goToPrevious = () => {
-        setCurrentIndex((prevIndex) => (prevIndex === 0 ? slides.length - 1 : prevIndex - 1));
-    };
+    if (loading) {
+        return <div className="w-full h-[500px] animate-pulse bg-gray-200 rounded-lg" />;
+    }
 
-    const goToNext = () => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % slides.length);
-    };
+    if (error || sliderImages.length === 0) {
+        return (
+            <div className="w-full h-[500px] flex items-center justify-center bg-gray-100 rounded-lg">
+                <p className="text-red-500">خطا در بارگذاری اسلایدر</p>
+            </div>
+        );
+    }
 
     return (
         <div className="relative w-full h-[500px] rounded-lg overflow-hidden mx-4">
             <div
                 className="w-full h-full flex items-center justify-center bg-gray-200"
                 style={{
-                    backgroundImage: `url(${slides[currentIndex]})`,
+                    backgroundImage: `url(${sliderImages[currentIndex]})`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                 }}
             >
-                <div className="absolute bottom-12 text-center w-full text-white px-4">
-                    <h2 className="text-5xl font-bold drop-shadow-md"></h2>
-                    <p className="text-xl drop-shadow-md"> پیشنهاد ویژه {currentIndex + 1}</p>
-                </div>
+                {/* Slider content */}
             </div>
 
             {/* Navigation Buttons */}
-            <button
-                onClick={goToPrevious}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-gray-800 bg-opacity-60 text-white p-4 rounded-full shadow-md hover:bg-gray-600"
-            >
-                ❮
-            </button>
-            <button
-                onClick={goToNext}
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-gray-800 bg-opacity-60 text-white p-4 rounded-full shadow-md hover:bg-gray-600"
-            >
-                ❯
-            </button>
+            {showNavigation && (
+                <>
+                    <button
+                        onClick={() => setCurrentIndex((prev) => (prev === 0 ? sliderImages.length - 1 : prev - 1))}
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-gray-800 bg-opacity-60 text-white p-4 rounded-full shadow-md hover:bg-gray-600"
+                    >
+                        ❮
+                    </button>
+                    <button
+                        onClick={() => setCurrentIndex((prev) => (prev + 1) % sliderImages.length)}
+                        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-gray-800 bg-opacity-60 text-white p-4 rounded-full shadow-md hover:bg-gray-600"
+                    >
+                        ❯
+                    </button>
+                </>
+            )}
 
             {/* Slide Indicators */}
-            <div className="absolute bottom-4 flex justify-center space-x-2 gap-2 w-full">
-                {slides.map((_, index) => (
-                    <button
-                        key={index}
-                        onClick={() => setCurrentIndex(index)}
-                        className={`w-4 h-4 rounded-full ${
-                            index === currentIndex ? 'bg-white' : 'bg-gray-400'
-                        }`}
-                    ></button>
-                ))}
-            </div>
+            {showIndicators && (
+                <div className="absolute bottom-4 flex justify-center gap-2 w-full">
+                    {sliderImages.map((_, index) => (
+                        <button
+                            key={index}
+                            onClick={() => setCurrentIndex(index)}
+                            className={`w-4 h-4 rounded-full ${
+                                index === currentIndex ? 'bg-white' : 'bg-gray-400'
+                            }`}
+                        />
+                    ))}
+                </div>
+            )}
         </div>
     );
 };
