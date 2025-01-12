@@ -28,7 +28,7 @@ class SettingController extends Controller
             });
         }
 
-        $settings = $query->orderBy('group')->orderBy('id')->paginate($request->per_page ?? 10);
+        $settings = $query->orderBy('id')->paginate($request->per_page ?? 10);
 
         return SettingResource::collection($settings);
     }
