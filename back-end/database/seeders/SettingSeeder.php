@@ -67,6 +67,30 @@ class SettingSeeder extends Seeder
                 'label' => 'Slider Image 3',
                 'description' => 'Third slider image (recommended size: 1920x1080px)'
             ],
+            [
+                'key' => 'slider_autoplay_speed',
+                'value' => null,
+                'type' => 'number',
+                'group' => 'slider',
+                'label' => 'Slider Autoplay Speed',
+                'description' => 'Slider autoplay speed (in milliseconds,recommended 666)'
+            ],
+            [
+                'key' => 'slider_show_navigation',
+                'value' => true,
+                'type' => 'boolean',
+                'group' => 'slider',
+                'label' => 'Slider Navigation Show',
+                'description' => 'Slider navigation show'
+            ],
+            [
+                'key' => 'slider_show_indicators',
+                'value' => true,
+                'type' => 'boolean',
+                'group' => 'slider',
+                'label' => 'Slider Indicator Show',
+                'description' => 'Slider indicator show'
+            ],
         ];
 
         foreach ($settings as $setting) {
