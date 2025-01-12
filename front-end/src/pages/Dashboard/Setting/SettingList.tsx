@@ -4,6 +4,7 @@ import { toast } from 'react-hot-toast';
 import Breadcrumb from '../../../components/Breadcrumbs/Breadcrumb';
 import Loader from '../../../common/Loader';
 import { Setting, settingService } from '../../../services/dashboard/settingService';
+import config from "../../../config";
 
 const SettingList = () => {
     const navigate = useNavigate();
@@ -107,6 +108,7 @@ const SettingList = () => {
                             <thead>
                             <tr className="bg-gray-2 text-left dark:bg-meta-4">
                                 <th className="py-4 px-4 font-medium text-black dark:text-white">Key</th>
+                                <th className="py-4 px-4 font-medium text-black dark:text-white">Value</th>
                                 <th className="py-4 px-4 font-medium text-black dark:text-white">Label</th>
                                 <th className="py-4 px-4 font-medium text-black dark:text-white">Type</th>
                                 <th className="py-4 px-4 font-medium text-black dark:text-white">Group</th>
@@ -120,10 +122,22 @@ const SettingList = () => {
                                         {setting.key}
                                     </td>
                                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                        {setting.type === 'image' ? (
+                                            <img
+                                                src={`${config.PUBLIC_URL}${setting.image_url}`}
+                                                alt={setting.key}
+                                                className="h-30 w-30 object-contain"
+                                            />
+                                        ) : (
+                                            setting.value
+                                        )}
+                                    </td>
+
+                                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                         {setting.label}
                                     </td>
                                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                        {setting.type}
+                                    {setting.type}
                                     </td>
                                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                         {setting.group}
