@@ -7,6 +7,7 @@ import { Setting, settingService } from '../../../services/dashboard/settingServ
 import config from "../../../config";
 
 
+
 interface Pagination {
     current_page: number;
     last_page: number;
@@ -15,6 +16,7 @@ interface Pagination {
     from: number;
     to: number;
 }
+
 
 const SettingList = () => {
     const navigate = useNavigate();
