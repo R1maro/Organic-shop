@@ -26,6 +26,8 @@ import OrderList from "./pages/Dashboard/Order/OrderList.tsx";
 import OrderForm from "./pages/Dashboard/Order/OrderForm.tsx";
 import InvoiceList from "./pages/Dashboard/Invoice/InvoiceList.tsx";
 import InvoiceForm from "./pages/Dashboard/Invoice/InvoiceForm.tsx";
+import SettingList from "./pages/Dashboard/Setting/SettingList.tsx";
+import SettingForm from "./pages/Dashboard/Setting/SettingForm.tsx";
 
 function App() {
     const [loading, setLoading] = useState<boolean>(true);
@@ -219,6 +221,33 @@ function App() {
                                             <>
                                                 <PageTitle title="Edit Invoices | TailAdmin" />
                                                 <InvoiceForm />
+                                            </>
+                                        }
+                                    />
+                                    <Route
+                                        path="/settings"
+                                        element={
+                                            <>
+                                                <PageTitle title="Settings | TailAdmin" />
+                                                <SettingList />
+                                            </>
+                                        }
+                                    />
+                                    <Route
+                                        path="/settings/create"
+                                        element={
+                                            <>
+                                                <PageTitle title="Create Setting | TailAdmin" />
+                                                <SettingForm />
+                                            </>
+                                        }
+                                    />
+                                    <Route
+                                        path="/settings/edit/:id"
+                                        element={
+                                            <>
+                                                <PageTitle title="Edit Setting | TailAdmin" />
+                                                <SettingForm />
                                             </>
                                         }
                                     />
