@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Website;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
@@ -43,4 +44,21 @@ class IndexController extends Controller
             );
         });
     }
+
+    public function getPublicSettings()
+    {
+        $settings = Setting::where('is_public', true)->get();
+
+        return $settings->map(function ($setting) {
+            $data = $setting->toArray();
+
+            if ($setting->type === 'image') {
+                $media = $setting->getFirstMedia('setting_image');
+                $data['media_url'] = $media ? $media->getFullUrl() : null;
+            }
+
+            return $data;
+        });
+    }
+
 }
