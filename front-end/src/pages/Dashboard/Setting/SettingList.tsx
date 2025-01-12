@@ -6,15 +6,33 @@ import Loader from '../../../common/Loader';
 import { Setting, settingService } from '../../../services/dashboard/settingService';
 import config from "../../../config";
 
+
+interface Pagination {
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+    from: number;
+    to: number;
+}
+
 const SettingList = () => {
     const navigate = useNavigate();
     const [settings, setSettings] = useState<Setting[]>([]);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
     const [search, setSearch] = useState('');
     const [selectedGroup, setSelectedGroup] = useState<string>('');
     const [groups, setGroups] = useState<string[]>([]);
+
+    const [pagination, setPagination] = useState<Pagination>({
+        current_page: 1,
+        last_page: 1,
+        per_page: 10,
+        total: 0,
+        from: 0,
+        to: 0
+    });
 
     useEffect(() => {
         fetchGroups();
@@ -34,9 +52,16 @@ const SettingList = () => {
         try {
             setLoading(true);
             const response = await settingService.getAll(currentPage, search, selectedGroup);
-            console.log(response)
+            console.log('API Response:', response); // Add this line
             setSettings(response.data);
-            setTotalPages(response.last_page);
+            setPagination({
+                current_page: response.meta.current_page,
+                last_page: response.meta.last_page,
+                per_page: response.meta.per_page,
+                total: response.meta.total,
+                from: response.meta.from,
+                to: response.meta.to
+            });
         } catch (error) {
             console.log(error)
             toast.error('Failed to fetch settings');
@@ -62,7 +87,69 @@ const SettingList = () => {
         fetchSettings();
     };
 
-    if (loading && currentPage === 1) return <Loader />;
+    const renderPagination = () => {
+        const pages = [];
+        let startPage = Math.max(1, pagination.current_page - 2);
+        let endPage = Math.min(pagination.last_page, pagination.current_page + 2);
+
+        if (startPage > 1) {
+            pages.push(
+                <button
+                    key="1"
+                    onClick={() => setCurrentPage(1)}
+                    className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                >
+                    1
+                </button>
+            );
+            if (startPage > 2) {
+                pages.push(
+                    <span key="dots1" className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700">
+                        ...
+                    </span>
+                );
+            }
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            pages.push(
+                <button
+                    key={i}
+                    onClick={() => setCurrentPage(i)}
+                    className={`px-3 py-1 rounded-md ${
+                        pagination.current_page === i
+                            ? 'bg-primary text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary'
+                            : 'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0'
+                    }`}
+                >
+                    {i}
+                </button>
+            );
+        }
+
+        if (endPage < pagination.last_page) {
+            if (endPage < pagination.last_page - 1) {
+                pages.push(
+                    <span key="dots2" className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700">
+                        ...
+                    </span>
+                );
+            }
+            pages.push(
+                <button
+                    key={pagination.last_page}
+                    onClick={() => setCurrentPage(pagination.last_page)}
+                    className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                >
+                    {pagination.last_page}
+                </button>
+            );
+        }
+
+        return pages;
+    };
+
+    if (loading) return <Loader />;
 
     return (
         <>
@@ -164,25 +251,40 @@ const SettingList = () => {
                         </table>
                     </div>
 
-                    {totalPages > 1 && (
-                        <div className="flex items-center justify-between py-4">
-                            <button
-                                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                                disabled={currentPage === 1}
-                                className="flex items-center gap-2 rounded bg-primary py-2 px-4.5 font-medium text-white hover:bg-opacity-80 disabled:opacity-50"
-                            >
-                                Previous
-                            </button>
-                            <span>
-                                Page {currentPage} of {totalPages}
-                            </span>
-                            <button
-                                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                                disabled={currentPage === totalPages}
-                                className="flex items-center gap-2 rounded bg-primary py-2 px-4.5 font-medium text-white hover:bg-opacity-80 disabled:opacity-50"
-                            >
-                                Next
-                            </button>
+                    {settings.length > 0 && (
+                        <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-4">
+                            <div className="flex flex-1 justify-between sm:hidden">
+                                <button
+                                    onClick={() => setCurrentPage(pagination.current_page - 1)}
+                                    disabled={pagination.current_page === 1}
+                                    className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                >
+                                    Previous
+                                </button>
+                                <button
+                                    onClick={() => setCurrentPage(pagination.current_page + 1)}
+                                    disabled={pagination.current_page === pagination.last_page}
+                                    className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                >
+                                    Next
+                                </button>
+                            </div>
+                            <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                                <div>
+                                    <p className="text-sm text-gray-700">
+                                        Showing{' '}
+                                        <span className="font-medium">{pagination.from}</span>{' '}
+                                        to{' '}
+                                        <span className="font-medium">{pagination.to}</span>{' '}
+                                        of{' '}
+                                        <span className="font-medium">{pagination.total}</span>{' '}
+                                        results
+                                    </p>
+                                </div>
+                                <div className="flex gap-2">
+                                    {renderPagination()}
+                                </div>
+                            </div>
                         </div>
                     )}
                 </div>
