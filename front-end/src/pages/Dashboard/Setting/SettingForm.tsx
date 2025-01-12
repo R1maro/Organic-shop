@@ -4,6 +4,7 @@ import { toast } from 'react-hot-toast';
 import Breadcrumb from '../../../components/Breadcrumbs/Breadcrumb';
 import Loader from '../../../common/Loader';
 import { Setting, SettingInput, settingService } from '../../../services/dashboard/settingService';
+import config from "../../../config";
 
 const SettingForm = () => {
     const navigate = useNavigate();
@@ -11,6 +12,7 @@ const SettingForm = () => {
     const [loading, setLoading] = useState(false);
     const [groups, setGroups] = useState<string[]>([]);
     const [types, setTypes] = useState<Setting['type'][]>([]);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [formData, setFormData] = useState<SettingInput>({
         key: '',
         label: '',
@@ -60,6 +62,9 @@ const SettingForm = () => {
                 value: setting.value,
                 is_public: setting.is_public
             });
+            if (setting.type === 'image') {
+                setImagePreview(`${config.PUBLIC_URL}${setting.image_url}`);
+            }
         } catch (error) {
             toast.error('Failed to fetch setting');
             navigate('/settings');
@@ -105,6 +110,7 @@ const SettingForm = () => {
                 ...prev,
                 image: file
             }));
+            setImagePreview(URL.createObjectURL(file));
         }
     };
 
@@ -206,12 +212,23 @@ const SettingForm = () => {
                                         className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                                     />
                                 ) : formData.type === 'image' ? (
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={handleFileChange}
-                                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                                    />
+                                    <>
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleFileChange}
+                                            className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                        />
+                                        {imagePreview && (
+                                            <div className="mt-4">
+                                                <img
+                                                    src={imagePreview}
+                                                    alt="Preview"
+                                                    className="w-40 h-40 object-cover rounded-md"
+                                                />
+                                            </div>
+                                        )}
+                                    </>
                                 ) : (
                                     <input
                                         type={formData.type === 'number' ? 'number' : 'text'}

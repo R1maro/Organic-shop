@@ -64,7 +64,7 @@ export const settingService = {
         }
     },
 
-// Update both methods in settingService.ts
+
     create: async (data: SettingInput): Promise<Setting> => {
         try {
             const formData = new FormData();
