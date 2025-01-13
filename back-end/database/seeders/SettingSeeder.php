@@ -69,7 +69,7 @@ class SettingSeeder extends Seeder
             ],
             [
                 'key' => 'slider_autoplay_speed',
-                'value' => null,
+                'value' => 6000,
                 'type' => 'number',
                 'group' => 'slider',
                 'label' => 'Slider Autoplay Speed',
