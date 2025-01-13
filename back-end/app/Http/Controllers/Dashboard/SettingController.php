@@ -15,10 +15,9 @@ class SettingController extends Controller
     {
         $query = Setting::query();
 
-//        if ($request->has('group')) {
-//            $query->where('group', $request->group);
-//        }
-
+        if ($request->filled('group')) {
+            $query->where('group', $request->group);
+        }
         if ($request->has('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
