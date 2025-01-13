@@ -11,7 +11,6 @@ import ECommerce from './pages/Dashboard/ECommerce';
 import FormElements from './pages/Form/FormElements';
 import FormLayout from './pages/Form/FormLayout';
 import Profile from './pages/Profile';
-import Settings from './pages/Settings';
 import Tables from './pages/Tables';
 import Alerts from './pages/UiElements/Alerts';
 import Buttons from './pages/UiElements/Buttons';
@@ -284,15 +283,6 @@ function App() {
                                             <>
                                                 <PageTitle title="Tables | TailAdmin" />
                                                 <Tables />
-                                            </>
-                                        }
-                                    />
-                                    <Route
-                                        path="/settings"
-                                        element={
-                                            <>
-                                                <PageTitle title="Settings | TailAdmin" />
-                                                <Settings />
                                             </>
                                         }
                                     />

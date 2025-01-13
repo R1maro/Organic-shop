@@ -40,7 +40,7 @@ interface PaginatedResponse<T> {
         per_page: number;
         to: number;
         total: number;
-    };
+    }
     data: T[];
     current_page: number;
     last_page: number;
