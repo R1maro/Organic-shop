@@ -1,11 +1,10 @@
-import  { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-hot-toast';
+import {useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {toast} from 'react-hot-toast';
 import Breadcrumb from '../../../components/Breadcrumbs/Breadcrumb';
 import Loader from '../../../common/Loader';
-import { Setting, settingService } from '../../../services/dashboard/settingService';
+import {Setting, settingService} from '../../../services/dashboard/settingService';
 import config from "../../../config";
-
 
 
 interface Pagination {
@@ -54,7 +53,6 @@ const SettingList = () => {
         try {
             setLoading(true);
             const response = await settingService.getAll(currentPage, search, selectedGroup);
-            console.log('API Response:', response); // Add this line
             setSettings(response.data);
             setPagination({
                 current_page: response.meta.current_page,
@@ -160,14 +158,26 @@ const SettingList = () => {
 
                 <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-center gap-4">
-                        <input
-                            type="text"
-                            placeholder="Search settings..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                            className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                        />
+                        <div className="relative w-100">
+
+                            <input
+                                type="text"
+                                placeholder="Search settings..."
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                                className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                            />
+                            <button
+                                onClick={handleSearch}
+                                className="absolute right-4 top-1/2 -translate-y-1/2 hover:text-primary"
+                            >
+                                <svg className="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
+                                </svg>
+
+                            </button>
+                        </div>
 
                         <select
                             value={selectedGroup}
