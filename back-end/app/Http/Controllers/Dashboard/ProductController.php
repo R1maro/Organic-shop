@@ -13,13 +13,18 @@ class ProductController extends Controller
     {
         $cacheKey = 'products_' . ($request->category_id ?? 'all') . '_page_' . ($request->get('page', 1));
 
-        return Cache::remember($cacheKey, now()->addHours(24), function () use ($request) {
-            return response()->json(
-                Product::with(['category', 'media'])
-                    ->when($request->category_id, fn($q) => $q->byCategory($request->category_id))
-                    ->paginate(10)
-            );
+        $products = Cache::remember($cacheKey, now()->addHours(24), function () use ($request) {
+            $products = Product::with(['category', 'media'])
+                ->when($request->category_id, fn($q) => $q->byCategory($request->category_id))
+                ->paginate(10);
+
+            return serialize($products);
         });
+
+
+        $products = unserialize($products);
+
+        return response()->json($products);
     }
 
 
@@ -59,9 +64,16 @@ class ProductController extends Controller
     {
         $cacheKey = 'product_' . $product->id;
 
-        return Cache::remember($cacheKey, now()->addHours(24), function () use ($product) {
-            return response()->json($product->load(['category', 'media']));
+
+        $productData = Cache::remember($cacheKey, now()->addHours(24), function () use ($product) {
+            $productData = $product->load(['category', 'media']);
+            return serialize($productData);
         });
+
+
+        $productData = unserialize($productData);
+
+        return response()->json($productData);
     }
 
     public function update(Request $request, Product $product)
@@ -121,14 +133,14 @@ class ProductController extends Controller
 
     private function clearProductCaches($categoryId)
     {
-        // Clear category-specific product listings
+
         Cache::forget('products_' . $categoryId . '_page_1');
 
-        // Clear all products listing
+
         Cache::forget('products_all_page_1');
 
-        // You might want to clear multiple pages if your application uses pagination
-        for ($i = 1; $i <= 5; $i++) { // Adjust the number based on your needs
+
+        for ($i = 1; $i <= 5; $i++) {
             Cache::forget('products_' . $categoryId . '_page_' . $i);
             Cache::forget('products_all_page_' . $i);
         }
