@@ -3,8 +3,6 @@ import {Route, Routes, useLocation} from 'react-router-dom';
 
 import Loader from './common/Loader';
 import PageTitle from './components/PageTitle';
-import SignIn from './pages/Authentication/SignIn';
-import SignUp from './pages/Authentication/SignUp';
 import Calendar from './pages/Calendar';
 import Chart from './pages/Chart';
 import ECommerce from './pages/Dashboard/ECommerce';
@@ -15,10 +13,8 @@ import Tables from './pages/Tables';
 import Alerts from './pages/UiElements/Alerts';
 import Buttons from './pages/UiElements/Buttons';
 import DefaultLayout from './layout/DefaultLayout';
-import {useAuth} from './AuthContext';
 import CategoryList from './pages/Dashboard/Category/CategoryList.tsx';
 import CategoryForm from './pages/Dashboard/Category/CategoryForm.tsx';
-import Index from "./pages/Website/Index";
 import ProductList from "./pages/Dashboard/Product/ProductList.tsx";
 import ProductForm from "./pages/Dashboard/Product/ProductForm.tsx";
 import OrderList from "./pages/Dashboard/Order/OrderList.tsx";
@@ -31,7 +27,7 @@ import SettingForm from "./pages/Dashboard/Setting/SettingForm.tsx";
 function App() {
     const [loading, setLoading] = useState<boolean>(true);
     const { pathname } = useLocation();
-    const { isAuthenticated } = useAuth();
+
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -47,51 +43,7 @@ function App() {
 
     return (
         <Routes>
-            {/* Public Routes */}
-            {!isAuthenticated ? (
                 <>
-                    <Route
-                        path="/"
-                        element={
-                            <>
-                                <PageTitle title="Welcome | Organic-Shop" />
-                                <Index />
-                            </>
-                        }
-                    />
-                    <Route
-                        path="/auth/signin"
-                        element={
-                            <>
-                                <PageTitle title="Signin | TailAdmin" />
-                                <SignIn />
-                            </>
-                        }
-                    />
-                    <Route
-                        path="/auth/signup"
-                        element={
-                            <>
-                                <PageTitle title="Signup | TailAdmin" />
-                                <SignUp />
-                            </>
-                        }
-                    />
-                    {/*<Route path="*" element={<Navigate to="/" />} />*/}
-                </>
-            ) : (
-                <>
-                    {/* Authenticated Index Route */}
-                    <Route
-                        path="/"
-                        element={
-                            <>
-                                <PageTitle title="Welcome | Organic-Shop" />
-                                <Index />
-                            </>
-                        }
-                    />
-                    {/* Authenticated Protected Routes */}
                     <Route
                         path="*"
                         element={
@@ -318,7 +270,6 @@ function App() {
                         }
                     />
                 </>
-            )}
         </Routes>
     );
 }
