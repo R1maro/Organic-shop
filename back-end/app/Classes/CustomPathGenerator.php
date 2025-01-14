@@ -16,7 +16,7 @@ class CustomPathGenerator implements PathGenerator
         }
 
         if ($media->model_type === \App\Models\Product::class) {
-            return 'product/'. $media->id . '/';
+            return 'products/'. $media->id . '/';
         }
 
         // Default path if no specific model is matched
