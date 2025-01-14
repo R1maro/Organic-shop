@@ -91,6 +91,22 @@ class SettingSeeder extends Seeder
                 'label' => 'Slider Indicator Show',
                 'description' => 'Slider indicator show'
             ],
+            [
+                'key' => 'advertisement_image_1',
+                'value' => null,
+                'type' => 'image',
+                'group' => 'slider',
+                'label' => 'Advertisement Image 1',
+                'description' => 'Advertisement image (recommended size: 1920x1080px)'
+            ],
+            [
+                'key' => 'advertisement_image_2',
+                'value' => null,
+                'type' => 'image',
+                'group' => 'slider',
+                'label' => 'Advertisement Image 2',
+                'description' => 'Advertisement image (recommended size: 1920x1080px)'
+            ],
         ];
 
         foreach ($settings as $setting) {

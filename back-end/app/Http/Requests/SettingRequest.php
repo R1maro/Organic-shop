@@ -32,7 +32,7 @@ class SettingRequest extends FormRequest
         }
 
         if ($this->type === 'image') {
-            $rules['image'] = 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048';
+            $rules['image'] = 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048';
         }
 
         return $rules;
