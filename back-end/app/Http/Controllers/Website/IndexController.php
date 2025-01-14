@@ -12,10 +12,9 @@ class IndexController extends Controller
 {
     public function getProducts(Request $request)
     {
-        // Optionally, you can apply pagination or filters here
+
         $cacheKey = 'products_main_page';
 
-        // Using Cache to avoid multiple queries
 
         return Cache::remember($cacheKey, now()->addHours(2), function () {
 
@@ -47,17 +46,21 @@ class IndexController extends Controller
 
     public function getPublicSettings()
     {
-        $settings = Setting::where('is_public', true)->get();
+        $cacheKey = 'settings_main_page';
+        return Cache::remember($cacheKey, now()->addHours(2), function () {
 
-        return $settings->map(function ($setting) {
-            $data = $setting->toArray();
+            $settings = Setting::where('is_public', true)->get();
 
-            if ($setting->type === 'image') {
-                $media = $setting->getFirstMedia('setting_image');
-                $data['media_url'] = $media ? $media->getFullUrl() : null;
-            }
+            return $settings->map(function ($setting) {
+                $data = $setting->toArray();
 
-            return $data;
+                if ($setting->type === 'image') {
+                    $media = $setting->getFirstMedia('setting_image');
+                    $data['media_url'] = $media ? $media->getFullUrl() : null;
+                }
+
+                return $data;
+            });
         });
     }
 
