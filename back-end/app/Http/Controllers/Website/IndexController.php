@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Website;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\Setting;
 use Illuminate\Http\Request;
@@ -58,6 +59,32 @@ class IndexController extends Controller
                     $media = $setting->getFirstMedia('setting_image');
                     $data['media_url'] = $media ? $media->getFullUrl() : null;
                 }
+
+                return $data;
+            });
+        });
+    }
+
+
+    public function getCategoriesWithProducts()
+    {
+        $cacheKey = 'categories_with_products';
+
+        return Cache::remember($cacheKey, now()->addHours(2), function () {
+            $categories = Category::with(['products' => function ($query) {
+                $query->take(6);
+            }])->where('is_active', true)->get();
+
+            return $categories->map(function ($category) {
+                $data = $category->toArray();
+
+
+                $data['products'] = $category->products->map(function ($product) {
+                    $productData = $product->toArray();
+                    $media = $product->getFirstMedia('product_image');
+                    $productData['image_url'] = $media ? $media->getFullUrl() : null;
+                    return $productData;
+                });
 
                 return $data;
             });
