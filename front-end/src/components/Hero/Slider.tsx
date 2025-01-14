@@ -44,12 +44,13 @@ const Slider: React.FC = () => {
         <div className="relative w-full h-[500px] rounded-lg overflow-hidden mx-4">
             <div
                 className="w-full h-full flex items-center justify-center bg-gray-200"
-                style={{
-                    backgroundImage: `url(${sliderImages[currentIndex]})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                }}
             >
+                <img
+                    rel="preload"
+                    src={`${sliderImages[currentIndex]}`}
+                    alt="#"
+                    className="h-full w-full object-cover"
+                />
                 {/* Slider content */}
             </div>
 
