@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
@@ -52,6 +53,7 @@ class ProductController extends Controller
                     ->toMediaCollection('product_image');
 
             }
+            Log::info('Product Image URL:', ['url' => $product->image_url]);
             $this->clearProductCaches($product->category_id);
 
             return response()->json($product->load(['category', 'media']), 201);
