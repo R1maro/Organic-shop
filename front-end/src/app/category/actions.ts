@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import type { Category } from "@/Services/categoryService";
+import type { Category } from "@/services/categoryService";
 
 const BASE_URL = "http://localhost:8000/api/admin";
 
