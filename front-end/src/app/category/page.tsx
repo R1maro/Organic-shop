@@ -2,7 +2,7 @@ import {Metadata} from 'next';
 import Link from 'next/link';
 import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb';
 import CategoryList from '@/components/Categories/CategoryList';
-import {categoryService} from '@/Services/categoryService';
+import {categoryService} from '@/services/categoryService';
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 
 export const metadata: Metadata = {
@@ -10,9 +10,7 @@ export const metadata: Metadata = {
     description: 'Category management page',
 };
 
-export default async function CategoriesPage({
-                                                 searchParams,
-                                             }: {
+export default async function CategoriesPage({searchParams,}: {
     searchParams: { page?: string };
 }) {
     const page = Number(searchParams.page) || 1;
@@ -23,7 +21,7 @@ export default async function CategoriesPage({
         return (
             <>
                 <DefaultLayout>
-                    <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+                    <div className="mx-auto min-h-screen max-w-screen-2xl p-4 md:p-6 2xl:p-10">
                         <div className="mb-6 flex flex-col gap-3">
                             <Breadcrumb pageName="Categories"/>
                             <Link
