@@ -61,6 +61,8 @@ async function ProductList({page = 1, categoryId,}: {
 }) {
     const products = await getProducts(page, categoryId);
 
+    console.log("API Response:", products);
+
     return (
         <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
             <div className="mb-6 flex flex-col gap-3">
@@ -101,7 +103,7 @@ async function ProductList({page = 1, categoryId,}: {
                                 <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                     {product.image_url ? (
                                         <img
-                                            src={product.image_url}
+                                            src={`${config.PUBLIC_URL}${product.image_url}`}
                                             alt={product.name}
                                             className="h-20 w-20 object-cover rounded-md"
                                         />
@@ -176,7 +178,7 @@ async function ProductList({page = 1, categoryId,}: {
                     </table>
                 </div>
 
-                <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-4">
+                <div className="flex items-center justify-between border-t border-gray-200 dark:border-meta-5 bg-white dark:bg-meta-4 px-4 py-3 sm:px-6 mt-4">
                     <div className="flex flex-1 justify-between sm:hidden">
                         <Link
                             href={`/products?page=${products.current_page - 1}${categoryId ? `&category_id=${categoryId}` : ''}`}
@@ -196,9 +198,9 @@ async function ProductList({page = 1, categoryId,}: {
                         </Link>
                     </div>
 
-                    <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                    <div className="hidden sm:flex sm:flex-1  sm:items-center sm:justify-between">
                         <div>
-                            <p className="text-sm text-gray-700">
+                            <p className="text-sm text-gray-700 dark:text-white">
                                 Showing{' '}
                                 <span className="font-medium">
                   {(products.current_page - 1) * products.per_page + 1}
