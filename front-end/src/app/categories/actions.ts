@@ -12,14 +12,14 @@ export async function deleteCategory(id: number) {
     });
 
     if (!response.ok) {
-      throw new Error("Failed to delete category");
+      throw new Error("Failed to delete categories");
     }
 
     revalidatePath("/admin/categories");
     return { success: true };
   } catch (error) {
-    console.error("Error deleting category:", error);
-    return { success: false, error: "Failed to delete category" };
+    console.error("Error deleting categories:", error);
+    return { success: false, error: "Failed to delete categories" };
   }
 }
 
@@ -34,13 +34,13 @@ export async function editCategory(id: number, data: Partial<Category>) {
     });
 
     if (!response.ok) {
-      throw new Error("Failed to update category");
+      throw new Error("Failed to update categories");
     }
 
     revalidatePath("/admin/categories");
     return { success: true, data: await response.json() };
   } catch (error) {
-    console.error("Error updating category:", error);
-    return { success: false, error: "Failed to update category" };
+    console.error("Error updating categories:", error);
+    return { success: false, error: "Failed to update categories" };
   }
 }

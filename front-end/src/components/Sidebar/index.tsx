@@ -60,7 +60,7 @@ const menuGroups = [
             </svg>
         ),
         label: "Categories",
-        route: "/category",
+        route: "/categories",
       },
       {
         icon: (

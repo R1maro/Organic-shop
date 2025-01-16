@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { deleteCategory } from '@/app/category/actions';
+import { deleteCategory } from '@/app/categories/actions';
 import type { PaginatedResponse, Category } from '@/services/categoryService';
 
 interface CategoryListProps {
@@ -13,7 +13,7 @@ const CategoryList = ({ initialData }: CategoryListProps) => {
     const router = useRouter();
 
     const handleDelete = async (id: number) => {
-        if (window.confirm('Are you sure you want to delete this category?')) {
+        if (window.confirm('Are you sure you want to delete this categories?')) {
             const result = await deleteCategory(id);
             if (result.success) {
 

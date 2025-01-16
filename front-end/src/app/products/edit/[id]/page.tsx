@@ -25,7 +25,7 @@ async function getProduct(id: string) {
     });
 
     if (!res.ok) {
-        throw new Error('Failed to fetch product');
+        throw new Error( 'Failed to fetch product');
     }
 
     return res.json();
@@ -100,9 +100,7 @@ async function getCategories() {
 }
 
 
-export default async function EditProductPage({
-                                                  params: {id},
-                                              }: {
+export default async function EditProductPage({params: {id},}: {
     params: { id: string };
 }) {
     const [product, categories] = await Promise.all([
@@ -114,7 +112,7 @@ export default async function EditProductPage({
 
     return (
         <DefaultLayout>
-            <div className="min-h-screen max-w-4xl mx-auto p-6">
+            <div className="min-h-screen max-w-5xl mx-auto p-6">
                 <h1 className="text-2xl font-bold mb-6">Edit Product</h1>
                 <ProductForm
                     categories={categories}
