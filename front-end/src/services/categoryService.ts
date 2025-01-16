@@ -1,5 +1,5 @@
 // services/categoryService.ts
-import config from "@/Config/config";
+import config from "@/config/config";
 export interface Category {
   id: number;
   name: string;

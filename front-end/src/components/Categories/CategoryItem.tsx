@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { Category } from "@/Services/categoryService";
+import type { Category } from "@/services/categoryService";
 
 interface CategoryItemProps {
   category: Category;

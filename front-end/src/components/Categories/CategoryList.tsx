@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { deleteCategory } from '@/app/category/actions';
-import type { PaginatedResponse, Category } from '@/Services/categoryService';
+import type { PaginatedResponse, Category } from '@/services/categoryService';
 
 interface CategoryListProps {
     initialData: PaginatedResponse;
@@ -131,7 +131,7 @@ const CategoryList = ({ initialData }: CategoryListProps) => {
                 </tbody>
             </table>
 
-            <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-4">
+            <div className="flex items-center justify-between border-t border-gray-200 dark:bg-meta-4 dark:border-meta-5 bg-white px-4 py-3 sm:px-6 mt-4">
                 <div className="flex flex-1 justify-between sm:hidden">
                     <button
                         onClick={() => router.push(`/admin/categories?page=${initialData.current_page - 1}`)}
@@ -148,9 +148,9 @@ const CategoryList = ({ initialData }: CategoryListProps) => {
                         Next
                     </button>
                 </div>
-                <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                <div className="hidden sm:flex sm:flex-1 sm:items-center dark:bg-meta-4 sm:justify-between">
                     <div>
-                        <p className="text-sm text-gray-700">
+                        <p className="text-sm text-gray-700 dark:text-white">
                             Showing{' '}
                             <span className="font-medium">
                 {(initialData.current_page - 1) * initialData.per_page + 1}
@@ -164,7 +164,7 @@ const CategoryList = ({ initialData }: CategoryListProps) => {
                             results
                         </p>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 dark:text-white">
                         {Array.from({ length: initialData.last_page }).map((_, i) => (
                             <button
                                 key={i + 1}
