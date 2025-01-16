@@ -57,9 +57,9 @@ export default function ProductForm({ categories, action, initialData }: Product
     };
     return (
         <form action={action}>
-            <div className="space-y-4">
+            <div className="space-y-6">
                 <div>
-                    <label htmlFor="name" className="block text-sm font-medium">
+                    <label htmlFor="name" className="mb-3 block text-sm font-medium text-black dark:text-white">
                         Name
                     </label>
                     <input
@@ -68,12 +68,12 @@ export default function ProductForm({ categories, action, initialData }: Product
                         name="name"
                         defaultValue={initialData?.name}
                         required
-                        className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                        className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                     />
                 </div>
 
                 <div>
-                    <label htmlFor="description" className="block text-sm font-medium">
+                    <label htmlFor="description" className="mb-3 block text-sm font-medium text-black dark:text-white">
                         Description
                     </label>
                     <textarea
@@ -81,13 +81,13 @@ export default function ProductForm({ categories, action, initialData }: Product
                         name="description"
                         defaultValue={initialData?.description}
                         rows={4}
-                        className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                        className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                     />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label htmlFor="price" className="block text-sm font-medium">
+                        <label htmlFor="price" className="mb-3 block text-sm font-medium text-black dark:text-white">
                             Price
                         </label>
                         <input
@@ -97,12 +97,12 @@ export default function ProductForm({ categories, action, initialData }: Product
                             value={price}
                             onChange={handlePriceChange}
                             placeholder="Enter price"
-                            className="mt-1 block w-full px-3 py-2 border rounded-md"
+                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                         />
                     </div>
 
                     <div>
-                        <label htmlFor="discount" className="block text-sm font-medium">
+                        <label htmlFor="discount" className="mb-3 block text-sm font-medium text-black dark:text-white">
                             Discount
                         </label>
                         <input
@@ -112,14 +112,14 @@ export default function ProductForm({ categories, action, initialData }: Product
                             value={discount}
                             onChange={handleDiscountChange}
                             placeholder="Enter discount"
-                            className="mt-1 block w-full px-3 py-2 border rounded-md"
+                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                         />
                     </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label htmlFor="quantity" className="block text-sm font-medium">
+                        <label htmlFor="quantity" className="mb-3 block text-sm font-medium text-black dark:text-white">
                             Quantity
                         </label>
                         <input
@@ -129,12 +129,12 @@ export default function ProductForm({ categories, action, initialData }: Product
                             defaultValue={initialData?.quantity}
                             min="0"
                             required
-                            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                         />
                     </div>
 
                     <div>
-                        <label htmlFor="sku" className="block text-sm font-medium">
+                        <label htmlFor="sku" className="mb-3 block text-sm font-medium text-black dark:text-white">
                             SKU
                         </label>
                         <input
@@ -143,14 +143,14 @@ export default function ProductForm({ categories, action, initialData }: Product
                             name="sku"
                             defaultValue={initialData?.sku}
                             required
-                            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                         />
                     </div>
                 </div>
 
 
                 <div>
-                    <label htmlFor="category_id" className="block text-sm font-medium">
+                    <label htmlFor="category_id" className="mb-3 block text-sm font-medium text-black dark:text-white">
                         Category
                     </label>
                     <select
@@ -158,7 +158,7 @@ export default function ProductForm({ categories, action, initialData }: Product
                         name="category_id"
                         defaultValue={initialData?.category_id}
                         required
-                        className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                        className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                     >
                         <option value="">Select a category</option>
                         {categories.map((category) => (
@@ -168,8 +168,9 @@ export default function ProductForm({ categories, action, initialData }: Product
                         ))}
                     </select>
                 </div>
-                <div className="flex items-center gap-2">
-                    <span className="text-md font-medium">Status:</span>
+                <div className="flex items-center gap-3">
+
+                    <span className="text-md text-black dark:text-white font-medium">Status:</span>
                     <label className="relative inline-block w-14 h-8">
                         <input
                             type="checkbox"
@@ -189,7 +190,7 @@ export default function ProductForm({ categories, action, initialData }: Product
 
 
                 <div>
-                    <label htmlFor="image" className="block text-sm font-medium">
+                    <label htmlFor="image" className="mb-3 mt-5 block text-sm font-medium text-black dark:text-white">
                         {initialData?.image_url ? 'New Product Image' : 'Product Image'}
                     </label>
                     <input
@@ -197,7 +198,7 @@ export default function ProductForm({ categories, action, initialData }: Product
                         id="image"
                         name="image"
                         accept="image/*"
-                        className="mt-1 block w-full"
+                        className="w-full cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:px-5 file:py-3 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
                         onChange={handleImageChange}
                     />
                 </div>
