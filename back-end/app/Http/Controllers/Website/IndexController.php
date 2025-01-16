@@ -91,4 +91,10 @@ class IndexController extends Controller
         });
     }
 
+    public function getLogo()
+    {
+        $logoUrl = Setting::getLogoUrl();
+        return response()->json(['logo_url' => $logoUrl]);
+    }
+
 }

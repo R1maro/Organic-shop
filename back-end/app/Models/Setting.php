@@ -44,4 +44,10 @@ class Setting extends Model implements HasMedia
     {
         return ['text', 'textarea', 'image', 'boolean', 'email', 'url', 'number'];
     }
+
+    public static function getLogoUrl(): ?string
+    {
+        $setting = self::where('key', 'logo')->first();
+        return $setting->value;
+    }
 }
