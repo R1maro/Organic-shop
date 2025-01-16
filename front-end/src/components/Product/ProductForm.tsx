@@ -28,6 +28,8 @@ export default function ProductForm({ categories, action, initialData }: Product
     const [previewImage, setPreviewImage] = useState<string | null>(
         initialData?.image_url ? `${config.PUBLIC_URL}${initialData.image_url}` : null
     );
+    const [price, setPrice] = useState<string>(initialData?.price?.toString() || "");
+    const [discount, setDiscount] = useState<string>(initialData?.discount?.toString() || "");
 
     const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -38,6 +40,20 @@ export default function ProductForm({ categories, action, initialData }: Product
         } else {
             setPreviewImage(initialData?.image_url ? `${config.PUBLIC_URL}${initialData.image_url}` : null);
         }
+    };
+
+    const formatNumber = (value: string) => {
+        if (!value) return "";
+        const numberValue = value.replace(/\D/g, ""); // Remove non-numeric characters
+        return new Intl.NumberFormat().format(Number(numberValue)); // Format with commas
+    };
+
+    const handlePriceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setPrice(formatNumber(event.target.value));
+    };
+
+    const handleDiscountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setDiscount(formatNumber(event.target.value));
     };
     return (
         <form action={action}>
@@ -75,14 +91,13 @@ export default function ProductForm({ categories, action, initialData }: Product
                             Price
                         </label>
                         <input
-                            type="number"
+                            type="text"
                             id="price"
                             name="price"
-                            defaultValue={initialData?.price}
-                            min="0"
-                            step="0.01"
-                            required
-                            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                            value={price}
+                            onChange={handlePriceChange}
+                            placeholder="Enter price"
+                            className="mt-1 block w-full px-3 py-2 border rounded-md"
                         />
                     </div>
 
@@ -91,13 +106,13 @@ export default function ProductForm({ categories, action, initialData }: Product
                             Discount
                         </label>
                         <input
-                            type="number"
+                            type="text"
                             id="discount"
                             name="discount"
-                            defaultValue={initialData?.discount ?? 0}
-                            min="0"
-                            step="0.01"
-                            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                            value={discount}
+                            onChange={handleDiscountChange}
+                            placeholder="Enter discount"
+                            className="mt-1 block w-full px-3 py-2 border rounded-md"
                         />
                     </div>
                 </div>

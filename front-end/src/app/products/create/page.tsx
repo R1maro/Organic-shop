@@ -21,8 +21,8 @@ async function createProduct(formData: FormData) {
         const data = {
             name: formData.get('name'),
             description: formData.get('description'),
-            price: parseFloat(formData.get('price') as string),
-            discount: parseFloat(formData.get('discount') as string) || 0,
+            price: parseFloat((formData.get('price') as string)?.replace(/,/g, '')),
+            discount: parseFloat((formData.get('discount') as string)?.replace(/,/g, '')) || 0,
             quantity: parseInt(formData.get('quantity') as string),
             sku: formData.get('sku'),
             category_id: parseInt(formData.get('category_id') as string),
