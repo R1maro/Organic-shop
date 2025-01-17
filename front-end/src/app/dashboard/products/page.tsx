@@ -3,11 +3,13 @@ import {Suspense} from 'react';
 import ProductList from '@/components/Product/ProductList'
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import {Metadata} from 'next';
+import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 
 export const metadata: Metadata = {
     title: 'Products | TailAdmin Next.js',
     description: 'Product management page',
 };
+
 function Loader() {
     return (
         <div className="flex items-center justify-center min-h-[400px]">
@@ -26,8 +28,10 @@ export default async function ProductsPage({searchParams,}: {
     return (
         <DefaultLayout>
             <div className="min-h-screen mx-auto px-4 py-8">
-                <h1 className="text-3xl font-bold mb-8">Our Products</h1>
-                <Suspense fallback={<Loader />}>
+                <div className="ms-10">
+                    <Breadcrumb pageName="Products"/>
+                </div>
+                <Suspense fallback={<Loader/>}>
                     <ProductList page={page} categoryId={categoryId}/>
                 </Suspense>
             </div>
