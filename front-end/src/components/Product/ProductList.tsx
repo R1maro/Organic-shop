@@ -68,7 +68,7 @@ async function ProductList({page = 1, categoryId,}: {
             <div className="mb-6 flex flex-col gap-3">
                 <h1 className="text-2xl font-semibold">Products</h1>
                 <Link
-                    href="/products/create"
+                    href="/dashboard/products/create"
                     className="inline-flex items-center justify-center gap-2.5 rounded-md bg-primary py-4 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
                 >
                     Add Product
