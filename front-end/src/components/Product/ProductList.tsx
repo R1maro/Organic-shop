@@ -61,12 +61,10 @@ async function ProductList({page = 1, categoryId,}: {
 }) {
     const products = await getProducts(page, categoryId);
 
-    console.log("API Response:", products);
 
     return (
         <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
             <div className="mb-6 flex flex-col gap-3">
-                <h1 className="text-2xl font-semibold">Products</h1>
                 <Link
                     href="/dashboard/products/create"
                     className="inline-flex items-center justify-center gap-2.5 rounded-md bg-primary py-4 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
@@ -181,7 +179,7 @@ async function ProductList({page = 1, categoryId,}: {
                 <div className="flex items-center justify-between border-t border-gray-200 dark:border-meta-5 bg-white dark:bg-meta-4 px-4 py-3 sm:px-6 mt-4">
                     <div className="flex flex-1 justify-between sm:hidden">
                         <Link
-                            href={`/products?page=${products.current_page - 1}${categoryId ? `&category_id=${categoryId}` : ''}`}
+                            href={`/dashboard/products?page=${products.current_page - 1}${categoryId ? `&category_id=${categoryId}` : ''}`}
                             className={`relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 ${
                                 products.current_page === 1 ? 'pointer-events-none opacity-50' : ''
                             }`}
@@ -189,7 +187,7 @@ async function ProductList({page = 1, categoryId,}: {
                             Previous
                         </Link>
                         <Link
-                            href={`/products?page=${products.current_page + 1}${categoryId ? `&category_id=${categoryId}` : ''}`}
+                            href={`/dashboard/products?page=${products.current_page + 1}${categoryId ? `&category_id=${categoryId}` : ''}`}
                             className={`relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 ${
                                 products.current_page === products.last_page ? 'pointer-events-none opacity-50' : ''
                             }`}
@@ -217,7 +215,7 @@ async function ProductList({page = 1, categoryId,}: {
                             {Array.from({ length: products.last_page }, (_, i) => i + 1).map((pageNum) => (
                                 <Link
                                     key={pageNum}
-                                    href={`/products?page=${pageNum}${categoryId ? `&category_id=${categoryId}` : ''}`}
+                                    href={`/dashboard/products?page=${pageNum}${categoryId ? `&category_id=${categoryId}` : ''}`}
                                     className={`px-3 py-1 rounded-md ${
                                         products.current_page === pageNum
                                             ? 'bg-primary text-white'

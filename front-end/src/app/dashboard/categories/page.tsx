@@ -25,7 +25,7 @@ export default async function CategoriesPage({searchParams,}: {
                         <div className="mb-6 flex flex-col gap-3">
                             <Breadcrumb pageName="Categories"/>
                             <Link
-                                href="/categories/create"
+                                href="/dashboard/categories/create"
                                 className="inline-flex items-center justify-center gap-2.5 rounded-md bg-primary py-4 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
                             >
                                 Add Category

@@ -134,14 +134,14 @@ const CategoryList = ({ initialData }: CategoryListProps) => {
             <div className="flex items-center justify-between border-t border-gray-200 dark:bg-meta-4 dark:border-meta-5 bg-white px-4 py-3 sm:px-6 mt-4">
                 <div className="flex flex-1 justify-between sm:hidden">
                     <button
-                        onClick={() => router.push(`/admin/categories?page=${initialData.current_page - 1}`)}
+                        onClick={() => router.push(`/dashboard/categories?page=${initialData.current_page - 1}`)}
                         disabled={initialData.current_page === 1}
                         className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
                     >
                         Previous
                     </button>
                     <button
-                        onClick={() => router.push(`/admin/categories?page=${initialData.current_page + 1}`)}
+                        onClick={() => router.push(`/dashboard/categories?page=${initialData.current_page + 1}`)}
                         disabled={initialData.current_page === initialData.last_page}
                         className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
                     >
@@ -168,7 +168,7 @@ const CategoryList = ({ initialData }: CategoryListProps) => {
                         {Array.from({ length: initialData.last_page }).map((_, i) => (
                             <button
                                 key={i + 1}
-                                onClick={() => router.push(`/admin/categories?page=${i + 1}`)}
+                                onClick={() => router.push(`/dashboard/categories?page=${i + 1}`)}
                                 className={`px-3 py-1 rounded-md ${
                                     initialData.current_page === i + 1
                                         ? 'bg-primary text-white'
