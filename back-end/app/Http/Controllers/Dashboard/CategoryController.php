@@ -35,7 +35,7 @@ class CategoryController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'parent_id' => ['nullable', 'exists:categories,id'],
-            'is_active' => ['boolean']
+            'status' => ['boolean']
         ]);
 
         $validated['slug'] = Str::slug($validated['name']);
@@ -67,7 +67,7 @@ class CategoryController extends Controller
                 'exists:categories,id',
                 Rule::notIn([$category->id])
             ],
-            'is_active' => ['boolean']
+            'status' => ['boolean']
         ]);
 
         if (isset($validated['name'])) {

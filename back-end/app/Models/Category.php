@@ -16,11 +16,11 @@ class Category extends Model
         'slug',
         'description',
         'parent_id',
-        'is_active',
+        'status',
     ];
 
     protected $casts = [
-        'is_active' => 'boolean',
+        'status' => 'boolean',
     ];
 
     public function parent(){
