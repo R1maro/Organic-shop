@@ -8,8 +8,8 @@ import {Metadata} from "next";
 
 
 export const metadata: Metadata = {
-    title: 'Products | TailAdmin Next.js',
-    description: 'Product management page',
+    title: 'Create Product | TailAdmin Next.js',
+    description: 'Create new product page',
 };
 async function createProduct(formData: FormData) {
     'use server'
