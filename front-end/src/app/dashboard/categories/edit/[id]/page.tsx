@@ -17,6 +17,7 @@ type Category = {
     name: string;
     description: string;
     status: boolean;
+    parent_id:number;
 };
 
 async function getCategory(id: string): Promise<Category> {
@@ -38,6 +39,19 @@ async function getCategory(id: string): Promise<Category> {
 
     return res.json();
 }
+async function getCategories(currentId: string) {
+    const res = await fetch(`${config.API_URL}/admin/categories`, {
+        cache: 'no-store',
+    });
+
+    if (!res.ok) throw new Error('Failed to fetch categories');
+    const response = await res.json();
+    // Filter out the current category and its children to prevent invalid parent selection
+    return (response.data || []).filter((category: Category) =>
+        category.id.toString() !== currentId &&
+        category.parent_id?.toString() !== currentId
+    );
+}
 
 async function updateCategory(id: string, formData: FormData) {
     'use server'
@@ -50,6 +64,7 @@ async function updateCategory(id: string, formData: FormData) {
             name: formData.get('name'),
             description: formData.get('description'),
             status: formData.get('status') !== null ? 1 : 0,
+            parent_id: formData.get('parent_id') || null,
         };
 
         const form = new FormData();
@@ -90,7 +105,10 @@ export default async function EditCategoryPage({
                                                }: {
     params: { id: string };
 }) {
-    const category = await getCategory(id);
+    const [category, categories] = await Promise.all([
+        getCategory(id),
+        getCategories(id),
+    ]);
     const updateCategoryWithId = updateCategory.bind(null, id);
 
     return (
@@ -98,6 +116,7 @@ export default async function EditCategoryPage({
             <div className="min-h-screen max-w-5xl mx-auto p-6 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
                 <h1 className="text-2xl font-bold mb-6">Edit Category</h1>
                 <CategoryForm
+                    categories={categories}
                     action={updateCategoryWithId}
                     initialData={category}
                 />
