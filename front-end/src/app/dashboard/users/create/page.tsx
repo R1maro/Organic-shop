@@ -41,7 +41,7 @@ async function createUser(formData: FormData) {
         const responseData = await response.json();
 
         if (!response.ok) {
-            throw new Error(responseData.error || 'Failed to create user');
+            throw new Error(responseData.message || 'Failed to create user');
         }
 
         revalidatePath('/dashboard/users');

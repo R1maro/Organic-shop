@@ -2,25 +2,18 @@ import UserList from '@/components/Users/UserList';
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import {Metadata} from 'next';
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import { Suspense } from 'react';
 
 export const metadata: Metadata = {
     title: 'Users | TailAdmin Next.js',
     description: 'User management page',
 };
 
-function Loader() {
-    return (
-        <div className="flex items-center justify-center min-h-[400px]">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
-    );
-}
 
-export default async function UsersPage({searchParams,}: {
-    searchParams: { page?: string };
+export default function UsersPage({searchParams,}: {
+    searchParams: { page?: string; search?: string };
 }) {
     const page = searchParams.page ? parseInt(searchParams.page) : 1;
+    const search = searchParams.search || '';
 
     return (
         <DefaultLayout>
@@ -28,9 +21,9 @@ export default async function UsersPage({searchParams,}: {
                 <div className="ms-10">
                     <Breadcrumb pageName="Users"/>
                 </div>
-                <Suspense fallback={<Loader/>}>
-                    <UserList page={page} />
-                </Suspense>
+
+                <UserList page={page} initialSearch={search}/>
+
             </div>
         </DefaultLayout>
     );

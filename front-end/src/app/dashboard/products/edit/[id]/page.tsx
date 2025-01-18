@@ -8,8 +8,8 @@ import {Metadata} from "next";
 
 
 export const metadata: Metadata = {
-    title: 'Products | TailAdmin Next.js',
-    description: 'Product management page',
+    title: 'Edit Product | TailAdmin Next.js',
+    description: 'Edit new product page',
 };
 
 type Product = {

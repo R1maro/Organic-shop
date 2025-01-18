@@ -1,5 +1,8 @@
+'use client';
+import { useState, useEffect } from 'react';
 import config from "@/config/config";
 import Link from "next/link";
+import { useRouter, useSearchParams } from 'next/navigation';
 
 interface User {
     id: number;
@@ -14,15 +17,29 @@ interface User {
 
 interface UsersResponse {
     data: User[];
-    current_page: number;
-    last_page: number;
-    per_page: number;
-    total: number;
+    links: {
+        first: string;
+        last: string;
+        prev: string | null;
+        next: string | null;
+    };
+    meta: {
+        current_page: number;
+        from: number;
+        last_page: number;
+        path: string;
+        per_page: number;
+        to: number;
+        total: number;
+    };
 }
 
-async function getUsers(page: number = 1) {
+async function getUsers(page: number = 1, search: string = '') {
     const url = new URL(`${config.API_URL}/admin/users`);
     url.searchParams.append('page', page.toString());
+    if (search) {
+        url.searchParams.append('search', search);
+    }
 
     const res = await fetch(url, {
         cache: 'no-store',
@@ -38,8 +55,45 @@ async function getUsers(page: number = 1) {
     return res.json() as Promise<UsersResponse>;
 }
 
-async function UserList({page = 1}: { page?: number }) {
-    const users = await getUsers(page);
+function UserList({ page = 1, initialSearch = '' }: { page?: number, initialSearch?: string }) {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const [users, setUsers] = useState<UsersResponse | null>(null);
+    const [search, setSearch] = useState(initialSearch);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const fetchUsers = async (currentPage: number, searchQuery: string) => {
+        setIsLoading(true);
+        try {
+            const data = await getUsers(currentPage, searchQuery);
+            setUsers(data);
+        } catch (error) {
+            console.error('Error fetching users:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        const currentSearch = searchParams.get('search') || '';
+        const currentPage = parseInt(searchParams.get('page') || '1');
+        setSearch(currentSearch);
+        fetchUsers(currentPage, currentSearch);
+    }, [searchParams]);
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        const params = new URLSearchParams();
+        if (search) {
+            params.append('search', search);
+        }
+        params.append('page', '1');
+        router.push(`/dashboard/users?${params.toString()}`);
+    };
+
+    if (!users) return <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+    </div>;
 
     return (
         <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
@@ -50,9 +104,26 @@ async function UserList({page = 1}: { page?: number }) {
                 >
                     Add User
                 </Link>
+                <form onSubmit={handleSearch} className="flex gap-2">
+                    <input
+                        type="text"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        placeholder="Search users..."
+                        className="rounded-md border border-stroke px-5 py-3 dark:border-strokedark dark:bg-meta-4"
+                    />
+                    <button
+                        type="submit"
+                        className="inline-flex items-center justify-center gap-2.5 rounded-md bg-primary py-4 px-10 text-center font-medium text-white hover:bg-opacity-90"
+                        disabled={isLoading}
+                    >
+                        {isLoading ? 'Searching...' : 'Search'}
+                    </button>
+                </form>
             </div>
 
-            <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+            <div
+                className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
                 <div className="max-w-full overflow-x-auto">
                     <table className="w-full table-auto">
                         <thead>
@@ -64,7 +135,7 @@ async function UserList({page = 1}: { page?: number }) {
                                 Email
                             </th>
                             <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">
-                                Role
+                            Role
                             </th>
                             <th className="py-4 px-4 font-medium text-black dark:text-white">
                                 Actions
@@ -81,11 +152,12 @@ async function UserList({page = 1}: { page?: number }) {
                                     {user.email}
                                 </td>
                                 <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                        <span className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${
-                                            user.is_admin
-                                                ? 'bg-success text-success'
-                                                : 'bg-warning text-warning'
-                                        }`}>
+                                        <span
+                                            className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${
+                                                user.is_admin
+                                                    ? 'bg-success text-success'
+                                                    : 'bg-warning text-warning'
+                                            }`}>
                                             {user.is_admin ? 'Admin' : 'User'}
                                         </span>
                                 </td>
@@ -145,30 +217,38 @@ async function UserList({page = 1}: { page?: number }) {
                             <p className="text-sm text-gray-700 dark:text-white">
                                 Showing{' '}
                                 <span className="font-medium">
-                                    {(users.current_page - 1) * users.per_page + 1}
+                                    {users.meta.from}
                                 </span>{' '}
                                 to{' '}
                                 <span className="font-medium">
-                                    {Math.min(users.current_page * users.per_page, users.total)}
-                                </span>{' '}
+                                    {users.meta.to}
+                                 </span>{' '}
                                 of{' '}
-                                <span className="font-medium">{users.total}</span> results
+                                <span className="font-medium">{users.meta.total}</span> results
                             </p>
                         </div>
                         <div className="flex gap-2">
-                            {Array.from({length: users.last_page}, (_, i) => i + 1).map((pageNum) => (
-                                <Link
-                                    key={pageNum}
-                                    href={`/dashboard/users?page=${pageNum}`}
-                                    className={`px-3 py-1 rounded-md ${
-                                        users.current_page === pageNum
-                                            ? 'bg-primary text-white'
-                                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                                    }`}
-                                >
-                                    {pageNum}
-                                </Link>
-                            ))}
+                            {Array.from({length: users.meta.last_page}, (_, i) => i + 1).map((pageNum) => {
+                                const params = new URLSearchParams();
+                                params.append('page', pageNum.toString());
+                                if (search) {
+                                    params.append('search', search);
+                                }
+
+                                return (
+                                    <Link
+                                        key={pageNum}
+                                        href={`/dashboard/users?${params.toString()}`}
+                                        className={`px-3 py-1 rounded-md ${
+                                            users.meta.current_page === pageNum
+                                                ? 'bg-primary text-white'
+                                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                        }`}
+                                    >
+                                        {pageNum}
+                                    </Link>
+                                );
+                            })}
                         </div>
                     </div>
                 </div>
