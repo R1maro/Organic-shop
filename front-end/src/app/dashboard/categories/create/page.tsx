@@ -23,6 +23,7 @@ async function createCategory(formData: FormData) {
             name: formData.get('name'),
             description: formData.get('description'),
             status: formData.get('status') !== null ? 1 : 0,
+            parent_id: formData.get('parent_id') || null,
         };
 
         const response = await fetch(`${config.API_URL}/admin/categories`, {
@@ -49,13 +50,23 @@ async function createCategory(formData: FormData) {
         throw error;
     }
 }
+async function getCategories() {
+    const res = await fetch(`${config.API_URL}/admin/categories`, {
+        cache: 'no-store',
+    });
+
+    if (!res.ok) throw new Error('Failed to fetch categories');
+    const response = await res.json();
+    return response.data || [];
+}
 
 export default async function CreateCategoryPage() {
+    const categories = await getCategories();
     return (
         <DefaultLayout>
             <div className="min-h-screen max-w-5xl mx-auto p-6 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
                 <h1 className="text-2xl font-bold mb-6">Create New Category</h1>
-                <CategoryForm action={createCategory} />
+                <CategoryForm action={createCategory} categories={categories} />
             </div>
         </DefaultLayout>
     );
