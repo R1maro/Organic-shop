@@ -11,7 +11,24 @@ export const metadata: Metadata = {
     title: 'Products | TailAdmin Next.js',
     description: 'Product management page',
 };
-async function getProduct(id: string) {
+
+type Product = {
+    id: string;
+    name: string;
+    description: string;
+    price: number;
+    discount?: number;
+    quantity: number;
+    sku: string;
+    category_id: number;
+    status: boolean;
+};
+
+type Category = {
+    id: number;
+    name: string;
+};
+async function getProduct(id: string): Promise<Product> {
     const cookieStore = cookies();
     const csrfToken = cookieStore.get('XSRF-TOKEN')?.value;
 
@@ -81,15 +98,15 @@ async function updateProduct(id: string, formData: FormData) {
             throw new Error(responseData.error || 'Failed to update product');
         }
 
-        revalidatePath('/products');
-        redirect('/products');
+        revalidatePath('/dashboard/products');
+        redirect('/dashboard/products');
     } catch (error) {
         console.error('Error updating product:', error);
         throw error;
     }
 }
 
-async function getCategories() {
+async function getCategories() : Promise<Category[]>{
     const res = await fetch(`${config.API_URL}/admin/categories`, {
         cache: 'no-store',
     });

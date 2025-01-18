@@ -1,7 +1,7 @@
 import config from "@/config/config";
 import Link from "next/link";
 
-// Types based on your Laravel model
+
 interface Product {
     id: number;
     name: string;
@@ -42,7 +42,7 @@ async function getProducts(page: number = 1, categoryId?: string) {
     }
 
     const res = await fetch(url, {
-        cache: 'no-store', // or 'force-cache' if you want to leverage NextJS cache
+        cache: 'no-store', //
         headers: {
             'Content-Type': 'application/json',
         },
@@ -129,7 +129,7 @@ async function ProductList({page = 1, categoryId,}: {
                                 <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                     <div className="flex items-center space-x-3.5">
                                         <Link
-                                            href={`/products/edit/${product.id}`}
+                                            href={`/dashboard/products/edit/${product.id}`}
                                             className="hover:text-primary"
                                             title="Edit Product"
                                         >

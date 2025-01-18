@@ -58,8 +58,8 @@ async function createProduct(formData: FormData) {
             throw new Error(responseData.error || 'Failed to create product');
         }
 
-        revalidatePath('/products');
-        redirect('/products');
+        revalidatePath('/dashboard/products');
+        redirect('/dashboard/products');
     } catch (error) {
         console.error('Error creating product:', error);
         throw error;
