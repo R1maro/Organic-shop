@@ -1,4 +1,3 @@
-// app/products/page.tsx
 import {Suspense} from 'react';
 import ProductList from '@/components/Product/ProductList'
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
