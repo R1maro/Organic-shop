@@ -22,7 +22,6 @@ class CategoryController extends Controller
         return Cache::remember($cacheKey, $this->cacheTimeout, function () {
             return response()->json(
                 Category::with('parent', 'children')
-                    ->whereNull('parent_id')
                     ->paginate(10)
             );
         });
