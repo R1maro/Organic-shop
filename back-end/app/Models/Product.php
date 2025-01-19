@@ -84,10 +84,10 @@ class Product extends Model implements HasMedia
 
     public function getFormattedPriceAttribute()
     {
-        return number_format($this->price, 0, '.', ',') . ' $';
+        return "$ ".number_format($this->price, 0, '.', ',');
     }
     public function getFormattedFinalPriceAttribute()
     {
-        return number_format($this->final_price, 0, '.', ',') . ' $';
+        return "$ ".number_format($this->final_price, 0, '.', ',');
     }
 }

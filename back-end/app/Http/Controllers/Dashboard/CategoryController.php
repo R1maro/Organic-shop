@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -19,12 +20,11 @@ class CategoryController extends Controller
         $page = request()->get('page', 1);
         $cacheKey = 'categories_page_' . $page;
 
-        return Cache::remember($cacheKey, $this->cacheTimeout, function () {
-            return response()->json(
-                Category::with('parent', 'children')
-                    ->paginate(10)
-            );
+        $categories = Cache::remember($cacheKey, $this->cacheTimeout, function () {
+            return Category::with('parent', 'children')->paginate(10);
         });
+
+        return CategoryResource::collection($categories);
     }
 
 
@@ -43,16 +43,18 @@ class CategoryController extends Controller
 
         $this->clearCategoryCache();
 
-        return response()->json($category);
+        return new CategoryResource($category);
     }
 
     public function show(Category $category)
     {
         $cacheKey = 'category_' . $category->id;
 
-        return Cache::remember($cacheKey, $this->cacheTimeout, function () use ($category) {
-            return response()->json($category->load('parent', 'children'));
+        $categoryData = Cache::remember($cacheKey, $this->cacheTimeout, function () use ($category) {
+            return $category->load('parent', 'children');
         });
+
+        return new CategoryResource($categoryData);
     }
 
 
@@ -77,7 +79,7 @@ class CategoryController extends Controller
         $this->clearCategoryCache();
         Cache::forget('category_' . $category->id);
 
-        return response()->json($category);
+        return new CategoryResource($category);
     }
 
     public function destroy(Category $category)

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\OrderResource;
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -22,22 +23,18 @@ class OrderController extends Controller
             $request->status ?? 'all',
             $request->payment_status ?? 'all',
             $request->get('page', 1),
-            $request->per_page ?? 15
+            $request->per_page ?? 10
         );
 
-        return Cache::remember($cacheKey, now()->addHours(self::CACHE_TTL), function () use ($request) {
-            return response()->json(
-                Order::with(['items.product', 'user'])
-                    ->when($request->status, function ($query, $status) {
-                        return $query->where('status', $status);
-                    })
-                    ->when($request->payment_status, function ($query, $payment_status) {
-                        return $query->where('payment_status', $payment_status);
-                    })
-                    ->latest()
-                    ->paginate($request->per_page ?? 15)
-            );
+        $orders = Cache::remember($cacheKey, now()->addHours(self::CACHE_TTL), function () use ($request) {
+            return Order::with(['items.product', 'user'])
+                ->when($request->status, fn($query, $status) => $query->where('status', $status))
+                ->when($request->payment_status, fn($query, $payment_status) => $query->where('payment_status', $payment_status))
+                ->latest()
+                ->paginate($request->per_page ?? 10);
         });
+
+        return OrderResource::collection($orders);
     }
 
 
@@ -93,10 +90,7 @@ class OrderController extends Controller
             DB::commit();
 
             $this->clearOrderCaches($userId);
-            return response()->json([
-                'message' => 'Order created successfully.',
-                'order' => $order->fresh()->load('items.product'),
-            ], 201);
+            return new OrderResource($order->fresh()->load('items.product'));
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['message' => $e->getMessage()], 422);
@@ -108,9 +102,11 @@ class OrderController extends Controller
     {
         $cacheKey = "order_{$order->id}";
 
-        return Cache::remember($cacheKey, now()->addHours(self::CACHE_TTL), function () use ($order) {
-            return response()->json($order->load(['items.product', 'user']));
+        $cachedOrder = Cache::remember($cacheKey, now()->addHours(self::CACHE_TTL), function () use ($order) {
+            return $order->load(['items.product', 'user']);
         });
+
+        return new OrderResource($cachedOrder);
     }
 
     public function update(Request $request, Order $order)
@@ -166,10 +162,7 @@ class OrderController extends Controller
         $this->clearOrderCaches($order->user_id);
         Cache::forget("order_{$order->id}");
 
-        return response()->json([
-            'message' => 'Order updated successfully.',
-            'order' => $order->fresh()->load('items.product'),
-        ]);
+        return new OrderResource($order->fresh()->load('items.product'));
     }
 
 

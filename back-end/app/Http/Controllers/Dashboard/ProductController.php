@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -15,17 +16,12 @@ class ProductController extends Controller
         $cacheKey = 'products_' . ($request->category_id ?? 'all') . '_page_' . ($request->get('page', 1));
 
         $products = Cache::remember($cacheKey, now()->addHours(24), function () use ($request) {
-            $products = Product::with(['category', 'media'])
+            return Product::with(['category', 'media'])
                 ->when($request->category_id, fn($q) => $q->byCategory($request->category_id))
                 ->paginate(10);
-
-            return serialize($products);
         });
 
-
-        $products = unserialize($products);
-
-        return response()->json($products);
+        return ProductResource::collection($products);
     }
 
 
@@ -53,10 +49,9 @@ class ProductController extends Controller
                     ->toMediaCollection('product_image');
 
             }
-            Log::info('Product Image URL:', ['url' => $product->image_url]);
             $this->clearProductCaches($product->category_id);
 
-            return response()->json($product->load(['category', 'media']), 201);
+            return new ProductResource($product->load(['category', 'media']));
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -68,14 +63,10 @@ class ProductController extends Controller
 
 
         $productData = Cache::remember($cacheKey, now()->addHours(24), function () use ($product) {
-            $productData = $product->load(['category', 'media']);
-            return serialize($productData);
+            return $product->load(['category', 'media']);
         });
 
-
-        $productData = unserialize($productData);
-
-        return response()->json($productData);
+        return new ProductResource($productData);
     }
 
     public function update(Request $request, Product $product)
@@ -113,7 +104,7 @@ class ProductController extends Controller
             }
             Cache::forget('product_' . $product->id);
 
-            return response()->json($product->load(['category', 'media']));
+            return new ProductResource($product->load(['category', 'media']));
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
