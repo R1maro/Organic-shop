@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\InvoiceResource;
 use App\Models\Invoice;
 use App\Models\Order;
 use Illuminate\Http\Request;
@@ -23,16 +24,14 @@ class InvoiceController extends Controller
             $request->per_page ?? 15
         );
 
-        return Cache::remember($cacheKey, now()->addHours(self::CACHE_TTL), function () use ($request) {
-            return response()->json(
-                Invoice::with(['order', 'user'])
-                    ->when($request->status, function ($query, $status) {
-                        return $query->where('status', $status);
-                    })
-                    ->latest()
-                    ->paginate($request->per_page ?? 15)
-            );
+        $invoices = Cache::remember($cacheKey, now()->addHours(self::CACHE_TTL), function () use ($request) {
+            return Invoice::with(['order', 'user'])
+                ->when($request->status, fn($query, $status) => $query->where('status', $status))
+                ->latest()
+                ->paginate($request->per_page ?? 15);
         });
+
+        return InvoiceResource::collection($invoices);
     }
 
     public function store(Request $request, Order $order)
@@ -81,10 +80,7 @@ class InvoiceController extends Controller
 
             $this->clearInvoiceCaches($order->user_id);
 
-            return response()->json([
-                'message' => 'Invoice created successfully.',
-                'invoice' => $invoice->fresh()->load('order.items'),
-            ], 201);
+            return new InvoiceResource($invoice->load('order.items'));
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -96,9 +92,11 @@ class InvoiceController extends Controller
     {
         $cacheKey = "invoice_{$invoice->id}";
 
-        return Cache::remember($cacheKey, now()->addHours(self::CACHE_TTL), function () use ($invoice) {
-            return response()->json($invoice->load(['order.items.product', 'user']));
+        $invoiceData = Cache::remember($cacheKey, now()->addHours(self::CACHE_TTL), function () use ($invoice) {
+            return $invoice->load(['order.items.product', 'user']);
         });
+
+        return new InvoiceResource($invoiceData);
     }
 
     public function update(Request $request, Invoice $invoice)
@@ -144,10 +142,7 @@ class InvoiceController extends Controller
         $this->clearInvoiceCaches($invoice->user_id);
         Cache::forget("invoice_{$invoice->id}");
 
-        return response()->json([
-            'message' => 'Invoice updated successfully.',
-            'invoice' => $invoice->fresh()->load('order.items'),
-        ]);
+        return new InvoiceResource($invoice->fresh()->load('order.items'));
     }
 
     public function destroy(Invoice $invoice)
@@ -169,14 +164,14 @@ class InvoiceController extends Controller
         $page = $request->get('page', 1);
         $cacheKey = "user_invoices_{$userId}_page_{$page}";
 
-        return Cache::remember($cacheKey, now()->addHours(self::CACHE_TTL), function () use ($userId, $request) {
-            return response()->json(
-                Invoice::with(['order'])
-                    ->where('user_id', $userId)
-                    ->latest()
-                    ->paginate($request->per_page ?? 15)
-            );
+        $invoices = Cache::remember($cacheKey, now()->addHours(self::CACHE_TTL), function () use ($userId, $request) {
+            return Invoice::with(['order'])
+                ->where('user_id', $userId)
+                ->latest()
+                ->paginate($request->per_page ?? 15);
         });
+
+        return InvoiceResource::collection($invoices);
     }
 
     private function clearInvoiceCaches($userId = null)
