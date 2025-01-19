@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ProductSelect from "@/components/Orders/ProductSelect";
 import UserSelect from "@/components/Orders/UserSelect";
-import { Order, OrderItem } from '@/types/order';
+import {Order, OrderItem, OrderItemCreate} from '@/types/order';
 import config from "@/config/config";
 
 interface OrderFormProps {
@@ -14,13 +14,17 @@ interface OrderFormProps {
 export default function OrderForm({ initialData }: OrderFormProps) {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [userId, setUserId] = useState<number>(initialData?.user_id || 0);
+    const [userId, setUserId] = useState<number>(
+        initialData?.user_id || initialData?.user?.id || 0
+    );
 
-    const [orderItems, setOrderItems] = useState<OrderItem[]>(
+
+
+    const [orderItems, setOrderItems] = useState<(OrderItem | OrderItemCreate)[]>(
         initialData?.items
             ? initialData.items.map(item => ({
                 id: item.id,
-                product_id: item.product_id,
+                product_id: item.product?.id || 0,
                 quantity: item.quantity,
                 unit_price: item.unit_price,
                 subtotal: item.subtotal,
@@ -28,6 +32,9 @@ export default function OrderForm({ initialData }: OrderFormProps) {
             }))
             : [{ product_id: 0, quantity: 1 }]
     );
+
+
+
 
 
     const [notes, setNotes] = useState(initialData?.notes || '');

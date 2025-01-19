@@ -48,7 +48,7 @@ export default function OrderFilters({
 
             <button
                 onClick={handleFilter}
-                className="inline-flex items-center justify-center gap-2.5 rounded-md bg-primary py-4 px-10 text-center font-medium text-white hover:bg-opacity-90"
+                className="inline-flex items-center justify-center gap-2.5 rounded-md bg-primary py-3 px-10 text-center font-medium text-white hover:bg-opacity-90"
             >
                 Apply Filters
             </button>
