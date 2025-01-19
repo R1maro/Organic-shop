@@ -1,29 +1,7 @@
 import config from "@/config/config";
 import Link from "next/link";
-
-interface Category {
-    id: number;
-    name: string;
-    slug: string;
-    description: string;
-    status: number;
-    parent_id?: number;
-    parent: {
-        id: number;
-        name: string;
-    } | null;
-    children: Category[];
-    created_at: string;
-    updated_at: string;
-}
-
-interface CategoriesResponse {
-    data: Category[];
-    current_page: number;
-    last_page: number;
-    per_page: number;
-    total: number;
-}
+import Pagination from "@/components/Pagination/Pagination";
+import { CategoriesResponse} from "@/types/category";
 
 async function getCategories(page: number = 1) {
     const url = new URL(`${config.API_URL}/admin/categories`);
@@ -46,7 +24,6 @@ async function getCategories(page: number = 1) {
 async function CategoryList({page = 1}: { page?: number }) {
 
     const categories = await getCategories(page);
-
 
 
     return (
@@ -150,40 +127,13 @@ async function CategoryList({page = 1}: { page?: number }) {
                     </table>
                 </div>
 
-                <div
-                    className="flex items-center justify-between border-t border-gray-200 dark:border-meta-5 bg-white dark:bg-meta-4 px-4 py-3 sm:px-6 mt-4">
-                    <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-                        <div>
-                            <p className="text-sm text-gray-700 dark:text-white">
-                                Showing{' '}
-                                <span className="font-medium">
-                                    {(categories.current_page - 1) * categories.per_page + 1}
-                                </span>{' '}
-                                to{' '}
-                                <span className="font-medium">
-                                    {Math.min(categories.current_page * categories.per_page, categories.total)}
-                                </span>{' '}
-                                of{' '}
-                                <span className="font-medium">{categories.total}</span> results
-                            </p>
-                        </div>
-                        <div className="flex gap-2">
-                            {Array.from({length: categories.last_page}, (_, i) => i + 1).map((pageNum) => (
-                                <Link
-                                    key={pageNum}
-                                    href={`/dashboard/categories?page=${pageNum}`}
-                                    className={`px-3 py-1 rounded-md ${
-                                        categories.current_page === pageNum
-                                            ? 'bg-primary text-white'
-                                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                                    }`}
-                                >
-                                    {pageNum}
-                                </Link>
-                            ))}
-                        </div>
-                    </div>
-                </div>
+                <Pagination
+                    currentPage={categories.meta.current_page}
+                    totalItems={categories.meta.total}
+                    itemsPerPage={categories.meta.per_page}
+                    baseUrl="/dashboard/categories"
+                    showItemCount={true}
+                />
             </div>
         </div>
     );
