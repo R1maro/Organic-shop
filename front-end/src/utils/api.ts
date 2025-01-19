@@ -63,5 +63,6 @@ export async function getOrder(id: number) {
         throw new Error('Failed to fetch order');
     }
 
-    return res.json();
+    const response = await res.json();
+    return response.data;
 }
