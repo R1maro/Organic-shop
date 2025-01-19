@@ -2,27 +2,8 @@
 'use client';
 import { useState } from 'react';
 import config from "@/config/config";
+import {ProductFormProps} from "@/types/product";
 
-interface Category {
-    id: number;
-    name: string;
-}
-
-interface ProductFormProps {
-    categories: Category[];
-    action: (formData: FormData) => Promise<void>;
-    initialData?: {
-        name?: string;
-        description?: string;
-        price?: number;
-        discount?: number;
-        quantity?: number;
-        sku?: string;
-        category_id?: number;
-        status?: boolean;
-        image_url?: string;
-    };
-}
 
 export default function ProductForm({ categories, action, initialData }: ProductFormProps) {
     const [previewImage, setPreviewImage] = useState<string | null>(

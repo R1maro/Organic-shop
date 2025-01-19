@@ -12,6 +12,13 @@ export const metadata: Metadata = {
     description: 'User management page',
 };
 
+function Loader() {
+    return (
+        <div className="flex items-center justify-center min-h-[400px]">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+    );
+}
 
 export default async function UsersPage({searchParams,}: {
     searchParams: { search?: string; page?: string };
@@ -37,7 +44,7 @@ export default async function UsersPage({searchParams,}: {
                     </Suspense>
                 </div>
 
-                <Suspense fallback={<div>Loading users...</div>}>
+                <Suspense fallback={<Loader/>}>
                     <UserList users={users} search={search}/>
                 </Suspense>
             </div>
