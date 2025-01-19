@@ -5,15 +5,20 @@ export interface OrderItem {
     id?: number;
     product_id: number;
     quantity: number;
-    unit_price?: number;
-    subtotal?: number;
-    product?: Product;
+    unit_price: number;
+    subtotal: number;
+    product: Product;
+}
+export interface OrderItemCreate {
+    product_id: number;
+    quantity: number;
 }
 
 export interface Order {
     id: number;
     order_number: string;
     user_id: number;
+    invoice_id:number;
     total_price: number;
     status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
     payment_status: 'pending' | 'paid' | 'failed' | 'refunded';
