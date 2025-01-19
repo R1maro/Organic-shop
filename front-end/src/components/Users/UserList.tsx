@@ -1,40 +1,9 @@
 import Link from "next/link";
-import Pagination from "@/components/Users/Pagination";
+import Pagination from "@/components/Pagination/Pagination";
+import {User , UsersResponse } from '@/types/user'
 
-interface User {
-    id: number;
-    name: string;
-    email: string;
-    phone: string;
-    address: string;
-    is_admin: boolean;
-    created_at: string;
-    updated_at: string;
-}
 
-interface UsersResponse {
-    data: User[];
-    links: {
-        first: string;
-        last: string;
-        prev: string | null;
-        next: string | null;
-    };
-    meta: {
-        current_page: number;
-        from: number;
-        last_page: number;
-        path: string;
-        per_page: number;
-        to: number;
-        total: number;
-    };
-}
-
-export default function UserList({
-                                     users,
-                                     search
-                                 }: {
+export default function UserList({users, search}: {
     users: UsersResponse;
     search: string;
 }) {
@@ -128,7 +97,14 @@ export default function UserList({
                 </table>
             </div>
 
-            <Pagination meta={users.meta} search={search}/>
+            <Pagination
+                currentPage={users.meta.current_page}
+                totalItems={users.meta.total}
+                itemsPerPage={users.meta.per_page}
+                baseUrl="/dashboard/users"
+                searchParams={search ? { search } : {}}
+                showItemCount={true}
+            />
         </div>
     );
 }

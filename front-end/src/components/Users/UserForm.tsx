@@ -1,14 +1,6 @@
 'use client';
 
-interface User {
-    id: number;
-    name: string;
-    email: string;
-    password:string;
-    phone: string;
-    address: string;
-    is_admin: boolean;
-}
+import {User} from "@/types/user";
 
 interface UserFormProps {
     action: (formData: FormData) => Promise<void>;
@@ -16,7 +8,6 @@ interface UserFormProps {
 }
 
 export default function UserForm({ action, initialData }: UserFormProps) {
-    console.log(initialData)
     return (
         <form action={action}>
             <div className="space-y-6">

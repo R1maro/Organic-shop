@@ -1,35 +1,8 @@
 import config from "@/config/config";
 import Link from "next/link";
+import Pagination from "@/components/Pagination/Pagination";
+import {ProductsResponse} from "@/types/product";
 
-
-interface Product {
-    id: number;
-    name: string;
-    slug: string;
-    description: string;
-    price: number;
-    discount: number;
-    final_price: number;
-    quantity: number;
-    sku: string;
-    status: number;
-    category_id: number;
-    formatted_price: string;
-    formatted_final_price: string;
-    image_url: string;
-    category: {
-        id: number;
-        name: string;
-    };
-}
-
-interface ProductsResponse {
-    data: Product[];
-    current_page: number;
-    last_page: number;
-    per_page: number;
-    total: number;
-}
 
 // Server Component
 async function getProducts(page: number = 1, categoryId?: string) {
@@ -73,7 +46,8 @@ async function ProductList({page = 1, categoryId,}: {
                 </Link>
             </div>
 
-            <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+            <div
+                className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
                 <div className="max-w-full overflow-x-auto">
                     <table className="w-full table-auto">
                         <thead>
@@ -176,61 +150,20 @@ async function ProductList({page = 1, categoryId,}: {
                     </table>
                 </div>
 
-                <div className="flex items-center justify-between border-t border-gray-200 dark:border-meta-5 bg-white dark:bg-meta-4 px-4 py-3 sm:px-6 mt-4">
-                    <div className="flex flex-1 justify-between sm:hidden">
-                        <Link
-                            href={`/dashboard/products?page=${products.current_page - 1}${categoryId ? `&category_id=${categoryId}` : ''}`}
-                            className={`relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 ${
-                                products.current_page === 1 ? 'pointer-events-none opacity-50' : ''
-                            }`}
-                        >
-                            Previous
-                        </Link>
-                        <Link
-                            href={`/dashboard/products?page=${products.current_page + 1}${categoryId ? `&category_id=${categoryId}` : ''}`}
-                            className={`relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 ${
-                                products.current_page === products.last_page ? 'pointer-events-none opacity-50' : ''
-                            }`}
-                        >
-                            Next
-                        </Link>
-                    </div>
 
-                    <div className="hidden sm:flex sm:flex-1  sm:items-center sm:justify-between">
-                        <div>
-                            <p className="text-sm text-gray-700 dark:text-white">
-                                Showing{' '}
-                                <span className="font-medium">
-                  {(products.current_page - 1) * products.per_page + 1}
-                </span>{' '}
-                                to{' '}
-                                <span className="font-medium">
-                  {Math.min(products.current_page * products.per_page, products.total)}
-                </span>{' '}
-                                of{' '}
-                                <span className="font-medium">{products.total}</span> results
-                            </p>
-                        </div>
-                        <div className="flex gap-2">
-                            {Array.from({ length: products.last_page }, (_, i) => i + 1).map((pageNum) => (
-                                <Link
-                                    key={pageNum}
-                                    href={`/dashboard/products?page=${pageNum}${categoryId ? `&category_id=${categoryId}` : ''}`}
-                                    className={`px-3 py-1 rounded-md ${
-                                        products.current_page === pageNum
-                                            ? 'bg-primary text-white'
-                                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                                    }`}
-                                >
-                                    {pageNum}
-                                </Link>
-                            ))}
-                        </div>
-                    </div>
-                </div>
+                <Pagination
+                    currentPage={products.meta.current_page}
+                    totalItems={products.meta.total}
+                    itemsPerPage={products.meta.per_page}
+                    baseUrl="/dashboard/products"
+                    searchParams={categoryId ? {category_id: categoryId} : {}}
+                    showItemCount={true}
+                    className="sm:flex sm:flex-1 sm:items-center sm:justify-between"
+                />
             </div>
         </div>
     );
 
 }
+
 export default ProductList;
