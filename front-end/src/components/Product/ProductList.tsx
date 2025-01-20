@@ -1,32 +1,10 @@
 import config from "@/config/config";
 import Link from "next/link";
 import Pagination from "@/components/Pagination/Pagination";
-import {ProductsResponse} from "@/types/product";
+import {getProducts} from '@/utils/api'
 
 
-// Server Component
-async function getProducts(page: number = 1, categoryId?: string) {
 
-    const url = new URL(`${config.API_URL}/admin/products`);
-
-    url.searchParams.append('page', page.toString());
-    if (categoryId) {
-        url.searchParams.append('category_id', categoryId);
-    }
-
-    const res = await fetch(url, {
-        cache: 'no-store', //
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    });
-
-    if (!res.ok) {
-        throw new Error('Failed to fetch products');
-    }
-
-    return res.json() as Promise<ProductsResponse>;
-}
 
 async function ProductList({page = 1, categoryId,}: {
     page?: number;
