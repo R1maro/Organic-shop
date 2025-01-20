@@ -66,3 +66,63 @@ export async function getOrder(id: number) {
     const response = await res.json();
     return response.data;
 }
+
+export async function getInvoices({page = 1, per_page = 10, status,}: {
+    page?: number;
+    per_page?: number;
+    status?: string;
+}) {
+    const url = new URL(`${config.API_URL}/admin/invoices`);
+    url.searchParams.append('page', page.toString());
+    url.searchParams.append('per_page', per_page.toString());
+
+    if (status) url.searchParams.append('status', status);
+
+    const res = await fetch(url, {
+        cache: 'no-store',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+
+    if (!res.ok) {
+        throw new Error('Failed to fetch invoices');
+    }
+
+    return res.json();
+}
+
+export async function getInvoice(id: number) {
+    const res = await fetch(`${config.API_URL}/admin/invoices/${id}`, {
+        cache: 'no-store',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+
+    if (!res.ok) {
+        throw new Error('Failed to fetch invoice');
+    }
+
+    const response = await res.json();
+    return response.data;
+}
+
+export async function getUserInvoices(userId: number, page = 1, per_page = 15) {
+    const url = new URL(`${config.API_URL}/admin/users/${userId}/invoices`);
+    url.searchParams.append('page', page.toString());
+    url.searchParams.append('per_page', per_page.toString());
+
+    const res = await fetch(url, {
+        cache: 'no-store',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+
+    if (!res.ok) {
+        throw new Error('Failed to fetch user invoices');
+    }
+
+    return res.json();
+}
