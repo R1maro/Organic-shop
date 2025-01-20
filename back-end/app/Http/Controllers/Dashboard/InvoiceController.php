@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Validator;
 
 class InvoiceController extends Controller
 {
-    private const CACHE_TTL = 24; // hours
+    private const CACHE_TTL = 1; // hours
 
     public function index(Request $request)
     {
@@ -70,7 +70,6 @@ class InvoiceController extends Controller
                 'shipping_address' => $request->shipping_address,
                 'billing_address' => $request->billing_address,
                 'shipping_cost' => $shipping_cost,
-                'total' => $subtotal + $tax + $shipping_cost,
                 'due_date' => $request->due_date,
                 'notes' => $request->notes,
                 'payment_method' => $request->payment_method,
@@ -115,36 +114,69 @@ class InvoiceController extends Controller
             return response()->json(['error' => $validator->errors()], 422);
         }
 
-        $updateData = $request->only([
-            'status',
+        try {
+            DB::beginTransaction();
 
-            'shipping_address',
-            'billing_address',
+            if ($request->has('order_id') && $request->order_id != $invoice->order_id) {
+                $order = Order::findOrFail($request->order_id);
 
-            'payment_method',
-            'due_date',
-            'notes'
-        ]);
+                $subtotal = $order->items->sum(function ($item) {
+                    return $item->quantity * $item->unit_price;
+                });
 
-        $invoice->update($updateData);
+                $tax = $subtotal * 0.09;
 
-        if ($request->status === 'paid') {
-            $invoice->markAsPaid();
-            $invoice->order->markAsPaid();
+                $updateData = $request->only([
+                    'status',
+                    'shipping_address',
+                    'billing_address',
+                    'payment_method',
+                    'due_date',
+                    'notes',
+                    'order_id'
+                ]);
+
+                $updateData = array_merge($updateData, [
+                    'user_id' => $order->user_id,
+                    'subtotal' => $subtotal,
+                    'tax' => $tax,
+                ]);
+            } else {
+                $updateData = $request->only([
+                    'status',
+                    'shipping_address',
+                    'billing_address',
+                    'payment_method',
+                    'due_date',
+                    'notes'
+                ]);
+            }
+
+            $oldUserId = $invoice->user_id;
+            $invoice->update($updateData);
+
+            if ($request->status === 'paid') {
+                $invoice->markAsPaid();
+                $invoice->order->markAsPaid();
+            }
+
+            if ($request->status == 'delivered') {
+                $invoice->markAsDelivered();
+            }
+
+            $this->clearInvoiceCaches($oldUserId);
+            $this->clearInvoiceCaches($invoice->user_id);
+            Cache::forget("invoice_{$invoice->id}");
+
+            DB::commit();
+
+            return new InvoiceResource($invoice->fresh()->load('order.items'));
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => $e->getMessage()], 422);
         }
-
-
-        if ($request->status == 'delivered') {
-            $invoice->markAsDelivered();
-        }
-
-
-        $this->clearInvoiceCaches($invoice->user_id);
-        Cache::forget("invoice_{$invoice->id}");
-
-        return new InvoiceResource($invoice->fresh()->load('order.items'));
     }
-
     public function destroy(Invoice $invoice)
     {
         $userId = $invoice->user_id;
@@ -174,7 +206,7 @@ class InvoiceController extends Controller
         return InvoiceResource::collection($invoices);
     }
 
-    private function clearInvoiceCaches($userId = null)
+    public function clearInvoiceCaches($userId = null)
     {
         // Clear main listing cache for first 5 pages
         for ($page = 1; $page <= 5; $page++) {
@@ -191,7 +223,9 @@ class InvoiceController extends Controller
 
         // Clear user-specific caches
         if ($userId) {
-            Cache::forget("user_invoices_{$userId}_page_1");
+            for ($page = 1; $page <= 5; $page++) {
+                Cache::forget("user_invoices_{$userId}_page_{$page}");
+            }
         }
     }
 }
