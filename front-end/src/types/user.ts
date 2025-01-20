@@ -5,8 +5,6 @@ export interface User {
     phone: string;
     address: string;
     is_admin: boolean;
-    created_at: string;
-    updated_at: string;
 }
 
 export interface UsersResponse {
