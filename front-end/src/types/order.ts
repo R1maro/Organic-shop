@@ -7,6 +7,8 @@ export interface OrderItem {
     quantity: number;
     unit_price: number;
     subtotal: number;
+    formatted_unit_price:string;
+    formatted_subtotal:string;
     product: Product;
 }
 export interface OrderItemCreate {
@@ -19,7 +21,7 @@ export interface Order {
     order_number: string;
     user_id: number;
     invoice_id:number;
-    total_price: number;
+    formatted_total_price:string;
     status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
     payment_status: 'pending' | 'paid' | 'failed' | 'refunded';
     notes: string;

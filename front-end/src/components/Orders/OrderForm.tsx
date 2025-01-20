@@ -50,7 +50,7 @@ export default function OrderForm({ initialData }: OrderFormProps) {
         setIsSubmitting(true);
 
         try {
-            if (!userId) {
+            if (!userId || userId === 0) {
                 throw new Error('Please select a user');
             }
             const endpoint = initialData
@@ -61,16 +61,17 @@ export default function OrderForm({ initialData }: OrderFormProps) {
 
             // Only send necessary data to the API
             const orderItemsData = orderItems
-                .filter(item => item.product_id !== 0) // Filter out unselected products
+                .filter(item => item.product_id !== 0)
                 .map(item => ({
                     product_id: item.product_id,
                     quantity: item.quantity
                 }));
 
-            // Validate order items before submission
             if (orderItemsData.length === 0) {
                 throw new Error('Please add at least one product to the order');
             }
+
+
 
             const response = await fetch(endpoint, {
                 method,
@@ -87,6 +88,7 @@ export default function OrderForm({ initialData }: OrderFormProps) {
                     payment_status: paymentStatus,
                 }),
             });
+
 
             if (!response.ok) {
                 // Try to parse error message from response

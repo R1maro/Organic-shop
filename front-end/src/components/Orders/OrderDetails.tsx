@@ -12,8 +12,7 @@ interface OrderDetailsProps {
 export default function OrderDetails({ order }: OrderDetailsProps) {
     const items = order.items || [];
     const subtotal = items.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0);
-    const tax = subtotal * 0.09;
-    const total = order.total_price;
+    const total = order.formatted_total_price;
 
     return (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
@@ -59,13 +58,13 @@ export default function OrderDetails({ order }: OrderDetailsProps) {
                                     </Link>
                                 </td>
                                 <td className="border-b border-[#eee] text-center py-5 px-4 dark:border-strokedark">
-                                    ${item.unit_price}
+                                   {item.formatted_unit_price}
                                 </td>
                                 <td className="border-b border-[#eee] text-center py-5 px-4 dark:border-strokedark">
                                     {item.quantity}
                                 </td>
                                 <td className="border-b border-[#eee] text-center py-5 px-4 dark:border-strokedark">
-                                    ${(item.quantity * item.unit_price)}
+                                    {item.formatted_subtotal}
                                 </td>
                             </tr>
                         ))}
@@ -79,14 +78,10 @@ export default function OrderDetails({ order }: OrderDetailsProps) {
                         <span className="font-medium">Subtotal:</span>
                         <span>${subtotal}</span>
                     </div>
-                    <div className="flex w-full justify-between sm:w-1/2">
-                        <span className="font-medium">Tax (9%):</span>
-                        <span>${tax}</span>
-                    </div>
                     <div className="flex w-full justify-between border-t border-stroke pt-3 sm:w-1/2">
                         <span className="text-lg font-semibold">Total:</span>
                         <span className="text-lg font-semibold text-primary">
-                            ${total}
+                            {total}
                         </span>
                     </div>
                 </div>
