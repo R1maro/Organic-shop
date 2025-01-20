@@ -28,7 +28,7 @@ class Product extends Model implements HasMedia
         'category_id',
     ];
 
-    protected $appends = ['formatted_price' , 'formatted_final_price' , 'image_url'];
+    protected $appends = ['formatted_price', 'formatted_final_price', 'image_url'];
 
     protected static function boot()
     {
@@ -47,6 +47,7 @@ class Product extends Model implements HasMedia
             }
         });
     }
+
     private function calculateFinalPrice()
     {
         return max(0, $this->price - $this->discount);
@@ -59,6 +60,7 @@ class Product extends Model implements HasMedia
             ->height(80)
             ->sharpen(5)
             ->nonQueued();
+
 
     }
 
@@ -84,10 +86,11 @@ class Product extends Model implements HasMedia
 
     public function getFormattedPriceAttribute()
     {
-        return "$ ".number_format($this->price, 0, '.', ',');
+        return "$ " . number_format($this->price, 0, '.', ',');
     }
+
     public function getFormattedFinalPriceAttribute()
     {
-        return "$ ".number_format($this->final_price, 0, '.', ',');
+        return "$ " . number_format($this->final_price, 0, '.', ',');
     }
 }
