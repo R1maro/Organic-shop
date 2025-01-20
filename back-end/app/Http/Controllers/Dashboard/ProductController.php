@@ -80,7 +80,7 @@ class ProductController extends Controller
                 'discount' => 'nullable|numeric|min:0',
                 'quantity' => 'sometimes|integer|min:0',
                 'sku' => 'sometimes|string|max:255|unique:products,sku,' . $product->id,
-                'image' => 'nullable|image|max:2048',
+                'image' => 'sometimes|nullable|image|max:2048',
                 'category_id' => 'sometimes|exists:categories,id',
                 'status' => 'boolean',
             ]);
