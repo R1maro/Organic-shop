@@ -1,4 +1,3 @@
-// app/dashboard/categories/page.tsx
 import CategoryList from '@/components/Categories/CategoryList';
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import {Metadata} from 'next';

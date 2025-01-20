@@ -1,25 +1,7 @@
-import config from "@/config/config";
 import Link from "next/link";
 import Pagination from "@/components/Pagination/Pagination";
-import { CategoriesResponse} from "@/types/category";
+import { getCategories} from "@/utils/api";
 
-async function getCategories(page: number = 1) {
-    const url = new URL(`${config.API_URL}/admin/categories`);
-    url.searchParams.append('page', page.toString());
-
-    const res = await fetch(url, {
-        cache: 'no-store',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    });
-
-    if (!res.ok) {
-        throw new Error('Failed to fetch categories');
-    }
-
-    return res.json() as Promise<CategoriesResponse>;
-}
 
 async function CategoryList({page = 1}: { page?: number }) {
 

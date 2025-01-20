@@ -1,96 +1,31 @@
-// app/dashboard/categories/edit/[id]/page.tsx
-import {redirect} from 'next/navigation';
-import {revalidatePath} from 'next/cache';
-import {cookies} from 'next/headers';
+import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
+import { cookies } from 'next/headers';
 import CategoryForm from '@/components/Categories/CategoryForm';
-import config from "@/config/config";
+import {apiUpdateCategory, getCategories, getCategory} from "@/utils/api";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import {Metadata} from "next";
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
     title: 'Edit Category | TailAdmin Next.js',
     description: 'Edit category page',
 };
 
-type Category = {
-    id: string;
-    name: string;
-    description: string;
-    status: boolean;
-    parent_id:number;
-};
-
-async function getCategory(id: string): Promise<Category> {
-    const cookieStore = cookies();
-    const csrfToken = cookieStore.get('XSRF-TOKEN')?.value;
-
-    const res = await fetch(`${config.API_URL}/admin/categories/${id}`, {
-        headers: {
-            'X-XSRF-TOKEN': csrfToken || '',
-            'Accept': 'application/json',
-        },
-        credentials: 'include',
-        cache: 'no-store',
-    });
-
-    if (!res.ok) {
-        throw new Error('Failed to fetch category');
-    }
-
-    return res.json();
-}
-async function getCategories(currentId: string) {
-    const res = await fetch(`${config.API_URL}/admin/categories`, {
-        cache: 'no-store',
-    });
-
-    if (!res.ok) throw new Error('Failed to fetch categories');
-    const response = await res.json();
-    // Filter out the current category and its children to prevent invalid parent selection
-    return (response.data || []).filter((category: Category) =>
-        category.id.toString() !== currentId &&
-        category.parent_id?.toString() !== currentId
-    );
-}
-
 async function updateCategory(id: string, formData: FormData) {
     'use server'
 
     const cookieStore = cookies();
-    const csrfToken = cookieStore.get('XSRF-TOKEN')?.value;
+    const csrfToken = cookieStore.get('XSRF-TOKEN')?.value || '';
 
     try {
         const data = {
-            name: formData.get('name'),
-            description: formData.get('description'),
+            name: formData.get('name')?.toString() || null,
+            description: formData.get('description')?.toString() || null,
             status: formData.get('status') !== null ? 1 : 0,
-            parent_id: formData.get('parent_id') || null,
+            parent_id: formData.get('parent_id')?.toString() || null,
         };
 
-        const form = new FormData();
-        form.append('_method', 'PUT');
-
-        Object.entries(data).forEach(([key, value]) => {
-            if (value !== null && value !== undefined) {
-                form.append(key, value.toString());
-            }
-        });
-
-        const response = await fetch(`${config.API_URL}/admin/categories/${id}`, {
-            method: 'POST',
-            headers: {
-                'X-XSRF-TOKEN': csrfToken || '',
-                'Accept': 'application/json',
-            },
-            body: form,
-            credentials: 'include',
-        });
-
-        const responseData = await response.json();
-
-        if (!response.ok) {
-            throw new Error(responseData.error || 'Failed to update category');
-        }
+        await apiUpdateCategory(id, data, csrfToken);
 
         revalidatePath('/dashboard/categories');
         redirect('/dashboard/categories');
@@ -101,14 +36,28 @@ async function updateCategory(id: string, formData: FormData) {
 }
 
 export default async function EditCategoryPage({
-                                                   params: {id},
+                                                   params: { id },
                                                }: {
     params: { id: string };
 }) {
-    const [category, categories] = await Promise.all([
+    const [category, categoriesResponse] = await Promise.all([
         getCategory(id),
-        getCategories(id),
+        getCategories(),
     ]);
+
+
+    const formCategories = categoriesResponse.data.filter(cat =>
+        cat.id.toString() !== id &&
+        cat.parent_id?.toString() !== id
+    );
+
+    const initialFormData = {
+        name: category.data.name,
+        description: category.data.description,
+        status: Boolean(category.data.status),
+        parent_id: category.data.parent?.id
+    };
+
     const updateCategoryWithId = updateCategory.bind(null, id);
 
     return (
@@ -116,9 +65,9 @@ export default async function EditCategoryPage({
             <div className="min-h-screen max-w-5xl mx-auto p-6 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
                 <h1 className="text-2xl font-bold mb-6">Edit Category</h1>
                 <CategoryForm
-                    categories={categories}
+                    categories={formCategories}
                     action={updateCategoryWithId}
-                    initialData={category}
+                    initialData={initialFormData}
                 />
             </div>
         </DefaultLayout>
