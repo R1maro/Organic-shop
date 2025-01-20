@@ -1,25 +1,15 @@
 'use client';
 
-interface Category {
-    id: number;
-    name: string;
-    slug: string;
-    description: string;
-    status: number;
-    parent?: {
-        id: number;
-        name: string;
-    };
-    parent_id?: number;
-}
+import { CategoryFormData } from '@/types/category';
+
 interface CategoryFormProps {
-    categories: Category[];
+    categories: CategoryFormData[];
     action: (formData: FormData) => Promise<void>;
     initialData?: {
         name?: string;
         description?: string;
         status?: boolean;
-        parent_id?: number;
+        parent_id?: number | null;
     };
 }
 
@@ -79,7 +69,7 @@ export default function CategoryForm({categories, action, initialData }: Categor
                     <select
                         id="parent_id"
                         name="parent_id"
-                        defaultValue={initialData?.parent_id || ''}
+                        defaultValue={initialData?.parent_id?.toString() || ''}
                         className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                     >
                         <option value="">None (Top Level Category)</option>

@@ -1,10 +1,9 @@
-// app/dashboard/categories/create/page.tsx
 import {redirect} from 'next/navigation';
 import {revalidatePath} from 'next/cache';
 import {cookies} from 'next/headers';
 import CategoryForm from '@/components/Categories/CategoryForm';
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import config from "@/config/config";
+import {apiCreateCategory , getAllCategories} from "@/utils/api";
 import {Metadata} from "next";
 
 export const metadata: Metadata = {
@@ -12,36 +11,22 @@ export const metadata: Metadata = {
     description: 'Create new category page',
 };
 
+
 async function createCategory(formData: FormData) {
     'use server'
 
     const cookieStore = cookies();
-    const csrfToken = cookieStore.get('XSRF-TOKEN')?.value;
+    const csrfToken = cookieStore.get('XSRF-TOKEN')?.value || '';
 
     try {
         const data = {
-            name: formData.get('name'),
-            description: formData.get('description'),
+            name: formData.get('name') as string,
+            description: formData.get('description') as string,
             status: formData.get('status') !== null ? 1 : 0,
-            parent_id: formData.get('parent_id') || null,
+            parent_id: formData.get('parent_id')?.toString() || null,
         };
 
-        const response = await fetch(`${config.API_URL}/admin/categories`, {
-            method: 'POST',
-            headers: {
-                'X-XSRF-TOKEN': csrfToken || '',
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-            credentials: 'include',
-        });
-
-        const responseData = await response.json();
-
-        if (!response.ok) {
-            throw new Error(responseData.error || 'Failed to create category');
-        }
+        await apiCreateCategory(data, csrfToken);
 
         revalidatePath('/dashboard/categories');
         redirect('/dashboard/categories');
@@ -50,18 +35,8 @@ async function createCategory(formData: FormData) {
         throw error;
     }
 }
-async function getCategories() {
-    const res = await fetch(`${config.API_URL}/admin/categories`, {
-        cache: 'no-store',
-    });
-
-    if (!res.ok) throw new Error('Failed to fetch categories');
-    const response = await res.json();
-    return response.data || [];
-}
-
 export default async function CreateCategoryPage() {
-    const categories = await getCategories();
+    const categories = await getAllCategories();
     return (
         <DefaultLayout>
             <div className="min-h-screen max-w-5xl mx-auto p-6 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">

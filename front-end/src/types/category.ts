@@ -5,7 +5,7 @@ export interface Category {
     description: string;
     status: number;
     parent_id?: number;
-    parent: {
+    parent?: {
         id: number;
         name: string;
     } | null;
@@ -14,6 +14,17 @@ export interface Category {
     updated_at: string;
 }
 
+export interface SingleCategoryResponse {
+    data: Category;
+}
+
+export interface CategoryFormData {
+    id: number;
+    name: string;
+    description: string;
+    status: number;
+    parent_id?: number | null;
+}
 export interface CategoriesResponse {
     data: Category[];
     links: {
