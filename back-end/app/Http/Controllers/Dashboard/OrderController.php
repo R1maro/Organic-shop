@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Validator;
 class OrderController extends Controller
 {
 
-    private const CACHE_TTL = 24; // hours
+    private const CACHE_TTL = 1;
 
     public function index(Request $request)
     {
@@ -45,6 +45,7 @@ class OrderController extends Controller
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|integer|min:1',
             'notes' => 'nullable|string',
+            'user_id' => 'required|exists:users,id'
         ]);
 
         if ($validator->fails()) {
@@ -68,7 +69,6 @@ class OrderController extends Controller
                     'subtotal' => $subtotal,
                 ];
             }
-
 
 
             $userId = $request->user_id ?? auth('sanctum')->id();
@@ -115,6 +115,7 @@ class OrderController extends Controller
             'status' => 'sometimes|required|in:pending,processing,shipped,delivered,cancelled',
             'payment_status' => 'sometimes|required|in:pending,paid,failed,refunded',
             'notes' => 'nullable|string',
+            'user_id' => 'sometimes|required|exists:users,id',
         ]);
 
         if ($validator->fails()) {
@@ -126,13 +127,26 @@ class OrderController extends Controller
             'status',
             'payment_status',
             'notes',
+            'user_id',
         ]);
 
 
+        $oldUserId = $order->user_id;
         $order->update($updateData);
 
 
+        if ($request->has('user_id') && $oldUserId !== $request->user_id && $order->invoice) {
+            $order->invoice()->update(['user_id' => $request->user_id]);
+        }
+
+
         if ($request->has('items')) {
+
+            foreach ($request->items as $item) {
+                if (!isset($item['product_id'], $item['quantity'])) {
+                    return response()->json(['message' => 'Invalid item data'], 422);
+                }
+            }
 
             $order->items()->delete();
 
@@ -152,6 +166,21 @@ class OrderController extends Controller
             $order->update([
                 'total_price' => $order->items()->sum('subtotal')
             ]);
+
+            if ($order->invoice) {
+                $subtotal = $order->items->sum(function ($item) {
+                    return $item->quantity * $item->unit_price;
+                });
+
+                $tax = $subtotal * 0.09;
+
+                $order->invoice()->update([
+                    'subtotal' => $subtotal,
+                    'tax' => $tax,
+                    // shipping_cost remains unchanged
+                    // total will be auto-calculated by Invoice model boot method
+                ]);
+            }
         }
 
 
@@ -159,8 +188,13 @@ class OrderController extends Controller
             $order->markAsPaid();
         }
 
+
         $this->clearOrderCaches($order->user_id);
         Cache::forget("order_{$order->id}");
+        if ($order->invoice) {
+            Cache::forget("invoice_{$order->invoice->id}");
+            app(InvoiceController::class)->clearInvoiceCaches($order->user_id);
+        }
 
         return new OrderResource($order->fresh()->load('items.product'));
     }
@@ -204,8 +238,12 @@ class OrderController extends Controller
 
 
         if ($userId) {
-            Cache::forget("user_orders_{$userId}_page_1");
+            for ($page = 1; $page <= 5; $page++) {
+                Cache::forget("user_orders_{$userId}_page_{$page}");
+            }
         }
+
+
     }
 
 }

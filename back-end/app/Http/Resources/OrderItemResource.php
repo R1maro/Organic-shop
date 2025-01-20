@@ -15,6 +15,8 @@ class OrderItemResource extends JsonResource
             'quantity' => $this->quantity,
             'unit_price' => $this->unit_price,
             'subtotal' => $this->subtotal,
+            'formatted_unit_price' => $this->formatted_unit_price,
+            'formatted_subtotal' => $this->formatted_subtotal,
         ];
     }
 }

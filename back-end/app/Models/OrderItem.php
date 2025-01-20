@@ -17,6 +17,7 @@ class OrderItem extends Model
         'subtotal',
     ];
 
+    protected $appends = [ 'formatted_unit_price', 'formatted_subtotal'];
     protected static function boot()
     {
         parent::boot();
@@ -31,5 +32,14 @@ class OrderItem extends Model
 
     public function product(){
         return $this->belongsTo(Product::class);
+    }
+
+    public function getFormattedUnitPriceAttribute()
+    {
+        return "$".number_format($this->unit_price, 0, '.', ',');
+    }
+    public function getFormattedSubTotalAttribute()
+    {
+        return "$".number_format($this->subtotal, 0, '.', ',');
     }
 }
