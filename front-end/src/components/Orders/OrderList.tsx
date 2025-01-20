@@ -48,7 +48,7 @@ export default function OrderList({ orders }: OrderListProps) {
                                 {order.user.name}
                             </td>
                             <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                ${order.total_price}
+                                {order.formatted_total_price}
                             </td>
                             <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                 <OrderStatusBadge status={order.status} />

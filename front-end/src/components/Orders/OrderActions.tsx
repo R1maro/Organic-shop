@@ -108,8 +108,8 @@ export default function OrderActions({order}: OrderActionsProps) {
             >
                 <svg
                     className="fill-current"
-                    width="18"
-                    height="18"
+                    width="20"
+                    height="20"
                     viewBox="0 0 18 18"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
@@ -153,12 +153,12 @@ export default function OrderActions({order}: OrderActionsProps) {
                 <button
                     onClick={() => handleStatusUpdate('processing')}
                     disabled={isProcessing}
-                    className="dark:text-gray-200 text-gray-700 hover:text-primary"
+                    className=" hover:text-primary"
                     title="Mark as Processing"
                 >
                     <svg className="w-6 h-6" aria-hidden="true"
                          xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1"
+                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"
                               d="M7 8v8a5 5 0 1 0 10 0V6.5a3.5 3.5 0 1 0-7 0V15a2 2 0 0 0 4 0V8"/>
                     </svg>
 
@@ -169,12 +169,12 @@ export default function OrderActions({order}: OrderActionsProps) {
                 <button
                     onClick={handleMarkAsPaid}
                     disabled={isProcessing}
-                    className="dark:text-gray-200 text-gray-700 hover:text-success"
+                    className="hover:text-success"
                     title="Mark as Paid"
                 >
                     <svg className="w-6 h-6" aria-hidden="true"
                          xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1"
+                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"
                               d="M17 8H5m12 0a1 1 0 0 1 1 1v2.6M17 8l-4-4M5 8a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.6M5 8l4-4 4 4m6 4h-4a2 2 0 1 0 0 4h4a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1Z"/>
                     </svg>
 
