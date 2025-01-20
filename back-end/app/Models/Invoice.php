@@ -34,6 +34,7 @@ class Invoice extends Model
         'delivered_at' => 'datetime',
     ];
 
+    protected $appends = ['formatted_total' , 'formatted_subtotal' , 'formatted_tax'];
 
     protected static function boot()
     {
@@ -102,6 +103,18 @@ class Invoice extends Model
         return $query->where('status', 'pending')
             ->whereNotNull('due_date')
             ->where('due_date', '<', now());
+    }
+    public function getFormattedTotalAttribute()
+    {
+        return "$".number_format($this->total, 0, '.', ',');
+    }
+    public function getFormattedTaxAttribute()
+    {
+        return "$".number_format($this->tax, 0, '.', ',');
+    }
+    public function getFormattedSubTotalAttribute()
+    {
+        return "$".number_format($this->subtotal, 0, '.', ',');
     }
 
 }
