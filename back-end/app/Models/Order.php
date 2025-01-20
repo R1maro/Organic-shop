@@ -25,6 +25,7 @@ class Order extends Model
         'delivered_at' => 'datetime',
     ];
 
+    protected $appends = ['formatted_total_price'];
     protected static function boot()
     {
         parent::boot();
@@ -44,6 +45,12 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    public function invoice()
+    {
+        return $this->hasOne(Invoice::class);
+    }
+
+
     public function markAsPaid()
     {
         $this->update([
@@ -61,6 +68,12 @@ class Order extends Model
     {
         return $query->where('payment_status', 'paid');
     }
+
+    public function getFormattedTotalPriceAttribute()
+    {
+        return "$".number_format($this->total_price, 0, '.', ',');
+    }
+
 
 
 }
