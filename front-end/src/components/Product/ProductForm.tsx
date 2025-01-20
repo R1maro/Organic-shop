@@ -1,16 +1,32 @@
 
 'use client';
-import { useState } from 'react';
+import { useState ,useEffect} from 'react';
 import config from "@/config/config";
 import {ProductFormProps} from "@/types/product";
 
 
-export default function ProductForm({ categories, action, initialData }: ProductFormProps) {
+export default function ProductForm({
+                                        categories,
+                                        action,
+                                        initialData
+                                    }: ProductFormProps & {
+    action: (formData: FormData) => Promise<void>
+}) {
+    const [selectedCategory, setSelectedCategory] = useState<number | ''>(
+        initialData?.category_id || ''
+    );
     const [previewImage, setPreviewImage] = useState<string | null>(
         initialData?.image_url ? `${config.PUBLIC_URL}${initialData.image_url}` : null
     );
     const [price, setPrice] = useState<string>(initialData?.price?.toString() || "");
     const [discount, setDiscount] = useState<string>(initialData?.discount?.toString() || "");
+
+    useEffect(() => {
+        if (initialData?.category_id) {
+            setSelectedCategory(initialData.category_id);
+        }
+    }, [initialData?.category_id]);
+
 
     const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -137,13 +153,14 @@ export default function ProductForm({ categories, action, initialData }: Product
                     <select
                         id="category_id"
                         name="category_id"
-                        defaultValue={initialData?.category_id}
+                        value={selectedCategory}
+                        onChange={(e) => setSelectedCategory(Number(e.target.value))}
                         required
                         className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                     >
                         <option value="">Select a category</option>
                         {categories.map((category) => (
-                            <option key={category.id} value={category.id}>
+                            <option key={category.id} value={category.id} >
                                 {category.name}
                             </option>
                         ))}

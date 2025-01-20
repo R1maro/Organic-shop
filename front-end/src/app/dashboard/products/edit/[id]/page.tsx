@@ -2,101 +2,38 @@ import {redirect} from 'next/navigation';
 import {revalidatePath} from 'next/cache';
 import {cookies} from 'next/headers';
 import ProductForm from '@/components/Product/ProductForm';
-import config from "@/config/config";
+import {apiUpdateProduct , getCategories , getProduct} from "@/utils/api";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import {Metadata} from "next";
+import {ProductApiData, ProductFormData} from "@/types/product";
 
 
 export const metadata: Metadata = {
     title: 'Edit Product | TailAdmin Next.js',
     description: 'Edit new product page',
 };
-
-type Product = {
-    id: string;
-    name: string;
-    description: string;
-    price: number;
-    discount?: number;
-    quantity: number;
-    sku: string;
-    category_id: number;
-    status: boolean;
-};
-
-type Category = {
-    id: number;
-    name: string;
-};
-async function getProduct(id: string): Promise<Product> {
-    const cookieStore = cookies();
-    const csrfToken = cookieStore.get('XSRF-TOKEN')?.value;
-
-    const res = await fetch(`${config.API_URL}/admin/products/${id}`, {
-        headers: {
-            'X-XSRF-TOKEN': csrfToken || '',
-            'Accept': 'application/json',
-        },
-        credentials: 'include',
-        cache: 'no-store',
-    });
-
-    if (!res.ok) {
-        throw new Error( 'Failed to fetch product');
-    }
-
-    return res.json();
-}
-
-async function updateProduct(id: string, formData: FormData) {
+async function updateProductAction(id: string, formData: FormData) {
     'use server'
 
     const cookieStore = cookies();
-    const csrfToken = cookieStore.get('XSRF-TOKEN')?.value;
+    const csrfToken = cookieStore.get('XSRF-TOKEN')?.value || '';
 
     try {
-        const data = {
-            name: formData.get('name'),
-            description: formData.get('description'),
-            price: parseFloat((formData.get('price') as string)?.replace(/,/g, '')),
-            discount: parseFloat((formData.get('discount') as string)?.replace(/,/g, '')) || 0,
-            quantity: parseInt(formData.get('quantity') as string),
-            sku: formData.get('sku'),
-            category_id: parseInt(formData.get('category_id') as string),
+        const imageFile = formData.get('image') as File;
+
+        const data: ProductApiData = {
+            name: formData.get('name')?.toString() || '',
+            description: formData.get('description')?.toString() || '',
+            price: parseFloat((formData.get('price') as string)?.replace(/,/g, '') || '0'),
+            discount: parseFloat((formData.get('discount') as string)?.replace(/,/g, '') || '0'),
+            quantity: parseInt(formData.get('quantity') as string || '0'),
+            sku: formData.get('sku')?.toString() || '',
+            category_id: parseInt(formData.get('category_id') as string || '0'),
             status: formData.get('status') !== null ? 1 : 0,
+            ...(imageFile && imageFile.size > 0 && { image: imageFile }),
         };
 
-        const form = new FormData();
-
-
-        form.append('_method', 'PUT');
-
-        Object.entries(data).forEach(([key, value]) => {
-            if (value !== null && value !== undefined) {
-                form.append(key, value.toString());
-            }
-        });
-
-        const image = formData.get('image') as File;
-        if (image && image.size > 0) {
-            form.append('image', image);
-        }
-
-        const response = await fetch(`${config.API_URL}/admin/products/${id}`, {
-            method: 'POST',
-            headers: {
-                'X-XSRF-TOKEN': csrfToken || '',
-                'Accept': 'application/json',
-            },
-            body: form,
-            credentials: 'include',
-        });
-
-        const responseData = await response.json();
-
-        if (!response.ok) {
-            throw new Error(responseData.error || 'Failed to update product');
-        }
+        await apiUpdateProduct(id, data, csrfToken);
 
         revalidatePath('/dashboard/products');
         redirect('/dashboard/products');
@@ -106,35 +43,40 @@ async function updateProduct(id: string, formData: FormData) {
     }
 }
 
-async function getCategories() : Promise<Category[]>{
-    const res = await fetch(`${config.API_URL}/admin/categories`, {
-        cache: 'no-store',
-    });
-
-    if (!res.ok) throw new Error('Failed to fetch categories');
-    const response = await res.json();
-    return response.data || [];
-}
-
-
 export default async function EditProductPage({params: {id},}: {
     params: { id: string };
 }) {
-    const [product, categories] = await Promise.all([
+    const [productResponse, categoriesResponse] = await Promise.all([
         getProduct(id),
         getCategories(),
     ]);
 
-    const updateProductWithId = updateProduct.bind(null, id);
+    const formCategories = categoriesResponse.data;
+    const product = productResponse.data;
+
+    const initialFormData: ProductFormData = {
+        name: product.name || '',
+        description: product.description || '',
+        price: product.price || 0,
+        discount: product.discount || 0,
+        quantity: product.quantity || 0,
+        sku: product.sku || '',
+        category_id: product.category.id || 0,
+        status: product.status === 1,
+        image_url: product.image_url || ''
+    };
+
 
     return (
         <DefaultLayout>
             <div className="min-h-screen max-w-5xl mx-auto p-6 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
                 <h1 className="text-2xl font-bold mb-6">Edit Product</h1>
                 <ProductForm
-                    categories={categories}
-                    action={updateProductWithId}
-                    initialData={product}
+                    categories={formCategories}
+                    action={async (formData: FormData) => {
+                        'use server';
+                        await updateProductAction(id, formData);
+                    }}                    initialData={initialFormData}
                 />
             </div>
         </DefaultLayout>

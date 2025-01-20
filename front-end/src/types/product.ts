@@ -18,6 +18,46 @@ export interface Product {
     name: string;
   };
 }
+
+export interface ProductApiData {
+  name: string;
+  description: string;
+  price: number;
+  discount: number;
+  quantity: number;
+  sku: string;
+  category_id: number;
+  status: number;
+  image?: File;
+}
+
+export interface ProductFormData {
+  name: string;
+  description: string;
+  price: number;
+  discount: number;
+  quantity: number;
+  sku: string;
+  category_id: number;
+  status: boolean;
+  image_url?: string;
+}
+export interface ProductCreateUpdateData {
+  name: string | null;
+  description: string | null;
+  price: number;
+  discount: number;
+  quantity: number;
+  sku: string | null;
+  category_id: number;
+  status: number;
+  image?: File;
+}
+
+interface Category {
+  id: number;
+  name: string;
+}
 export interface ProductsResponse {
   data: Product[];
   links: {
@@ -36,23 +76,18 @@ export interface ProductsResponse {
     total: number;
   };
 }
+
+export interface SingleProductResponse{
+  data:Product;
+}
 interface Category {
   id: number;
   name: string;
 }
 
+export type FormAction = (formData: FormData) => Promise<void>;
 export interface ProductFormProps {
   categories: Category[];
-  action: (formData: FormData) => Promise<void>;
-  initialData?: {
-    name?: string;
-    description?: string;
-    price?: number;
-    discount?: number;
-    quantity?: number;
-    sku?: string;
-    category_id?: number;
-    status?: boolean;
-    image_url?: string;
-  };
+  action: FormAction;
+  initialData?: ProductFormData;
 }
