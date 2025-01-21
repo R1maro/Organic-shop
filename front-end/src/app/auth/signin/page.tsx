@@ -32,7 +32,14 @@ const SignIn: React.FC = () => {
             }
 
 
-            router.push("/dashboard");
+            const user = data.user;
+            if (user?.roles?.some((role: any) => role.slug === "admin")) {
+                router.push("/dashboard");
+            } else {
+                router.push("/");
+            }
+
+
             router.refresh();
         } catch (err) {
             setError(err instanceof Error ? err.message : "An error occurred during login");

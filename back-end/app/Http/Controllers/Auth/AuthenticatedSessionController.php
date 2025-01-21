@@ -23,8 +23,8 @@ class AuthenticatedSessionController extends Controller
         return response()->json([
             'message' => 'Login successful.',
             'access_token' => $token,
-            'token_type' => 'Bearer',
-        ], 200);
+            'user' => $user,
+            ], 200);
     }
 
     public function checkAuth(Request $request)
