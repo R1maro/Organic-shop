@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Pagination from "@/components/Pagination/Pagination";
-import {User , UsersResponse } from '@/types/user'
+import {UsersResponse } from '@/types/user'
 
 
 export default function UserList({users, search}: {

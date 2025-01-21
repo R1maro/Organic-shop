@@ -1,0 +1,74 @@
+// app/dashboard/settings/create/page.tsx
+import {redirect} from 'next/navigation';
+import {revalidatePath} from 'next/cache';
+import {cookies} from 'next/headers';
+import SettingForm from '@/components/Settings/SettingForm';
+import DefaultLayout from "@/components/Layouts/DefaultLayout";
+import {apiCreateSetting, getSettingGroups, getSettingTypes} from "@/utils/api";
+import {Metadata} from "next";
+
+export const metadata: Metadata = {
+    title: 'Create Setting | TailAdmin Next.js',
+    description: 'Create new setting page',
+};
+
+async function createSettingAction(formData: FormData) {
+    'use server'
+
+    const cookieStore = cookies();
+    const csrfToken = cookieStore.get('XSRF-TOKEN')?.value || '';
+
+    try {
+        const type = formData.get('type')?.toString();
+        const imageFile = formData.get('image') as File;
+
+        const data = {
+            key: formData.get('key')?.toString(),
+            label: formData.get('label')?.toString(),
+            description: formData.get('description')?.toString(),
+            type: type,
+            group: formData.get('group')?.toString(),
+            // Only include value if it's not an image type or if no image file is uploaded
+            ...(type !== 'image' || !imageFile || imageFile.size === 0
+                    ? { value: formData.get('value')?.toString() }
+                    : {}
+            ),
+            // Only include image if it's an image type and a file is uploaded
+            ...(type === 'image' && imageFile && imageFile.size > 0
+                    ? { image: imageFile }
+                    : {}
+            ),
+        };
+
+        await apiCreateSetting(data, csrfToken);
+
+        revalidatePath('/dashboard/settings');
+        redirect('/dashboard/settings');
+    } catch (error) {
+        console.error('Error creating setting:', error);
+        throw error;
+    }
+}
+
+export default async function CreateSettingPage() {
+    const [types, groups] = await Promise.all([
+        getSettingTypes(),
+        getSettingGroups()
+    ]);
+
+    return (
+        <DefaultLayout>
+            <div className="min-h-screen max-w-5xl mx-auto p-6 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                <h1 className="text-2xl font-bold mb-6">Create New Setting</h1>
+                <SettingForm
+                    types={types}
+                    groups={groups}
+                    action={async (formData: FormData) => {
+                        'use server';
+                        await createSettingAction(formData);
+                    }}
+                />
+            </div>
+        </DefaultLayout>
+    );
+}

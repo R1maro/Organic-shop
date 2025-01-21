@@ -1,12 +1,12 @@
 import config from "@/config/config";
-import { UsersResponse} from "@/types/user";
+import {UsersResponse} from "@/types/user";
 import {
     ProductsResponse,
     SingleProductResponse,
     ProductCreateUpdateData
 } from '@/types/product';
-import { CategoriesResponse, SingleCategoryResponse , Category } from "@/types/category";
-
+import {CategoriesResponse, SingleCategoryResponse, Category} from "@/types/category";
+import {SettingsResponse} from "@/types/setting";
 
 export async function getUsers(page: number = 1, search: string = '') {
     const url = new URL(`${config.API_URL}/admin/users`);
@@ -30,7 +30,7 @@ export async function getUsers(page: number = 1, search: string = '') {
     return res.json() as Promise<UsersResponse>;
 }
 
-export async function getCategories(page: number = 1) : Promise<CategoriesResponse> {
+export async function getCategories(page: number = 1): Promise<CategoriesResponse> {
     const url = new URL(`${config.API_URL}/admin/categories`);
     url.searchParams.append('page', page.toString());
 
@@ -163,6 +163,7 @@ export async function getProducts(page: number = 1, categoryId?: string) {
 
     return res.json() as Promise<ProductsResponse>;
 }
+
 export async function getProduct(id: string): Promise<SingleProductResponse> {
     const res = await fetch(`${config.API_URL}/admin/products/${id}`, {
         headers: {
@@ -250,6 +251,7 @@ export async function apiUpdateProduct(
 
     return responseData;
 }
+
 export async function getOrders({page = 1, per_page = 10, status, payment_status}: {
     page?: number;
     per_page?: number;
@@ -353,3 +355,148 @@ export async function getUserInvoices(userId: number, page = 1, per_page = 15) {
 
     return res.json();
 }
+
+export async function getSettings(page: number = 1, group?: string, search?: string): Promise<SettingsResponse> {
+    const url = new URL(`${config.API_URL}/admin/settings`);
+
+    url.searchParams.append('page', page.toString());
+    if (group) {
+        url.searchParams.append('group', group);
+    }
+    if (search) {
+        url.searchParams.append('search', search);
+    }
+
+    const res = await fetch(url, {
+        cache: 'no-store',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+
+    if (!res.ok) {
+        throw new Error('Failed to fetch settings');
+    }
+
+    return res.json();
+}
+
+export async function getSetting(id: string) {
+    const response = await fetch(`${config.API_URL}/admin/settings/${id}`, {
+        cache: 'no-store',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+
+    if (!response.ok) {
+        throw new Error('Failed to fetch setting');
+    }
+
+    return response.json();
+}
+export async function getSettingGroups() {
+    const res = await fetch(`${config.API_URL}/admin/settings/groups`, {
+        cache: 'no-store',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+
+    if (!res.ok) {
+        throw new Error('Failed to fetch setting groups');
+    }
+
+    const response = await res.json();
+    return response.data as string[];
+}
+
+export async function getSettingTypes() {
+    const res = await fetch(`${config.API_URL}/admin/settings/types`, {
+        cache: 'no-store',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+
+    if (!res.ok) {
+        throw new Error('Failed to fetch setting types');
+    }
+
+    const response = await res.json();
+    return response.data as string[];
+}
+
+
+export async function apiCreateSetting(data: any, csrfToken: string) {
+    const form = new FormData();
+
+    Object.entries(data).forEach(([key, value]) => {
+        if (value !== null && value !== undefined) {
+            if (key === 'image' && value instanceof File) {
+                form.append(key, value);
+            } else {
+                form.append(key, value.toString());
+            }
+        }
+    });
+
+    const response = await fetch(`${config.API_URL}/admin/settings`, {
+        method: 'POST',
+        headers: {
+            'X-XSRF-TOKEN': csrfToken,
+            'Accept': 'application/json',
+        },
+        body: form,
+        credentials: 'include',
+    });
+
+    const responseData = await response.json();
+
+    if (!response.ok) {
+        throw new Error(responseData.error || 'Failed to create setting');
+    }
+
+    return responseData;
+}
+export async function apiUpdateSetting(
+    id: string,
+    data: any,
+    csrfToken: string
+) {
+    const form = new FormData();
+    form.append('_method', 'PUT');
+
+    Object.entries(data).forEach(([key, value]) => {
+        if (value !== null && value !== undefined) {
+            if (key === 'image' && value instanceof File) {
+                form.append(key, value);
+            } else {
+                form.append(key, value.toString());
+            }
+        }
+    });
+
+    const response = await fetch(`${config.API_URL}/admin/settings/${id}`, {
+        method: 'POST',
+        headers: {
+            'X-XSRF-TOKEN': csrfToken,
+            'Accept': 'application/json',
+        },
+        body: form,
+        credentials: 'include',
+    });
+
+    const responseData = await response.json();
+
+    if (!response.ok) {
+        throw new Error(responseData.error || 'Failed to update setting');
+    }
+
+    return responseData;
+}
+
+
+
+
+
