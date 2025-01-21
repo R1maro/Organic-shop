@@ -1,26 +1,27 @@
-import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
+import {NextResponse} from 'next/server';
+import {cookies} from 'next/headers';
+import config from "@/config/config";
 
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { email, password } = body;
+        const {email, password} = body;
 
-        const response = await fetch('http://localhost:8000/api/login', {
+        const response = await fetch(`${config.API_URL}/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
             },
-            body: JSON.stringify({ email, password }),
+            body: JSON.stringify({email, password}),
         });
 
         const data = await response.json();
 
         if (!response.ok) {
             return NextResponse.json(
-                { error: data.message || 'Authentication failed' },
-                { status: response.status }
+                {error: data.message || 'Authentication failed'},
+                {status: response.status}
             );
         }
 
@@ -35,11 +36,11 @@ export async function POST(request: Request) {
         return NextResponse.json({
             success: true,
             user: data.user,
-            access_token: data.access_token,});
+        });
     } catch (error) {
         return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
+            {error: 'Internal server error'},
+            {status: 500}
         );
     }
 }
@@ -51,7 +52,7 @@ export async function DELETE() {
 
         if (token) {
             // Call Laravel logout endpoint
-            await fetch('http://localhost:8000/api/logout', {
+            await fetch(`${config.API_URL}/logout`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token.value}`,
@@ -63,11 +64,11 @@ export async function DELETE() {
             cookies().delete('token');
         }
 
-        return NextResponse.json({ success: true });
+        return NextResponse.json({success: true});
     } catch (error) {
         return NextResponse.json(
-            { error: 'Logout failed' },
-            { status: 500 }
+            {error: 'Logout failed'},
+            {status: 500}
         );
     }
 }
