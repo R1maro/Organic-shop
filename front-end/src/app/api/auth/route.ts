@@ -32,7 +32,10 @@ export async function POST(request: Request) {
             path: '/',
         });
 
-        return NextResponse.json({ success: true });
+        return NextResponse.json({
+            success: true,
+            user: data.user,
+            access_token: data.access_token,});
     } catch (error) {
         return NextResponse.json(
             { error: 'Internal server error' },
