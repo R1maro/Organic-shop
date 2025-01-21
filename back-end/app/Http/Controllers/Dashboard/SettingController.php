@@ -37,8 +37,10 @@ class SettingController extends Controller
         $setting = Setting::create($request->validated());
 
         if ($request->hasFile('image') && $setting->type === 'image') {
-            $setting->addMediaFromRequest('image')
+            $media = $setting->addMediaFromRequest('image')
                 ->toMediaCollection('setting_image');
+
+            $setting->update(['value' => $media->getUrl()]);
         }
 
         return response()->json([
@@ -60,14 +62,17 @@ class SettingController extends Controller
 
         if ($request->hasFile('image') && $setting->type === 'image') {
             $setting->clearMediaCollection('setting_image');
-            $setting->addMediaFromRequest('image')
+            $media = $setting->addMediaFromRequest('image')
                 ->toMediaCollection('setting_image');
+
+            $setting->update(['value' => $media->getUrl()]);
+
         }
 
         return response()->json([
             'message' => 'Setting updated successfully',
             'data' => new SettingResource($setting)
-        ]);
+        ],201);
     }
 
     public function destroy(Setting $setting)
