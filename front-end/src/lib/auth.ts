@@ -1,29 +1,36 @@
-import { cookies } from 'next/headers';
+import { cookies } from "next/headers";
 
 export async function getServerSideAuth() {
     const cookieStore = cookies();
-    const token = cookieStore.get('token')?.value;
+    const token = cookieStore.get("token")?.value;
 
     if (!token) {
-        return { user: null, isAuthenticated: false };
+        return { user: null, isAuthenticated: false, isAdmin: false };
     }
 
     try {
-        const response = await fetch('http://localhost:8000/api/auth-check', {
+        const response = await fetch("http://localhost:8000/api/auth-check", {
             headers: {
-                'Authorization': `Bearer ${token}`,
-                'Accept': 'application/json',
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
             },
-            cache: 'no-store'
+            cache: "no-store",
         });
 
         const data = await response.json();
 
-        return {
-            user: data.authenticated ? data.user : null,
-            isAuthenticated: data.authenticated
-        };
+        if (data.authenticated) {
+            const isAdmin = data.user.roles.some((role: any) => role.slug === "admin");
+
+            return {
+                user: data.user,
+                isAuthenticated: true,
+                isAdmin,
+            };
+        }
+
+        return { user: null, isAuthenticated: false, isAdmin: false };
     } catch (error) {
-        return { user: null, isAuthenticated: false };
+        return { user: null, isAuthenticated: false, isAdmin: false };
     }
 }
