@@ -23,4 +23,4 @@ Route::prefix('admin')->group(function () {
     Route::get('settings/types', [SettingController::class, 'getTypes']);
     Route::post('settings/bulk-update', [SettingController::class, 'bulkUpdate']);
     Route::apiResource('settings', SettingController::class);
-})->middleware(['auth:sanctum']);
+})->middleware(['auth:sanctum' , 'role:admin']);
