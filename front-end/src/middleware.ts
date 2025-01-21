@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import apiConfig from "@/config/config";
 
 export async function middleware(request: NextRequest) {
     const token = request.cookies.get('token')?.value;
@@ -11,7 +12,7 @@ export async function middleware(request: NextRequest) {
 
     if (token) {
         try {
-            const authCheckResponse = await fetch('http://localhost:8000/api/auth-check', {
+            const authCheckResponse = await fetch(`${apiConfig.API_URL}/auth-check`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     Accept: 'application/json',
