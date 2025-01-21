@@ -31,7 +31,7 @@ class AuthenticatedSessionController extends Controller
     {
         return response()->json([
             'authenticated' => auth('sanctum')->check(),
-            'user' => auth('sanctum')->check() ? auth('sanctum')->user() : null,
+            'user' => auth('sanctum')->check() ? auth('sanctum')->user()->load('roles') : null,
         ]);
     }
 
