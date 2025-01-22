@@ -18,7 +18,7 @@ async function createProductAction(formData: FormData) {
     const csrfToken = cookieStore.get('XSRF-TOKEN')?.value || '';
 
     try {
-        const imageFile = formData.get('image') as File;
+        const imageFiles = formData.getAll('images[]');
         const data = {
 
             name: formData.get('name')?.toString() || null,
@@ -29,7 +29,7 @@ async function createProductAction(formData: FormData) {
             sku: formData.get('sku')?.toString() || null,
             category_id: parseInt(formData.get('category_id') as string),
             status: formData.get('status') !== null ? 1 : 0,
-            ...(imageFile && imageFile.size > 0 && { image: imageFile }),
+            images: imageFiles as File[],
         };
 
         await apiCreateProduct(data, csrfToken);
