@@ -20,7 +20,7 @@ class User extends Authenticatable
         'password',
         'phone',
         'address',
-        'is_admin'
+        'is_admin',
     ];
 
 
