@@ -31,6 +31,7 @@ class UserController extends Controller
 
         $users = Cache::remember($cacheKey, self::CACHE_TTL, function () use ($request) {
             return User::query()
+                ->with('roles')
                 ->when($request->search, function ($query, $search) {
                     $query->where('name', 'like', "%{$search}%")
                         ->orWhere('email', 'like', "%{$search}%");
@@ -51,6 +52,7 @@ class UserController extends Controller
             'phone' => ['nullable', 'string', 'max:20'],
             'address' => ['nullable', 'string', 'max:255'],
             'is_admin' => ['nullable', 'boolean'],
+            'roles' => ['required', 'exists:roles,id'],
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
@@ -58,6 +60,9 @@ class UserController extends Controller
         DB::beginTransaction();
         try {
             $user = User::create($validated);
+
+
+            $user->roles()->sync([$validated['roles']]);
             DB::commit();
 
             // Clear relevant caches
@@ -82,7 +87,7 @@ class UserController extends Controller
             return $user;
         });
         return response()->json([
-            'data' => new UserResource($cachedUser)
+            'data' => new UserResource($cachedUser->load('roles')),
         ]);
     }
 
@@ -96,6 +101,7 @@ class UserController extends Controller
             'phone' => ['nullable', 'string', 'max:20'],
             'address' => ['nullable', 'string', 'max:255'],
             'is_admin' => ['nullable', 'boolean'],
+            'roles' => ['nullable', 'exists:roles,id'],
         ]);
 
         if (isset($validated['password'])) {
@@ -105,6 +111,10 @@ class UserController extends Controller
         DB::beginTransaction();
         try {
             $user->update($validated);
+
+            if (isset($validated['roles'])) {
+                $user->roles()->sync([$validated['roles']]);
+            }
             DB::commit();
 
 

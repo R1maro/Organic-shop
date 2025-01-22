@@ -28,7 +28,7 @@ class Product extends Model implements HasMedia
         'category_id',
     ];
 
-    protected $appends = ['formatted_price', 'formatted_final_price', 'image_url'];
+    protected $appends = ['formatted_price', 'formatted_final_price', 'image_urls'];
 
     protected static function boot()
     {
@@ -64,9 +64,11 @@ class Product extends Model implements HasMedia
 
     }
 
-    public function getImageUrlAttribute()
+    public function getImageUrlsAttribute()
     {
-        return $this->getFirstMediaUrl('product_image', 'thumb') ?: $this->getFirstMediaUrl('product_image');
+        return $this->getMedia('product_image')->map(function ($media) {
+            return $media->getFullUrl('thumb') ?: $media->getFullUrl();
+        });
     }
 
     public function category()
