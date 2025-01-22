@@ -35,18 +35,21 @@ class ProductController extends Controller
                 'discount' => 'nullable|numeric|min:0',
                 'quantity' => 'required|integer|min:0',
                 'sku' => 'required|string|max:255|unique:products',
-                'image' => 'nullable|image|max:2048',
+                'images.*' => 'nullable|file|mimes:jpeg,png,jpg,webp|max:2048',
+                'images' => 'array',
                 'category_id' => 'required|exists:categories,id',
                 'status' => 'boolean',
             ]);
 
             $product = Product::create($validated);
 
-            if ($request->hasFile('image')) {
+            if ($request->hasFile('images')) {
                 $product->clearMediaCollection('product_image');
-                $product->addMedia($request->file('image'))
-                    ->withResponsiveImages()
-                    ->toMediaCollection('product_image');
+                foreach ($request->file('images') as $image) {
+                    $product->addMedia($image)
+                        ->withResponsiveImages()
+                        ->toMediaCollection('product_image');
+                }
 
             }
             $this->clearProductCaches($product->category_id);
@@ -80,7 +83,8 @@ class ProductController extends Controller
                 'discount' => 'nullable|numeric|min:0',
                 'quantity' => 'sometimes|integer|min:0',
                 'sku' => 'sometimes|string|max:255|unique:products,sku,' . $product->id,
-                'image' => 'sometimes|nullable|image|max:2048',
+                'images.*' => 'nullable|file|mimes:jpeg,png,jpg,webp|max:2048',
+                'images' => 'array',
                 'category_id' => 'sometimes|exists:categories,id',
                 'status' => 'boolean',
             ]);
@@ -89,13 +93,13 @@ class ProductController extends Controller
             $product->update($validated);
 
 
-            if ($request->hasFile('image')) {
+            if ($request->hasFile('images')) {
                 $product->clearMediaCollection('product_image');
-                $product->addMedia($request->file('image'))
-                    ->withResponsiveImages()
-                    ->toMediaCollection('product_image');
-
-
+                foreach ($request->file('images') as $image) {
+                    $product->addMedia($image)
+                        ->withResponsiveImages()
+                        ->toMediaCollection('product_image');
+                }
             }
 
             $this->clearProductCaches($oldCategoryId);
