@@ -1,7 +1,5 @@
-
 'use client';
-import { useState ,useEffect} from 'react';
-import config from "@/config/config";
+import {useState, useEffect} from 'react';
 import {ProductFormProps} from "@/types/product";
 
 
@@ -15,9 +13,10 @@ export default function ProductForm({
     const [selectedCategory, setSelectedCategory] = useState<number | ''>(
         initialData?.category_id || ''
     );
-    const [previewImage, setPreviewImage] = useState<string | null>(
-        initialData?.image_url ? `${config.PUBLIC_URL}${initialData.image_url}` : null
-    );
+    const [previewImages, setPreviewImages] = useState<string[]>([]);
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+
+
     const [price, setPrice] = useState<string>(initialData?.price?.toString() || "");
     const [discount, setDiscount] = useState<string>(initialData?.discount?.toString() || "");
 
@@ -25,19 +24,75 @@ export default function ProductForm({
         if (initialData?.category_id) {
             setSelectedCategory(initialData.category_id);
         }
-    }, [initialData?.category_id]);
-
-
-    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = () => setPreviewImage(reader.result as string);
-            reader.readAsDataURL(file);
+        if (Array.isArray(initialData?.image_urls)) {
+            setPreviewImages(initialData.image_urls);
         } else {
-            setPreviewImage(initialData?.image_url ? `${config.PUBLIC_URL}${initialData.image_url}` : null);
+            setPreviewImages([]);
+        }
+    }, [initialData?.category_id, initialData?.image_urls]);
+
+
+    const handleFileSelection = (files: FileList | null) => {
+        if (files) {
+            const fileArray = Array.from(files);
+            if (fileArray.length + selectedFiles.length > 5) {
+                alert("You can only upload up to 5 images.");
+                return;
+            }
+
+            setSelectedFiles(prev => [...prev, ...fileArray]);
+
+            const previews = fileArray.map((file) => {
+                const reader = new FileReader();
+                return new Promise<string>((resolve) => {
+                    reader.onload = () => resolve(reader.result as string);
+                    reader.readAsDataURL(file);
+                });
+            });
+
+            Promise.all(previews).then((newImages) => {
+                setPreviewImages(prev => [...prev, ...newImages]);
+            });
         }
     };
+    const handleImageDelete = (index: number) => {
+        setPreviewImages((prevImages) => prevImages.filter((_, i) => i !== index));
+        setSelectedFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    };
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+
+        formData.delete('images[]');
+
+        selectedFiles.forEach(file => {
+            formData.append('images[]', file);
+        });
+
+        await action(formData);
+    };
+    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        handleFileSelection(event.target.files);
+    };
+
+    const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.currentTarget.classList.add('bg-gray-50');
+    };
+
+    const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.currentTarget.classList.remove('bg-gray-50');
+    };
+
+    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.currentTarget.classList.remove('bg-gray-50');
+        handleFileSelection(e.dataTransfer.files);
+    };
+
+
 
     const formatNumber = (value: string) => {
         if (!value) return "";
@@ -53,7 +108,7 @@ export default function ProductForm({
         setDiscount(formatNumber(event.target.value));
     };
     return (
-        <form action={action}>
+        <form action={action} onSubmit={handleSubmit}>
             <div className="space-y-6">
                 <div>
                     <label htmlFor="name" className="mb-3 block text-sm font-medium text-black dark:text-white">
@@ -160,7 +215,7 @@ export default function ProductForm({
                     >
                         <option value="">Select a category</option>
                         {categories.map((category) => (
-                            <option key={category.id} value={category.id} >
+                            <option key={category.id} value={category.id}>
                                 {category.name}
                             </option>
                         ))}
@@ -188,27 +243,54 @@ export default function ProductForm({
 
 
                 <div>
-                    <label htmlFor="image" className="mb-3 mt-5 block text-sm font-medium text-black dark:text-white">
-                        {initialData?.image_url ? 'New Product Image' : 'Product Image'}
+                    <label htmlFor="images" className="mb-3 block text-sm font-medium text-black dark:text-white">
+                        {initialData?.image_urls ? 'New Product Image' : 'Product Image'}
                     </label>
-                    <input
-                        type="file"
-                        id="image"
-                        name="image"
-                        accept="image/*"
-                        className="w-full cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:px-5 file:py-3 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
-                        onChange={handleImageChange}
-                    />
+                    <div
+                        className="relative w-full h-[300px] border-2 border-dashed border-gray-300 rounded-lg cursor-pointer"
+                        onDragOver={handleDragOver}
+                        onDragLeave={handleDragLeave}
+                        onDrop={handleDrop}
+                    >
+                        <input
+                            type="file"
+                            id="images"
+                            name="images[]"
+                            accept="image/*"
+                            multiple
+                            onChange={handleImageChange}
+                            className="hidden"
+                        />
+
+                        <label
+                            htmlFor="images"
+                            className="absolute inset-0 flex flex-col items-center justify-center"
+                        >
+                            <span className="text-6xl text-gray-400 mb-4">+</span>
+                            <p className="text-gray-500">Click or drag and drop images here</p>
+                            <p className="text-gray-400 text-sm mt-2">Up to 5 images allowed</p>
+                        </label>
+                    </div>
                 </div>
 
-                {previewImage && (
-                    <div className="mt-2">
-                        <p className="text-sm font-medium mb-2">Image Preview:</p>
-                        <img
-                            src={previewImage}
-                            alt="Preview"
-                            className="w-32 h-32 object-cover rounded-md"
-                        />
+                {previewImages.length > 0 && (
+                    <div className="w-full h-full flex flex-wrap justify-center items-center">
+                        {previewImages.map((src, index) => (
+                            <div key={index} className="relative m-2">
+                                <img
+                                    src={src}
+                                    alt={`Preview ${index}`}
+                                    className="w-32 h-32 object-cover rounded-md cursor-pointer"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => handleImageDelete(index)}
+                                    className="absolute top-0 right-0 bg-red-500 text-white p-1 rounded-full text-xs"
+                                >
+                                    X
+                                </button>
+                            </div>
+                        ))}
                     </div>
                 )}
 

@@ -1,4 +1,3 @@
-import config from "@/config/config";
 import Link from "next/link";
 import Pagination from "@/components/Pagination/Pagination";
 import {getProducts} from '@/utils/api'
@@ -51,9 +50,9 @@ async function ProductList({page = 1, categoryId,}: {
                         {products.data.map((product) => (
                             <tr key={product.id}>
                                 <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                    {product.image_url ? (
+                                    {product.image_urls[0] ? (
                                         <img
-                                            src={`${config.PUBLIC_URL}${product.image_url}`}
+                                            src={product.image_urls[0]}
                                             alt={product.name}
                                             className="h-20 w-20 object-cover rounded-md"
                                         />

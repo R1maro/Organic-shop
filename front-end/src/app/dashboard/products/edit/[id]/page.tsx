@@ -19,7 +19,9 @@ async function updateProductAction(id: string, formData: FormData) {
     const csrfToken = cookieStore.get('XSRF-TOKEN')?.value || '';
 
     try {
-        const imageFile = formData.get('image') as File;
+        const imageFiles = formData.getAll('images[]');
+
+
 
         const data: ProductApiData = {
             name: formData.get('name')?.toString() || '',
@@ -30,7 +32,7 @@ async function updateProductAction(id: string, formData: FormData) {
             sku: formData.get('sku')?.toString() || '',
             category_id: parseInt(formData.get('category_id') as string || '0'),
             status: formData.get('status') !== null ? 1 : 0,
-            ...(imageFile && imageFile.size > 0 && { image: imageFile }),
+            images:imageFiles as File[],
         };
 
         await apiUpdateProduct(id, data, csrfToken);
@@ -63,7 +65,7 @@ export default async function EditProductPage({params: {id},}: {
         sku: product.sku || '',
         category_id: product.category.id || 0,
         status: product.status === 1,
-        image_url: product.image_url || ''
+        image_urls: product.image_urls || ''
     };
 
 

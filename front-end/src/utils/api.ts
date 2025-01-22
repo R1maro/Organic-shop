@@ -186,8 +186,10 @@ export async function apiCreateProduct(data: ProductCreateUpdateData, csrfToken:
         if (value !== null && value !== undefined) {
             if (key === 'price' || key === 'discount') {
                 form.append(key, value.toString().replace(/,/g, ''));
-            } else if (key === 'image' && value instanceof File) {
-                form.append(key, value);
+            } else if (key === 'images' && Array.isArray(value)) {
+                value.forEach((file) => {
+                    form.append('images[]', file);
+                });
             } else {
                 form.append(key, value.toString());
             }
@@ -225,13 +227,20 @@ export async function apiUpdateProduct(
         if (value !== null && value !== undefined) {
             if (key === 'price' || key === 'discount') {
                 form.append(key, value.toString().replace(/,/g, ''));
-            } else if (key === 'image' && value instanceof File) {
-                form.append(key, value);
+            } else if (key === 'images' && Array.isArray(value)) {
+                form.delete('images[]');
+                value.forEach((file, index) => {
+                    if (file instanceof File) {
+                        console.log(`Appending image ${index}:`, file.name);
+                        form.append('images[]', file);
+                    }
+                });
             } else {
                 form.append(key, value.toString());
             }
         }
     });
+
 
     const response = await fetch(`${config.API_URL}/admin/products/${id}`, {
         method: 'POST',
