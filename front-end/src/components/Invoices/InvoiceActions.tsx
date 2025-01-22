@@ -37,6 +37,7 @@ export function InvoiceActions({ invoice }: { invoice: Invoice }) {
             <Link
                 href={`/dashboard/invoices/${invoice.id}`}
                 className="hover:text-primary"
+                title="Show Invoice"
             >
                 <svg
                     className="fill-current"
@@ -59,6 +60,7 @@ export function InvoiceActions({ invoice }: { invoice: Invoice }) {
             <Link
                 href={`/dashboard/invoices/edit/${invoice.id}`}
                 className="hover:text-primary"
+                title="Edit Invoice"
             >
                 <svg
                     className="w-6 h-6"
@@ -81,6 +83,7 @@ export function InvoiceActions({ invoice }: { invoice: Invoice }) {
             <button
                 onClick={handleDelete}
                 className="hover:text-danger"
+                title="Delete Invoice"
             >
                 <svg
                     className="fill-current"

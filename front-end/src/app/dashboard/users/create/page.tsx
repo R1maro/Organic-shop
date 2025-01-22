@@ -4,6 +4,7 @@ import {cookies} from 'next/headers';
 import UserForm from '@/components/Users/UserForm';
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import config from "@/config/config";
+import {Role} from "@/types/user";
 import {Metadata} from "next";
 
 export const metadata: Metadata = {
@@ -11,6 +12,23 @@ export const metadata: Metadata = {
     description: 'Create new user page',
 };
 
+async function fetchRoles(): Promise<Role[]> {
+    const cookieStore = cookies();
+    const csrfToken = cookieStore.get('XSRF-TOKEN')?.value;
+
+    const res = await fetch(`${config.API_URL}/admin/roles`, {
+        headers: {
+            'X-XSRF-TOKEN': csrfToken || '',
+            'Accept': 'application/json',
+        },
+        credentials: 'include',
+        cache: 'no-store',
+    });
+
+    const responseData = await res.json();
+    return responseData.data || responseData;
+
+}
 async function createUser(formData: FormData) {
     'use server'
 
@@ -25,6 +43,7 @@ async function createUser(formData: FormData) {
             phone: formData.get('phone'),
             address: formData.get('address'),
             is_admin: formData.get('is_admin') !== null ? 1 : 0,
+            roles: formData.get('role_id'),
         };
 
         const response = await fetch(`${config.API_URL}/admin/users`, {
@@ -53,11 +72,12 @@ async function createUser(formData: FormData) {
 }
 
 export default async function CreateUserPage() {
+    const roles = await fetchRoles();
     return (
         <DefaultLayout>
             <div className="min-h-screen max-w-5xl mx-auto p-6 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
                 <h1 className="text-2xl font-bold mb-6">Create New User</h1>
-                <UserForm action={createUser} />
+                <UserForm action={createUser} roles={roles} />
             </div>
         </DefaultLayout>
     );

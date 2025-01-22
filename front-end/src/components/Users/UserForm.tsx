@@ -1,13 +1,16 @@
 'use client';
 
-import {User} from "@/types/user";
+import {User, Role} from "@/types/user";
 
 interface UserFormProps {
     action: (formData: FormData) => Promise<void>;
     initialData?: User;
+    roles: Role[];
 }
 
-export default function UserForm({ action, initialData }: UserFormProps) {
+export default function UserForm({action, initialData, roles}: UserFormProps) {
+
+    console.log(initialData?.roles)
     return (
         <form action={action}>
             <div className="space-y-6">
@@ -88,9 +91,31 @@ export default function UserForm({ action, initialData }: UserFormProps) {
                             defaultChecked={initialData?.is_admin || false}
                             className="peer hidden"
                         />
-                        <span className="absolute inset-0 bg-gray-300 rounded-full transition duration-300 peer-checked:bg-blue-500"></span>
-                        <span className="absolute left-1 top-1 w-6 h-6 bg-white rounded-full transition-transform duration-300 transform peer-checked:translate-x-6"></span>
+                        <span
+                            className="absolute inset-0 bg-gray-300 rounded-full transition duration-300 peer-checked:bg-blue-500"></span>
+                        <span
+                            className="absolute left-1 top-1 w-6 h-6 bg-white rounded-full transition-transform duration-300 transform peer-checked:translate-x-6"></span>
                     </label>
+                </div>
+                <div>
+                    <label htmlFor="role" className="mb-3 block text-sm font-medium text-black dark:text-white">
+                        Role
+                    </label>
+                    <select
+                        id="role"
+                        name="role_id"
+                        defaultValue={initialData?.roles?.[0]?.id || ''}
+                        className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                    >
+                        <option value="" disabled>
+                            Select a role
+                        </option>
+                        {roles.map((role) => (
+                            <option key={role.id} value={role.id}>
+                                {role.name}
+                            </option>
+                        ))}
+                    </select>
                 </div>
 
                 <div className="flex justify-end gap-4">

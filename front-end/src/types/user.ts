@@ -1,3 +1,7 @@
+export interface Role {
+    id: number;
+    name: string;
+}
 export interface User {
     id: number;
     name: string;
@@ -5,7 +9,9 @@ export interface User {
     phone: string;
     address: string;
     is_admin: boolean;
+    roles?: Role[] | null
 }
+
 
 export interface UsersResponse {
     data: User[];

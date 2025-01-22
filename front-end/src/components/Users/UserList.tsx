@@ -38,14 +38,17 @@ export default function UserList({users, search}: {
                                 {user.email}
                             </td>
                             <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                        <span
-                                            className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${
-                                                user.is_admin
-                                                    ? 'bg-success text-success'
-                                                    : 'bg-warning text-warning'
-                                            }`}>
-                                            {user.is_admin ? 'Admin' : 'User'}
-                                        </span>
+                                    <span
+                                        className={`inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium ${
+                                            user.roles && user.roles.length > 0
+                                                ? 'bg-success text-success'
+                                                : 'bg-warning text-warning'
+                                        }`}
+                                    >
+                                        {user.roles && user.roles.length > 0
+                                            ? user.roles[0].name
+                                            : 'No Role'}
+                                    </span>
                             </td>
                             <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                 <div className="flex items-center space-x-3.5">
@@ -74,7 +77,7 @@ export default function UserList({users, search}: {
                                     </Link>
                                     <button
                                         className="hover:text-danger"
-                                        title="Delete Category"
+                                        title="Delete User"
                                     >
                                         <svg
                                             className="fill-current"
@@ -102,7 +105,7 @@ export default function UserList({users, search}: {
                 totalItems={users.meta.total}
                 itemsPerPage={users.meta.per_page}
                 baseUrl="/dashboard/users"
-                searchParams={search ? { search } : {}}
+                searchParams={search ? {search} : {}}
                 showItemCount={true}
             />
         </div>
