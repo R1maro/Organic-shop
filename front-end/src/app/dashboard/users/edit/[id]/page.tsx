@@ -5,6 +5,7 @@ import UserForm from '@/components/Users/UserForm';
 import config from "@/config/config";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import {Metadata} from "next";
+import {Role} from "@/types/user";
 
 export const metadata: Metadata = {
     title: 'Edit User | TailAdmin Next.js',
@@ -15,11 +16,30 @@ type User = {
     id: number;
     name: string;
     email: string;
-    password:string;
+    password: string;
     phone: string;
     address: string;
     is_admin: boolean;
+    role_id?: number;
 };
+
+async function fetchRoles(): Promise<Role[]> {
+    const cookieStore = cookies();
+    const csrfToken = cookieStore.get('XSRF-TOKEN')?.value;
+
+    const res = await fetch(`${config.API_URL}/admin/roles`, {
+        headers: {
+            'X-XSRF-TOKEN': csrfToken || '',
+            'Accept': 'application/json',
+        },
+        credentials: 'include',
+        cache: 'no-store',
+    });
+
+    const responseData = await res.json();
+    return responseData.data || responseData;
+
+}
 
 async function getUser(id: string): Promise<User> {
     const cookieStore = cookies();
@@ -56,6 +76,7 @@ async function updateUser(id: string, formData: FormData) {
             phone: FormDataEntryValue | null;
             address: FormDataEntryValue | null;
             is_admin: number;
+            roles: number | null;
             password?: FormDataEntryValue;
         }
 
@@ -65,9 +86,10 @@ async function updateUser(id: string, formData: FormData) {
             phone: formData.get('phone'),
             address: formData.get('address'),
             is_admin: formData.get('is_admin') !== null ? 1 : 0,
+            roles: formData.get('role_id') ? Number(formData.get('role_id')) : null,
         };
 
-        // Add password if provided
+
         const password = formData.get('password');
         if (password && password.toString().length > 0) {
             data.password = password;
@@ -96,7 +118,7 @@ async function updateUser(id: string, formData: FormData) {
         const responseData = await response.json();
 
         if (!response.ok) {
-            throw new Error(responseData.error || 'Failed to update user');
+            throw new Error(responseData.message || 'Failed to update user');
         }
 
         revalidatePath('/dashboard/users');
@@ -112,14 +134,17 @@ export default async function EditUserPage({params: {id},}: {
 }) {
     const user = await getUser(id);
     const updateUserWithId = updateUser.bind(null, id);
+    const roles = await fetchRoles();
 
     return (
         <DefaultLayout>
-            <div className="min-h-screen max-w-5xl mx-auto p-6 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+            <div
+                className="min-h-screen max-w-5xl mx-auto p-6 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
                 <h1 className="text-2xl font-bold mb-6">Edit User</h1>
                 <UserForm
                     action={updateUserWithId}
                     initialData={user}
+                    roles={roles}
                 />
             </div>
         </DefaultLayout>
