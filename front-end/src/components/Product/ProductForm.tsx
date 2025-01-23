@@ -35,11 +35,12 @@ export default function ProductForm({
     const handleFileSelection = (files: FileList | null) => {
         if (files) {
             const fileArray = Array.from(files);
-            if (fileArray.length + selectedFiles.length > 5) {
+
+            const totalImages = previewImages.length + fileArray.length;
+            if (totalImages > 5) {
                 alert("You can only upload up to 5 images.");
                 return;
             }
-
             setSelectedFiles(prev => [...prev, ...fileArray]);
 
             const previews = fileArray.map((file) => {
@@ -78,17 +79,17 @@ export default function ProductForm({
 
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
-        e.currentTarget.classList.add('bg-gray-50');
+        e.currentTarget.classList.add('bg-gray-300');
     };
 
     const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
-        e.currentTarget.classList.remove('bg-gray-50');
+        e.currentTarget.classList.remove('bg-gray-300');
     };
 
     const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
-        e.currentTarget.classList.remove('bg-gray-50');
+        e.currentTarget.classList.remove('bg-gray-300');
         handleFileSelection(e.dataTransfer.files);
     };
 
