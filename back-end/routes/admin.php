@@ -1,10 +1,12 @@
 <?php
 
+use App\Http\Controllers\Dashboard\BlogController;
 use App\Http\Controllers\Dashboard\CategoryController;
 use App\Http\Controllers\Dashboard\InvoiceController;
 use App\Http\Controllers\Dashboard\OrderController;
 use App\Http\Controllers\Dashboard\ProductController;
 use App\Http\Controllers\Dashboard\SettingController;
+use App\Http\Controllers\Dashboard\TagController;
 use App\Http\Controllers\Dashboard\UserController;
 use App\Http\Controllers\Dashboard\RoleController;
 use Illuminate\Support\Facades\Route;
@@ -20,6 +22,8 @@ Route::prefix('admin')->group(function () {
     Route::apiResource('products', ProductController::class);
     Route::apiResource('orders', OrderController::class);
     Route::apiResource('invoices', InvoiceController::class);
+    Route::apiResource('blogs', BlogController::class);
+    Route::apiResource('tags', TagController::class);
     Route::get('user/{userId}/invoices', [InvoiceController::class, 'getUserInvoices']);
     Route::get('settings/groups', [SettingController::class, 'getGroups']);
     Route::get('settings/types', [SettingController::class, 'getTypes']);
