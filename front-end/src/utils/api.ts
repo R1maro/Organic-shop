@@ -7,6 +7,9 @@ import {
 } from '@/types/product';
 import {CategoriesResponse, SingleCategoryResponse, Category} from "@/types/category";
 import {SettingsResponse} from "@/types/setting";
+import {BlogApiData} from '@/types/blog';
+import {cookies} from "next/headers";
+
 
 export async function getUsers(page: number = 1, search: string = '') {
     const url = new URL(`${config.API_URL}/admin/users`);
@@ -404,6 +407,7 @@ export async function getSetting(id: string) {
 
     return response.json();
 }
+
 export async function getSettingGroups() {
     const res = await fetch(`${config.API_URL}/admin/settings/groups`, {
         cache: 'no-store',
@@ -468,6 +472,7 @@ export async function apiCreateSetting(data: any, csrfToken: string) {
 
     return responseData;
 }
+
 export async function apiUpdateSetting(
     id: string,
     data: any,
@@ -504,6 +509,182 @@ export async function apiUpdateSetting(
 
     return responseData;
 }
+
+export async function getBlogs(page: number = 1, categoryId?: string): Promise<{
+    data: BlogApiData[];
+    meta: {
+        current_page: number;
+        total: number;
+        per_page: number;
+    };
+}> {
+    const url = new URL(`${config.API_URL}/admin/blogs`);
+
+    url.searchParams.append('page', page.toString());
+    if (categoryId) {
+        url.searchParams.append('category_id', categoryId);
+    }
+
+    const res = await fetch(url.toString(), {
+        cache: 'no-store',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+
+    const response = await res.json()
+    if (!res.ok) {
+        throw new Error(response.message || 'Failed to fetch blogs');
+    }
+
+    return response;
+}
+
+
+export async function apiCreateBlog(data: BlogApiData) {
+    const cookieStore = cookies();
+    const token = cookieStore.get("token")?.value;
+
+    if (!token) {
+        throw new Error('Authentication token is missing');
+    }
+
+    const formData = new FormData();
+    try {
+
+
+        Object.entries(data).forEach(([key, value]) => {
+            if (value !== null && value !== undefined) {
+                if (Array.isArray(value)) {
+                    value.forEach((item, index) => {
+                        formData.append(`${key}[${index}]`, item.toString());
+                    });
+                } else if (value instanceof File) {
+                    formData.append(key, value);
+                } else {
+                    formData.append(key, String(value));
+                }
+            }
+        });
+
+        const response = await fetch(`${config.API_URL}/admin/blogs`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json',
+            },
+            body: formData,
+            credentials: 'include',
+        });
+
+        const responseData = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                responseData.message ||
+                responseData.error ||
+                `Server error: ${response.status}`
+            );
+        }
+
+        return responseData;
+    } catch (error) {
+        // Log the complete error
+        console.error('API call failed:', {
+            error,
+            message: error instanceof Error ? error.message : 'Unknown error',
+            stack: error instanceof Error ? error.stack : undefined
+        });
+
+        if (error instanceof Error) {
+            throw error;
+        }
+        throw new Error(String(error));
+    }
+}
+
+export async function apiUpdateBlog(id: string, data: BlogApiData) {
+    const cookieStore = cookies();
+    const token = cookieStore.get("token")?.value;
+
+    if (!token) {
+        throw new Error('Authentication token is missing');
+    }
+
+    const formData = new FormData();
+    try {
+        Object.entries(data).forEach(([key, value]) => {
+            if (value !== null && value !== undefined) {
+                if (Array.isArray(value)) {
+                    value.forEach((item, index) => {
+                        formData.append(`${key}[${index}]`, item.toString());
+                    });
+                } else if (value instanceof File) {
+                    formData.append(key, value);
+                } else {
+                    formData.append(key, String(value));
+                }
+            }
+        });
+
+        formData.append('_method', 'PUT');
+
+        const response = await fetch(`${config.API_URL}/admin/blogs/${id}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json',
+            },
+            body: formData,
+            credentials: 'include',
+        });
+
+        const responseData = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                responseData.message ||
+                responseData.error ||
+                `Server error: ${response.status}`
+            );
+        }
+
+        return responseData;
+    } catch (error) {
+        console.error('API call failed:', error);
+        if (error instanceof Error) {
+            throw error;
+        }
+        throw new Error(String(error));
+    }
+}
+
+
+export async function getBlog(id: string) {
+    const response = await fetch(`${config.API_URL}/admin/blogs/${id}`, {
+        credentials: 'include',
+    });
+
+    if (!response.ok) {
+        throw new Error('Failed to fetch blog');
+    }
+
+    return response.json();
+}
+
+export async function getAllTags() {
+    const res = await fetch(`${config.API_URL}/admin/tags`, {
+        credentials: 'include',
+    });
+
+    if (!res.ok) {
+        throw new Error('Failed to fetch tags');
+    }
+
+    const response = await res.json();
+    return response.data;
+}
+
 
 
 
