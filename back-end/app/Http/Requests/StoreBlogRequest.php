@@ -18,7 +18,7 @@ class StoreBlogRequest extends FormRequest
             'slug' => ['nullable', 'string', 'max:255', 'unique:blogs,slug'],
             'content' => ['required', 'string'],
             'excerpt' => ['nullable', 'string', 'max:500'],
-            'featured_image' => ['nullable', 'string', 'max:255'],
+            'featured_image' => ['nullable', 'file', 'image', 'max:5120'],
             'status' => ['required', Rule::in(['draft', 'published', 'archived'])],
             'published_at' => ['nullable', 'date'],
             'meta_title' => ['nullable', 'string', 'max:255'],
