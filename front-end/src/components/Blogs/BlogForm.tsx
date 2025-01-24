@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 
 const ReactQuill = dynamic(() => import('react-quill'), {ssr: false});
 import 'react-quill/dist/quill.snow.css';
+import config from "@/config/config";
 
 export default function BlogForm({
                                      categories,
@@ -23,13 +24,41 @@ export default function BlogForm({
         initialData?.tags?.map(tag => tag.id) || []
     );
     const [content, setContent] = useState(initialData?.content || '');
-    const [featuredImage, setFeaturedImage] = useState<string>(initialData?.featured_image || '');
+    const [featuredImage, setFeaturedImage] = useState<string>(() => {
+        if (initialData?.featured_image) {
+            if (typeof initialData.featured_image === 'string') {
+                return initialData.featured_image;
+            } else {
+                return initialData.featured_image.original;
+            }
+        }
+        return '';
+    });
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [metaKeywords, setMetaKeywords] = useState<string[]>(
         Array.isArray(initialData?.meta?.keywords) ? initialData.meta.keywords : []
     );
+    const [metaKeywordsInput, setMetaKeywordsInput] = useState(
+        Array.isArray(initialData?.meta?.keywords)
+            ? initialData.meta.keywords.join(', ')
+            : ''
+    );
+
+
+
+    useEffect(() => {
+        if (initialData?.featured_image) {
+            if (typeof initialData.featured_image === 'string') {
+                setFeaturedImage(`${config.PUBLIC_URL}${initialData.featured_image}`);
+            } else if ('original' in initialData.featured_image) {
+                setFeaturedImage(`${config.PUBLIC_URL}${initialData.featured_image.original}`);
+            }
+        }
+    }, [initialData]);
 
     const handleMetaKeywordsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const input = e.target.value;
+        setMetaKeywordsInput(input);
         const keywords = e.target.value.split(',')
             .map(keyword => keyword.trim())
             .filter(keyword => keyword.length > 0 && keyword.length <= 50);
@@ -151,7 +180,7 @@ export default function BlogForm({
                                 <img
                                     src={featuredImage}
                                     alt="Preview"
-                                    className="w-full h-48 object-cover rounded-lg"
+                                    className="w-full h-full object-cover rounded-lg"
                                 />
                             ) : (
                                 <div className="text-center">
@@ -276,7 +305,7 @@ export default function BlogForm({
                         <input
                             type="text"
                             id="meta_keywords"
-                            value={metaKeywords.join(', ')}
+                            value={metaKeywordsInput}
                             onChange={handleMetaKeywordsChange}
                             placeholder="Enter keywords separated by commas (max 50 characters each)"
                             className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"

@@ -1,6 +1,5 @@
 import {redirect} from 'next/navigation';
 import {revalidatePath} from 'next/cache';
-import {cookies} from 'next/headers';
 import BlogForm from '@/components/Blogs/BlogForm';
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import {apiCreateBlog, getAllCategories, getAllTags} from "@/utils/api";
@@ -18,6 +17,8 @@ async function createBlogAction(formData: FormData) {
         const metaKeywords = JSON.parse(formData.get('meta_keywords')?.toString() || '[]');
         const categories = JSON.parse(formData.get('categories')?.toString() || '[]');
         const tags = JSON.parse(formData.get('tags')?.toString() || '[]');
+        const featuredImage = formData.get('featured_image');
+
 
 
         const data = {
@@ -31,7 +32,7 @@ async function createBlogAction(formData: FormData) {
             meta_keywords: metaKeywords,
             categories: categories,
             tags: tags,
-            featured_image: formData.get('featured_image') as File || null,
+            featured_image: featuredImage instanceof File ? featuredImage : undefined,
         };
 
 
@@ -48,10 +49,11 @@ async function createBlogAction(formData: FormData) {
 }
 
 export default async function CreateBlogPage() {
-    const [categories, tags] = await Promise.all([
+    const [categories, tagsResponse] = await Promise.all([
         getAllCategories(),
         getAllTags()
     ]);
+    const tags = tagsResponse.data;
 
     return (
 

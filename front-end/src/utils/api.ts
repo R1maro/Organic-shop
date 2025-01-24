@@ -7,7 +7,7 @@ import {
 } from '@/types/product';
 import {CategoriesResponse, SingleCategoryResponse, Category} from "@/types/category";
 import {SettingsResponse} from "@/types/setting";
-import {BlogApiData} from '@/types/blog';
+import {BlogCreatePayload, BlogApiResponse } from '@/types/blog';
 import {cookies} from "next/headers";
 
 
@@ -511,7 +511,7 @@ export async function apiUpdateSetting(
 }
 
 export async function getBlogs(page: number = 1, categoryId?: string): Promise<{
-    data: BlogApiData[];
+    data: BlogApiResponse[];
     meta: {
         current_page: number;
         total: number;
@@ -541,7 +541,7 @@ export async function getBlogs(page: number = 1, categoryId?: string): Promise<{
 }
 
 
-export async function apiCreateBlog(data: BlogApiData) {
+export async function apiCreateBlog(data: BlogCreatePayload) {
     const cookieStore = cookies();
     const token = cookieStore.get("token")?.value;
 
@@ -589,12 +589,6 @@ export async function apiCreateBlog(data: BlogApiData) {
 
         return responseData;
     } catch (error) {
-        // Log the complete error
-        console.error('API call failed:', {
-            error,
-            message: error instanceof Error ? error.message : 'Unknown error',
-            stack: error instanceof Error ? error.stack : undefined
-        });
 
         if (error instanceof Error) {
             throw error;
@@ -603,7 +597,7 @@ export async function apiCreateBlog(data: BlogApiData) {
     }
 }
 
-export async function apiUpdateBlog(id: string, data: BlogApiData) {
+export async function apiUpdateBlog(id: string, data: Partial<BlogApiResponse>): Promise<void> {
     const cookieStore = cookies();
     const token = cookieStore.get("token")?.value;
 
@@ -651,10 +645,6 @@ export async function apiUpdateBlog(id: string, data: BlogApiData) {
 
         return responseData;
     } catch (error) {
-        console.error('API call failed:', error);
-        if (error instanceof Error) {
-            throw error;
-        }
         throw new Error(String(error));
     }
 }
@@ -663,6 +653,7 @@ export async function apiUpdateBlog(id: string, data: BlogApiData) {
 export async function getBlog(id: string) {
     const response = await fetch(`${config.API_URL}/admin/blogs/${id}`, {
         credentials: 'include',
+        cache: 'no-store',
     });
 
     if (!response.ok) {
@@ -681,8 +672,7 @@ export async function getAllTags() {
         throw new Error('Failed to fetch tags');
     }
 
-    const response = await res.json();
-    return response.data;
+    return await res.json();
 }
 
 

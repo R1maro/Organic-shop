@@ -1,14 +1,20 @@
 import Link from 'next/link';
 import Pagination from '@/components/Pagination/Pagination';
 import { getBlogs } from '@/utils/api';
-import {Blog} from "@/types/blog";
+import {BlogApiListResponse, BlogApiResponse, MediaUrls} from "@/types/blog";
+import config from "@/config/config";
 
-async function BlogList({page = 1, categoryId,}: {
+interface BlogListProps {
     page?: number;
     categoryId?: string;
-}) {
-    const blogs = await getBlogs(page, categoryId);
+}
+async function BlogList({page = 1, categoryId,}: BlogListProps) {
+    const blogs:BlogApiListResponse = await getBlogs(page, categoryId);
 
+
+    const isMediaUrls = (featured_image: any): featured_image is MediaUrls => {
+        return featured_image && 'original' in featured_image;
+    };
     return (
         <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
             <div className="mb-6 flex flex-col gap-3">
@@ -43,18 +49,34 @@ async function BlogList({page = 1, categoryId,}: {
                         </tr>
                         </thead>
                         <tbody>
-                        {blogs.data.map((blog : Blog) => (
-
+                        {blogs.data.map((blog :  BlogApiResponse) => (
                             <tr key={blog.id}>
                                 <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                    {blog.featured_image ? (
-                                        <img
-                                            src={blog.featured_image}
-                                            alt={blog.title}
-                                            className="h-20 w-20 object-cover rounded-md"
-                                        />
+                                    {blog.featured_image && isMediaUrls(blog.featured_image) ? (
+                                        <div className="relative h-20 w-20">
+                                            <img
+                                                src={`${config.PUBLIC_URL}${blog.featured_image.original}`}
+                                                alt={blog.title}
+                                                className="h-full w-full object-cover rounded-md"
+                                            />
+                                        </div>
                                     ) : (
-                                        <span>No Image</span>
+                                        <div
+                                            className="flex h-20 w-20 items-center justify-center rounded-md bg-gray-100 dark:bg-gray-800">
+                                            <svg
+                                                className="h-8 w-8 text-gray-400"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth="2"
+                                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                                />
+                                            </svg>
+                                        </div>
                                     )}
                                 </td>
                                 <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark xl:pl-11">
@@ -129,7 +151,7 @@ async function BlogList({page = 1, categoryId,}: {
                     totalItems={blogs.meta.total}
                     itemsPerPage={blogs.meta.per_page}
                     baseUrl="/dashboard/blogs"
-                    searchParams={categoryId ? { category_id: categoryId } : {}}
+                    searchParams={categoryId ? {category_id: categoryId} : {}}
                     showItemCount={true}
                     className="sm:flex sm:flex-1 sm:items-center sm:justify-between"
                 />
