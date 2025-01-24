@@ -15,7 +15,11 @@ class BlogResource extends JsonResource
             'slug' => $this->slug,
             'content' => $this->content,
             'excerpt' => $this->excerpt,
-            'featured_image' => $this->featured_image,
+            'featured_image' => [
+                'original' => $this->getFirstMediaUrl('blog_images'),
+                'thumbnail' => $this->getFirstMediaUrl('blog_images', 'thumbnail'),
+                'responsive' => $this->getFirstMedia('blog_images')?->responsive ?? null,
+            ],
             'status' => $this->status,
             'published_at' => $this->published_at?->format('Y-m-d H:i:s'),
             'read_time' => $this->read_time,
