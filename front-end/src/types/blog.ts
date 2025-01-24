@@ -1,3 +1,11 @@
+export interface MediaUrls {
+    original: string;
+    thumbnail: string;
+    responsive: {
+        [key: string]: string;
+    } | null;
+}
+
 export interface Category {
     id: number;
     name: string;
@@ -14,12 +22,19 @@ export interface MetaData {
     keywords?: string[];
 }
 
+export interface BlogMeta {
+    current_page: number;
+    total: number;
+    per_page: number;
+}
+
 export interface BlogFormData {
+    id?: number;
     title?: string;
     slug?: string;
     content?: string;
     excerpt?: string;
-    featured_image?: string;
+    featured_image?: MediaUrls | string;
     status?: 'draft' | 'published' | 'archived';
     published_at?: string;
     meta?: MetaData;
@@ -33,16 +48,41 @@ export interface BlogFormProps {
     initialData?: BlogFormData;
 }
 
-export interface BlogApiData {
+export interface BlogApiResponse {
+    id?: number;
     title: string;
     content: string;
     excerpt?: string;
-    featured_image?: File;
+    featured_image: MediaUrls | File;
+    author: {
+        id: number;
+        name: string;
+    };
+    status: string;
+    published_at?: string;
+    meta: MetaData;
+    meta_title?: string;
+    meta_description?: string;
+    meta_keywords?: string[];
+    categories?: Category[];
+    tags?: Tag[];
+}
+
+export interface BlogCreatePayload {
+    title: string;
+    content: string;
+    excerpt: string;
     status: string;
     published_at?: string;
     meta_title?: string;
     meta_description?: string;
-    meta_keywords?: string[];
-    categories?: number[];
-    tags?: number[];
+    meta_keywords: string[];
+    categories: any[];
+    tags: any[];
+    featured_image?: File;
+}
+
+export interface BlogApiListResponse {
+    data: BlogApiResponse[];
+    meta: BlogMeta;
 }
