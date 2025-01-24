@@ -14,7 +14,7 @@ class BlogController extends Controller
     public function index(Request $request)
     {
         $blogs = Blog::query()
-            ->with('user')
+            ->with(['user' , 'media'])
             ->when($request->status, function ($query, $status) {
                 return $query->where('status', $status);
             })
@@ -43,11 +43,20 @@ class BlogController extends Controller
             if (!$user) {
                 return response()->json(['message' => 'Unauthenticated'], 401);
             }
+            $validated = $request->validated();
+
+            unset($validated['featured_image']);
 
             $blog = Blog::create([
-                ...$request->validated(),
+                ...$validated,
                 'user_id' => $user->id,
             ]);
+
+            if ($request->hasFile('featured_image')) {
+                $blog->addMediaFromRequest('featured_image')
+                    ->withResponsiveImages()
+                    ->toMediaCollection('blog_images');
+            }
 
             if ($request->has('categories')) {
                 $blog->categories()->sync($request->categories);
@@ -68,9 +77,24 @@ class BlogController extends Controller
         return new BlogResource($blog->load(['categories', 'tags', 'user']));
     }
 
+
     public function update(UpdateBlogRequest $request, Blog $blog)
     {
-        $blog->update($request->validated());
+
+        $validated = $request->validated();
+
+        unset($validated['featured_image']);
+
+        $blog->update($validated);
+
+        if ($request->hasFile('featured_image')) {
+            $blog->clearMediaCollection('blog_images');
+
+            $blog->addMediaFromRequest('featured_image')
+                ->withResponsiveImages()
+                ->toMediaCollection('blog_images');
+        }
+
 
         if ($request->has('categories')) {
             $blog->categories()->sync($request->categories);

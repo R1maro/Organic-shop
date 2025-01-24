@@ -10,13 +10,15 @@ class CustomPathGenerator implements PathGenerator
 {
     public function getPath(Media $media): string
     {
-        // Check the model type and define the storage path accordingly
         if ($media->model_type === \App\Models\Setting::class) {
             return 'settings/'. $media->model_id . '/';
         }
 
         if ($media->model_type === \App\Models\Product::class) {
             return 'products/'. $media->model_id . '/';
+        }
+        if ($media->model_type === \App\Models\Blog::class) {
+            return 'blogs/'. $media->model_id . '/';
         }
 
         // Default path if no specific model is matched
