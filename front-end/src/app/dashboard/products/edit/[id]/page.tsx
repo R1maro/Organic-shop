@@ -57,6 +57,7 @@ export default async function EditProductPage({params: {id},}: {
     const product = productResponse.data;
 
     const initialFormData: ProductFormData = {
+        id: product.id,
         name: product.name || '',
         description: product.description || '',
         price: product.price || 0,
