@@ -32,6 +32,7 @@ export interface ProductApiData {
 }
 
 export interface ProductFormData {
+  id?: number;
   name: string;
   description: string;
   price: number;

@@ -1,6 +1,7 @@
 'use client';
 import {useState, useEffect} from 'react';
 import {ProductFormProps} from "@/types/product";
+import config from "@/config/config";
 
 
 export default function ProductForm({
@@ -56,10 +57,33 @@ export default function ProductForm({
             });
         }
     };
-    const handleImageDelete = (index: number) => {
-        setPreviewImages((prevImages) => prevImages.filter((_, i) => i !== index));
-        setSelectedFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    const handleImageDelete = async (index: number) => {
+        const imageUrl = previewImages[index];
+        const isExistingImage = initialData?.image_urls?.includes(imageUrl); // Check if it's an existing image
+
+        try {
+            if (isExistingImage) {
+                const response = await fetch(`${config.API_URL}/admin/products/${initialData?.id}/image`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ image_url: imageUrl }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to delete image');
+                }
+            }
+
+            setPreviewImages((prevImages) => prevImages.filter((_, i) => i !== index));
+            setSelectedFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+        } catch (error) {
+            console.error('Error deleting image:', error);
+        }
     };
+
+
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -286,7 +310,7 @@ export default function ProductForm({
                                 <button
                                     type="button"
                                     onClick={() => handleImageDelete(index)}
-                                    className="absolute top-0 right-0 bg-red-500 text-white p-1 rounded-full text-xs"
+                                    className="absolute top-0 right-0 bg-red-500 text-white p-1 px-2 rounded-full text-xs"
                                 >
                                     X
                                 </button>
