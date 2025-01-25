@@ -20,6 +20,7 @@ Route::prefix('admin')->group(function () {
     Route::get('roles', [RoleController::class, 'index']);
     Route::apiResource('categories', CategoryController::class);
     Route::apiResource('products', ProductController::class);
+    Route::delete('products/{product}/image', [ProductController::class, 'deleteImage']);
     Route::apiResource('orders', OrderController::class);
     Route::apiResource('invoices', InvoiceController::class);
     Route::apiResource('blogs', BlogController::class);

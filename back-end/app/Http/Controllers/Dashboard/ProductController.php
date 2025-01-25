@@ -94,7 +94,6 @@ class ProductController extends Controller
 
 
             if ($request->hasFile('images')) {
-                $product->clearMediaCollection('product_image');
                 foreach ($request->file('images') as $image) {
                     $product->addMedia($image)
                         ->withResponsiveImages()
@@ -142,5 +141,60 @@ class ProductController extends Controller
             Cache::forget('products_all_page_' . $i);
         }
     }
+    public function deleteImage(Request $request, Product $product)
+    {
+        try {
+            $imageUrl = $request->input('image_url'); // Thumb URL from the frontend
+            if (!$imageUrl) {
+                return response()->json(['error' => 'Image URL is required.'], 400);
+            }
+
+            \Log::info("Image URL from request: $imageUrl");
+
+            // Extract the file name without the directory path
+            $thumbFileName = basename($imageUrl); // e.g., "1736637466-ezgif.com-jpg-to-webp-converter-thumb.jpg"
+
+            // Remove the "-thumb" suffix and get the base file name (without extension)
+            $baseFileNameWithoutExtension = pathinfo(str_replace('-thumb', '', $thumbFileName), PATHINFO_FILENAME); // "1736637466-ezgif.com-jpg-to-webp-converter"
+            \Log::info("Base file name (without extension): $baseFileNameWithoutExtension");
+
+            // Check if the image is already stored in the media collection
+            $media = $product->getMedia('product_image')->first(function ($media) use ($baseFileNameWithoutExtension) {
+                $mediaFileNameWithoutExtension = pathinfo($media->file_name, PATHINFO_FILENAME); // Strip the extension
+                return $mediaFileNameWithoutExtension === $baseFileNameWithoutExtension;
+            });
+
+            if ($media) {
+                // Image exists in the media collection
+                \Log::info("Deleting media with file name: {$media->file_name} and URL: {$media->getFullUrl()}");
+                $media->delete(); // Deletes both the main image and its conversions
+            } else {
+                // Image might be in temporary storage (not yet saved to the media collection)
+                $temporaryFilePath = storage_path('app/public/temp/' . $thumbFileName);
+
+                if (file_exists($temporaryFilePath)) {
+                    \Log::info("Deleting temporary file: $temporaryFilePath");
+                    unlink($temporaryFilePath); // Delete the temporary file
+                } else {
+                    \Log::error("Image not found in media collection or temporary storage: $thumbFileName");
+                    return response()->json(['error' => 'Image not found.'], 404);
+                }
+            }
+
+            return response()->json(['message' => 'Image deleted successfully.']);
+        } catch (\Exception $e) {
+            \Log::error('Error deleting image: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to delete image.'], 500);
+        }
+    }
+
+
+
+
+
+
+
+
+
 
 }
