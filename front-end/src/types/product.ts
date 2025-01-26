@@ -13,6 +13,8 @@ export interface Product {
   formatted_price: string;
   formatted_final_price: string;
   image_urls: string;
+  display_photo_url: string;
+  display_photo_index: number;
   category: {
     id: number;
     name: string;
@@ -29,6 +31,7 @@ export interface ProductApiData {
   category_id: number;
   status: number;
   images?: File[];
+  display_photo_index: number;
 }
 
 export interface ProductFormData {
@@ -42,6 +45,7 @@ export interface ProductFormData {
   category_id: number;
   status: boolean;
   image_urls?: string;
+  display_photo_index?: number;
 }
 export interface ProductCreateUpdateData {
   name: string | null;
