@@ -16,7 +16,7 @@ export default function ProductForm({
     );
     const [previewImages, setPreviewImages] = useState<string[]>([]);
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-    const [displayPhotoIndex, setDisplayPhotoIndex] = useState<number>(0);
+    const [displayPhotoIndex, setDisplayPhotoIndex] = useState<number>(initialData?.display_photo_index ?? 0);
 
 
     const [price, setPrice] = useState<string>(initialData?.price?.toString() || "");
@@ -31,7 +31,10 @@ export default function ProductForm({
         } else {
             setPreviewImages([]);
         }
-    }, [initialData?.category_id, initialData?.image_urls]);
+        if (typeof initialData?.display_photo_index === 'number') {
+            setDisplayPhotoIndex(initialData.display_photo_index);
+        }
+    }, [initialData?.category_id, initialData?.image_urls,initialData?.display_photo_index]);
 
 
     const handleFileSelection = (files: FileList | null) => {
@@ -309,16 +312,14 @@ export default function ProductForm({
                 {previewImages.length > 0 && (
                     <div className="w-full">
                         <label className="mb-3 block text-sm font-medium text-black dark:text-white">
-                            Product Images
+                            Product Images (Click to set display photo)
                         </label>
                         <div className="flex flex-wrap gap-4">
                             {previewImages.map((src, index) => (
                                 <div key={index} className="relative">
                                     <div
-                                        className={`relative border-2 ${
-                                            index === displayPhotoIndex
-                                                ? 'border-blue-500'
-                                                : 'border-transparent'
+                                        className={`w-full h-32 object-cover rounded-md cursor-pointer ${
+                                            index === displayPhotoIndex ? 'ring-4 ring-blue-500' : ''
                                         }`}
                                     >
                                         <img
@@ -328,7 +329,7 @@ export default function ProductForm({
                                             onClick={() => setDisplayPhotoIndex(index)}
                                         />
                                         {index === displayPhotoIndex && (
-                                            <span className="absolute top-2 left-2 bg-blue-500 text-white px-2 py-1 rounded-md text-xs">
+                                            <span className="absolute bottom-0 left-5 bg-blue-500 text-white px-2 py-1 rounded-md text-xs">
                                             Display Photo
                                         </span>
                                         )}
