@@ -20,6 +20,8 @@ async function updateProductAction(id: string, formData: FormData) {
 
     try {
         const imageFiles = formData.getAll('images[]');
+        const displayPhotoIndex = parseInt(formData.get('display_photo_index') as string || '0');
+
 
 
 
@@ -33,6 +35,9 @@ async function updateProductAction(id: string, formData: FormData) {
             category_id: parseInt(formData.get('category_id') as string || '0'),
             status: formData.get('status') !== null ? 1 : 0,
             images:imageFiles as File[],
+            display_photo_index: displayPhotoIndex,
+
+
         };
 
         await apiUpdateProduct(id, data, csrfToken);
@@ -66,7 +71,10 @@ export default async function EditProductPage({params: {id},}: {
         sku: product.sku || '',
         category_id: product.category.id || 0,
         status: product.status === 1,
-        image_urls: product.image_urls || ''
+        image_urls: product.image_urls || '',
+        display_photo_index: product.display_photo_index || 0
+
+
     };
 
 

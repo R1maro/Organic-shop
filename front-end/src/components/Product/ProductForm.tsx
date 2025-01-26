@@ -16,6 +16,7 @@ export default function ProductForm({
     );
     const [previewImages, setPreviewImages] = useState<string[]>([]);
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+    const [displayPhotoIndex, setDisplayPhotoIndex] = useState<number>(0);
 
 
     const [price, setPrice] = useState<string>(initialData?.price?.toString() || "");
@@ -75,6 +76,11 @@ export default function ProductForm({
                     throw new Error('Failed to delete image');
                 }
             }
+            if (index === displayPhotoIndex && previewImages.length > 1) {
+                setDisplayPhotoIndex(0);
+            } else if (index < displayPhotoIndex) {
+                setDisplayPhotoIndex(prev => prev - 1);
+            }
 
             setPreviewImages((prevImages) => prevImages.filter((_, i) => i !== index));
             setSelectedFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
@@ -90,6 +96,8 @@ export default function ProductForm({
         const formData = new FormData(e.currentTarget);
 
         formData.delete('images[]');
+
+        formData.append('display_photo_index', displayPhotoIndex.toString());
 
         selectedFiles.forEach(file => {
             formData.append('images[]', file);
@@ -299,23 +307,42 @@ export default function ProductForm({
                 </div>
 
                 {previewImages.length > 0 && (
-                    <div className="w-full h-full flex flex-wrap justify-center items-center">
-                        {previewImages.map((src, index) => (
-                            <div key={index} className="relative m-2">
-                                <img
-                                    src={src}
-                                    alt={`Preview ${index}`}
-                                    className="w-32 h-32 object-cover rounded-md cursor-pointer"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => handleImageDelete(index)}
-                                    className="absolute top-0 right-0 bg-red-500 text-white p-1 px-2 rounded-full text-xs"
-                                >
-                                    X
-                                </button>
-                            </div>
-                        ))}
+                    <div className="w-full">
+                        <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                            Product Images
+                        </label>
+                        <div className="flex flex-wrap gap-4">
+                            {previewImages.map((src, index) => (
+                                <div key={index} className="relative">
+                                    <div
+                                        className={`relative border-2 ${
+                                            index === displayPhotoIndex
+                                                ? 'border-blue-500'
+                                                : 'border-transparent'
+                                        }`}
+                                    >
+                                        <img
+                                            src={src}
+                                            alt={`Preview ${index}`}
+                                            className="w-32 h-32 object-cover rounded-md cursor-pointer"
+                                            onClick={() => setDisplayPhotoIndex(index)}
+                                        />
+                                        {index === displayPhotoIndex && (
+                                            <span className="absolute top-2 left-2 bg-blue-500 text-white px-2 py-1 rounded-md text-xs">
+                                            Display Photo
+                                        </span>
+                                        )}
+                                        <button
+                                            type="button"
+                                            onClick={() => handleImageDelete(index)}
+                                            className="absolute top-2 right-2 bg-red-500 text-white p-1 px-2 rounded-full text-xs"
+                                        >
+                                            X
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 )}
 
