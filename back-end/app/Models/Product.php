@@ -26,9 +26,10 @@ class Product extends Model implements HasMedia
         'sku',
         'status',
         'category_id',
+        'display_photo_index'
     ];
 
-    protected $appends = ['formatted_price', 'formatted_final_price', 'image_urls'];
+    protected $appends = ['formatted_price', 'formatted_final_price', 'image_urls' , 'display_photo_url' ];
 
     protected static function boot()
     {
@@ -53,6 +54,7 @@ class Product extends Model implements HasMedia
         return max(0, $this->price - $this->discount);
     }
 
+
     public function registerMediaConversions(Media $media = null): void
     {
         $this->addMediaConversion('thumb')
@@ -69,6 +71,21 @@ class Product extends Model implements HasMedia
         return $this->getMedia('product_image')->map(function ($media) {
             return $media->getFullUrl('thumb') ?: $media->getFullUrl();
         });
+    }
+    public function getDisplayPhotoUrlAttribute()
+    {
+
+        $media = $this->getMedia('product_image');
+        if ($media->isEmpty()) {
+            return null;
+        }
+
+        $index = $this->display_photo_index;
+        if ($index >= $media->count()) {
+            $index = 0;
+        }
+
+        return $media[$index]->getFullUrl('thumb') ?: $media[$index]->getFullUrl();
     }
 
     public function category()
