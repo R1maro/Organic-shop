@@ -1,11 +1,35 @@
 'use client';
 import {useState, useEffect} from 'react';
 import {BlogFormProps} from "@/types/blog";
-import dynamic from 'next/dynamic';
 
-const ReactQuill = dynamic(() => import('react-quill'), {ssr: false});
-import 'react-quill/dist/quill.snow.css';
 import config from "@/config/config";
+
+import {CKEditor} from '@ckeditor/ckeditor5-react';
+import {
+    ClassicEditor,
+    ParagraphButtonUI,
+    Essentials,
+    Paragraph,
+    Bold,
+    Italic,
+    Code,
+    Strikethrough,
+    Subscript,
+    Superscript,
+    Underline,
+    List,
+    AutoLink,
+    Link,
+    Table,
+    TableToolbar,
+    RemoveFormat,
+    Alignment,
+    Font,
+    Indent,
+    IndentBlock
+} from 'ckeditor5';
+
+import 'ckeditor5/ckeditor5.css';
 
 export default function BlogForm({
                                      categories,
@@ -43,7 +67,6 @@ export default function BlogForm({
             ? initialData.meta.keywords.join(', ')
             : ''
     );
-
 
 
     useEffect(() => {
@@ -134,14 +157,29 @@ export default function BlogForm({
                 </div>
 
                 {/* Content */}
-                <div>
+                <div className="custom-editor">
                     <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                         Content
                     </label>
-                    <ReactQuill
-                        value={content}
-                        onChange={setContent}
-                        className="h-64 mb-12"
+                    <CKEditor
+                        editor={ClassicEditor}
+                        data={content}
+                        onChange={(event, editor) => setContent(editor.getData())}
+                        config={{
+                            licenseKey: 'GPL',
+                            plugins: [Font, ParagraphButtonUI, Indent, IndentBlock, Essentials, Paragraph, Bold, Italic, List, Link, AutoLink, Table, TableToolbar, RemoveFormat, Alignment, Code, Strikethrough, Subscript, Superscript, Underline],
+                            toolbar: ['undo', 'redo', '|', 'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', 'link', '|', 'bold', 'italic', 'underline', 'strikethrough', 'code', 'subscript', 'superscript', '|', 'outdent', 'indent', '|', 'bulletedList', 'numberedList', 'alignment', '|', 'insertTable', '|', 'removeFormat'],
+                            table: {
+                                contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells']
+                            },
+                            heading: {
+                                options: [
+                                    {model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph'},
+                                    {model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1'},
+                                    {model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2'}
+                                ]
+                            }
+                        }}
                     />
                 </div>
 
