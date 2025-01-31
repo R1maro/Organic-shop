@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Resources\BlogResource;
 use App\Http\Requests\StoreBlogRequest;
 use App\Http\Requests\UpdateBlogRequest;
+use Illuminate\Support\Str;
 
 class BlogController extends Controller
 {
@@ -30,10 +31,11 @@ class BlogController extends Controller
                 });
             })
             ->latest('published_at')
-            ->paginate($request->per_page ?? 15);
+            ->paginate($request->per_page ?? 10);
 
         return BlogResource::collection($blogs);
     }
+
 
     public function store(StoreBlogRequest $request)
     {
@@ -125,5 +127,30 @@ class BlogController extends Controller
         $blog = Blog::withTrashed()->findOrFail($id);
         $blog->forceDelete();
         return response()->noContent();
+    }
+
+    public function uploadImage(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
+        ]);
+
+        try {
+            if (!$request->hasFile('image')) {
+                return response()->json(['message' => 'No image file provided'], 400);
+            }
+
+            $blog = new Blog();
+            $media = $blog->addMediaFromRequest('image')
+                ->withResponsiveImages()
+                ->toMediaCollection('blog-content');
+
+            return response()->json([
+                'url' => $media->getUrl('optimized'),
+                'message' => 'Image uploaded successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Upload failed: ' . $e->getMessage()], 500);
+        }
     }
 }

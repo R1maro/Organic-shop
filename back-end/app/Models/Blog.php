@@ -50,6 +50,13 @@ class Blog extends Model implements HasMedia
             ->singleFile()
             ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp'])
             ->withResponsiveImages();
+
+        $this->addMediaConversion('content')
+            ->width(800)
+            ->height(800)
+            ->sharpen(10)
+            ->nonQueued()
+            ->performOnCollections('blog-content');
     }
     public function registerMediaConversions(Media $media = null): void
     {
@@ -64,6 +71,13 @@ class Blog extends Model implements HasMedia
             ->height(480)
             ->sharpen(10)
             ->nonQueued();
+
+        $this->addMediaConversion('optimized')
+            ->width(1200)
+            ->height(1200)
+            ->optimize()
+            ->performOnCollections('blog-content');
+
     }
 
     public function user()
