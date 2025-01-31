@@ -51,12 +51,7 @@ class Blog extends Model implements HasMedia
             ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp'])
             ->withResponsiveImages();
 
-        $this->addMediaConversion('content')
-            ->width(800)
-            ->height(800)
-            ->sharpen(10)
-            ->nonQueued()
-            ->performOnCollections('blog-content');
+        $this->addMediaConversion('content');
     }
     public function registerMediaConversions(Media $media = null): void
     {
@@ -76,7 +71,7 @@ class Blog extends Model implements HasMedia
             ->width(1200)
             ->height(1200)
             ->optimize()
-            ->performOnCollections('blog-content');
+            ->performOnCollections('content');
 
     }
 
