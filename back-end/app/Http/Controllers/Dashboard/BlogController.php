@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\Blog;
+use App\Models\TemporaryUpload;
 use Illuminate\Http\Request;
 use App\Http\Resources\BlogResource;
 use App\Http\Requests\StoreBlogRequest;
@@ -60,6 +61,8 @@ class BlogController extends Controller
                     ->toMediaCollection('blog_images');
             }
 
+            $this->moveTemporaryMediaToBlog($blog);
+
             if ($request->has('categories')) {
                 $blog->categories()->sync($request->categories);
             }
@@ -97,6 +100,8 @@ class BlogController extends Controller
                 ->toMediaCollection('blog_images');
         }
 
+        $this->moveTemporaryMediaToBlog($blog);
+
 
         if ($request->has('categories')) {
             $blog->categories()->sync($request->categories);
@@ -131,26 +136,86 @@ class BlogController extends Controller
 
     public function uploadImage(Request $request)
     {
-        $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
-        ]);
-
         try {
+
+            $request->validate([
+                'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
+            ]);
+
             if (!$request->hasFile('image')) {
                 return response()->json(['message' => 'No image file provided'], 400);
             }
 
-            $blog = new Blog();
-            $media = $blog->addMediaFromRequest('image')
-                ->withResponsiveImages()
-                ->toMediaCollection('blog-content');
+            $temporaryUpload = new TemporaryUpload();
+            $temporaryUpload->save();
+
+            $media = $temporaryUpload->addMediaFromRequest('image')
+                ->toMediaCollection('temp_content');
+
+            $fullUrl = $media->getUrl();
+
 
             return response()->json([
-                'url' => $media->getUrl('optimized'),
+                'url' => $fullUrl,
                 'message' => 'Image uploaded successfully'
             ]);
         } catch (\Exception $e) {
+            \Log::error('Image upload failed', ['error' => $e->getMessage()]);
             return response()->json(['message' => 'Upload failed: ' . $e->getMessage()], 500);
         }
+    }
+
+    private function moveTemporaryMediaToBlog(Blog $blog)
+    {
+        $content = $blog->content;
+
+        $existingMedia = $blog->getMedia('content');
+
+        $processedTempUploads = collect();
+
+        $temporaryUploads = TemporaryUpload::where('created_at', '>=', now()->subHour())
+            ->whereHas('media')
+            ->get();
+
+        foreach ($temporaryUploads as $tempUpload) {
+            $mediaWasMoved = false;
+
+            foreach ($tempUpload->getMedia('temp_content') as $media) {
+                $oldUrl = $media->getUrl();
+                $newMedia = $media->move($blog, 'content');
+                $newUrl = $newMedia->getUrl();
+
+                $content = str_replace($oldUrl, $newUrl, $content);
+                $mediaWasMoved = true;
+            }
+
+            if ($mediaWasMoved) {
+                $tempUpload->delete();
+            }
+
+            $processedTempUploads->push($tempUpload->id);
+        }
+
+        $blog->update(['content' => $content]);
+
+        foreach ($existingMedia as $media) {
+            $mediaUrl = $media->getUrl();
+            if (!str_contains($content, $mediaUrl)) {
+                $media->delete();
+            }
+        }
+
+        $this->cleanupOldTemporaryUploads();
+    }
+
+    private function cleanupOldTemporaryUploads()
+    {
+        TemporaryUpload::where('created_at', '<', now()->subHour())
+            ->chunk(100, function ($uploads) {
+                foreach ($uploads as $upload) {
+                    $upload->clearMediaCollection('temp_content');
+                    $upload->delete();
+                }
+            });
     }
 }
