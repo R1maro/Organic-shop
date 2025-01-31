@@ -33,7 +33,7 @@ class ImageUploadAdapter {
                                 default: `${config.PUBLIC_URL}${response.url}`
                             });
                         } else {
-                            console.error('Upload failed:', response);
+                            console.error('Upload failed:', response.message);
                             reject(response?.message || 'Upload failed');
                         }
                     });

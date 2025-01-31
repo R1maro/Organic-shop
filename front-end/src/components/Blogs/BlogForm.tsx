@@ -33,7 +33,6 @@ import {
     ImageStyle,
     ImageResize,
     ImageUpload,
-    Base64UploadAdapter
 } from 'ckeditor5';
 
 function uploadPlugin(editor: any) {
@@ -208,7 +207,6 @@ export default function BlogForm({
                                 ImageStyle,
                                 ImageResize,
                                 ImageUpload,
-                                Base64UploadAdapter
                             ],
                             toolbar: {
                                 items: [
