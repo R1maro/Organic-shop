@@ -1,7 +1,7 @@
 'use client';
 import {useState, useEffect} from 'react';
 import {BlogFormProps} from "@/types/blog";
-
+import ImageUploadAdapter from '@/utils/ImageUploadAdapter';
 import config from "@/config/config";
 
 import {CKEditor} from '@ckeditor/ckeditor5-react';
@@ -26,8 +26,20 @@ import {
     Alignment,
     Font,
     Indent,
-    IndentBlock
+    IndentBlock,
+    Image,
+    ImageToolbar,
+    ImageCaption,
+    ImageStyle,
+    ImageResize,
+    ImageUpload,
 } from 'ckeditor5';
+
+function uploadPlugin(editor: any) {
+    editor.plugins.get('FileRepository').createUploadAdapter = (loader: any) => {
+        return new ImageUploadAdapter(loader);
+    };
+}
 
 import 'ckeditor5/ckeditor5.css';
 
@@ -164,21 +176,109 @@ export default function BlogForm({
                     <CKEditor
                         editor={ClassicEditor}
                         data={content}
-                        onChange={(event, editor) => setContent(editor.getData())}
+                        onChange={(event: any, editor: any) => setContent(editor.getData())}
                         config={{
+                            extraPlugins: [uploadPlugin],
                             licenseKey: 'GPL',
-                            plugins: [Font, ParagraphButtonUI, Indent, IndentBlock, Essentials, Paragraph, Bold, Italic, List, Link, AutoLink, Table, TableToolbar, RemoveFormat, Alignment, Code, Strikethrough, Subscript, Superscript, Underline],
-                            toolbar: ['undo', 'redo', '|', 'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', 'link', '|', 'bold', 'italic', 'underline', 'strikethrough', 'code', 'subscript', 'superscript', '|', 'outdent', 'indent', '|', 'bulletedList', 'numberedList', 'alignment', '|', 'insertTable', '|', 'removeFormat'],
-                            table: {
-                                contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells']
+                            plugins: [
+                                Font,
+                                ParagraphButtonUI,
+                                Indent,
+                                IndentBlock,
+                                Essentials,
+                                Paragraph,
+                                Bold,
+                                Italic,
+                                List,
+                                Link,
+                                AutoLink,
+                                Table,
+                                TableToolbar,
+                                RemoveFormat,
+                                Alignment,
+                                Code,
+                                Strikethrough,
+                                Subscript,
+                                Superscript,
+                                Underline,
+                                Image,
+                                ImageToolbar,
+                                ImageCaption,
+                                ImageStyle,
+                                ImageResize,
+                                ImageUpload,
+                            ],
+                            toolbar: {
+                                items: [
+                                    'undo', 'redo',
+                                    '|',
+                                    'fontSize',
+                                    'fontFamily',
+                                    'fontColor',
+                                    'fontBackgroundColor',
+                                    '|',
+                                    'bold',
+                                    'italic',
+                                    'underline',
+                                    'strikethrough',
+                                    'code',
+                                    'subscript',
+                                    'superscript',
+                                    '|',
+                                    'alignment',
+                                    'outdent',
+                                    'indent',
+                                    '|',
+                                    'bulletedList',
+                                    'numberedList',
+                                    '|',
+                                    'link',
+                                    'insertImage',
+                                    'insertTable',
+                                    '|',
+                                    'removeFormat'
+                                ],
+                                shouldNotGroupWhenFull: true
                             },
-                            heading: {
-                                options: [
-                                    {model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph'},
-                                    {model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1'},
-                                    {model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2'}
+                            image: {
+                                toolbar: [
+                                    'imageStyle:inline',
+                                    'imageStyle:block',
+                                    'imageStyle:side',
+                                    '|',
+                                    'toggleImageCaption',
+                                    'imageTextAlternative',
+                                    '|',
+                                    'resizeImage'
+                                ],
+                                upload: {
+                                    types: ['jpeg', 'png', 'gif', 'bmp', 'webp', 'tiff']
+                                },
+                                resizeOptions: [
+                                    {
+                                        name: 'resizeImage:original',
+                                        value: null,
+                                        label: 'Original'
+                                    },
+                                    {
+                                        name: 'resizeImage:50',
+                                        value: '50',
+                                        label: '50%'
+                                    },
+                                    {
+                                        name: 'resizeImage:75',
+                                        value: '75',
+                                        label: '75%'
+                                    }
+                                ],
+                            },
+                            table: {
+                                contentToolbar: [
+                                    'tableColumn',
+                                    'tableRow',
+                                    'mergeTableCells'
                                 ]
-                            }
+                            },
                         }}
                     />
                 </div>
@@ -218,7 +318,7 @@ export default function BlogForm({
                                 <img
                                     src={featuredImage}
                                     alt="Preview"
-                                    className="w-full h-full object-cover rounded-lg"
+                                    className="w-50 h-50 object-cover rounded-lg"
                                 />
                             ) : (
                                 <div className="text-center">
