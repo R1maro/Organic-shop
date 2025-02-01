@@ -91,6 +91,8 @@ export default function BlogForm({
         }
     }, [initialData]);
 
+
+
     const handleMetaKeywordsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const input = e.target.value;
         setMetaKeywordsInput(input);
@@ -153,7 +155,6 @@ export default function BlogForm({
                     </div>
                 )}
                 {/* Title */}
-
                 <div>
                     <label htmlFor="title" className="mb-3 block text-sm font-medium text-black dark:text-white">
                         Title
@@ -330,45 +331,59 @@ export default function BlogForm({
                 </div>
 
                 {/* Categories and Tags */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4 border border-gray-600 rounded p-4">
+                    {/* Categories Section */}
                     <div>
                         <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                             Categories
                         </label>
-                        <select
-                            multiple
-                            value={selectedCategories.map(String)}
-                            onChange={(e) => setSelectedCategories(
-                                Array.from(e.target.selectedOptions, option => Number(option.value))
-                            )}
-                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                        >
+                        <div className="space-y-2">
                             {categories.map((category) => (
-                                <option key={category.id} value={category.id}>
-                                    {category.name}
-                                </option>
+                                <label key={category.id} className="flex items-center gap-2 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        value={category.id}
+                                        checked={selectedCategories.includes(category.id)}
+                                        onChange={(e) => {
+                                            setSelectedCategories((prev) =>
+                                                e.target.checked
+                                                    ? [...prev, category.id]
+                                                    : prev.filter((id) => id !== category.id)
+                                            );
+                                        }}
+                                        className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary"
+                                    />
+                                    <span className="text-black dark:text-white">{category.name}</span>
+                                </label>
                             ))}
-                        </select>
+                        </div>
                     </div>
 
+                    {/* Tags Section */}
                     <div>
                         <label className="mb-3 block text-sm font-medium text-black dark:text-white">
                             Tags
                         </label>
-                        <select
-                            multiple
-                            value={selectedTags.map(String)}
-                            onChange={(e) => setSelectedTags(
-                                Array.from(e.target.selectedOptions, option => Number(option.value))
-                            )}
-                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                        >
+                        <div className="space-y-2">
                             {tags?.map((tag) => (
-                                <option key={tag.id} value={tag.id}>
-                                    {tag.name}
-                                </option>
+                                <label key={tag.id} className="flex items-center gap-2 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        value={tag.id}
+                                        checked={selectedTags.includes(tag.id)}
+                                        onChange={(e) => {
+                                            setSelectedTags((prev) =>
+                                                e.target.checked
+                                                    ? [...prev, tag.id]
+                                                    : prev.filter((id) => id !== tag.id)
+                                            );
+                                        }}
+                                        className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary"
+                                    />
+                                    <span className="text-black dark:text-white">{tag.name}</span>
+                                </label>
                             ))}
-                        </select>
+                        </div>
                     </div>
                 </div>
 
