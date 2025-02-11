@@ -24,6 +24,7 @@ Route::prefix('admin')->group(function () {
     Route::apiResource('orders', OrderController::class);
     Route::apiResource('invoices', InvoiceController::class);
     Route::apiResource('blogs', BlogController::class);
+    Route::post('blogs/upload-image', [BlogController::class, 'uploadImage']);
     Route::apiResource('tags', TagController::class);
     Route::get('user/{userId}/invoices', [InvoiceController::class, 'getUserInvoices']);
     Route::get('settings/groups', [SettingController::class, 'getGroups']);

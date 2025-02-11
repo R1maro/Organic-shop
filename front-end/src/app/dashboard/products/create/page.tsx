@@ -30,6 +30,7 @@ async function createProductAction(formData: FormData) {
             category_id: parseInt(formData.get('category_id') as string),
             status: formData.get('status') !== null ? 1 : 0,
             images: imageFiles as File[],
+            display_photo_index: formData.get('display_photo_index') || 0,
         };
 
         await apiCreateProduct(data, csrfToken);

@@ -20,9 +20,12 @@ class CustomPathGenerator implements PathGenerator
         if ($media->model_type === \App\Models\Blog::class) {
             return 'blogs/'. $media->model_id . '/';
         }
+        if ($media->model_type === \App\Models\TemporaryUpload::class) {
+            return 'temp/'. $media->model_id . '/';
+        }
 
         // Default path if no specific model is matched
-        return 'other/'. $media->id . '/';
+        return 'other'. $media->id . '/';
     }
 
     public function getPathForConversions(Media $media): string

@@ -21,6 +21,7 @@ return new class extends Migration {
             $table->unsignedInteger('quantity')->default(0);
             $table->string('sku')->unique();
             $table->boolean('status')->default(1);
+            $table->integer('display_photo_index')->default(0);
             $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();

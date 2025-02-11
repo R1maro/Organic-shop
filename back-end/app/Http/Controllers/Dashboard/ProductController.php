@@ -39,6 +39,7 @@ class ProductController extends Controller
                 'images' => 'array',
                 'category_id' => 'required|exists:categories,id',
                 'status' => 'boolean',
+                'display_photo_index' => 'required|integer|min:0',
             ]);
 
             $product = Product::create($validated);
@@ -52,6 +53,8 @@ class ProductController extends Controller
                 }
 
             }
+            $product->update(['display_photo_index' => $request->display_photo_index]);
+
             $this->clearProductCaches($product->category_id);
 
             return new ProductResource($product->load(['category', 'media']));
@@ -87,6 +90,7 @@ class ProductController extends Controller
                 'images' => 'array',
                 'category_id' => 'sometimes|exists:categories,id',
                 'status' => 'boolean',
+                'display_photo_index' => 'required|integer|min:0',
             ]);
 
             $oldCategoryId = $product->category_id;
@@ -100,6 +104,8 @@ class ProductController extends Controller
                         ->toMediaCollection('product_image');
                 }
             }
+
+            $product->update(['display_photo_index' => $request->display_photo_index]);
 
             $this->clearProductCaches($oldCategoryId);
             if ($oldCategoryId !== $product->category_id) {

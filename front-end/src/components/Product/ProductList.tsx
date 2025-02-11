@@ -11,7 +11,17 @@ async function ProductList({page = 1, categoryId,}: {
 }) {
     const products = await getProducts(page, categoryId);
 
+    const getProductImage = (product: any) => {
+        if (product.display_photo_url) {
+            return product.display_photo_url;
+        }
 
+        if (product.image_urls && Array.isArray(product.image_urls) && product.image_urls.length > 0) {
+            return product.image_urls[0];
+        }
+
+        return null;
+    };
     return (
         <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
             <div className="mb-6 flex flex-col gap-3">
@@ -50,9 +60,9 @@ async function ProductList({page = 1, categoryId,}: {
                         {products.data.map((product) => (
                             <tr key={product.id}>
                                 <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                    {product.image_urls[0] ? (
+                                    {product.display_photo_url ? (
                                         <img
-                                            src={product.image_urls[0]}
+                                            src={product.display_photo_url}
                                             alt={product.name}
                                             className="h-20 w-20 object-cover rounded-md"
                                         />

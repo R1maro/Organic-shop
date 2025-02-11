@@ -22,6 +22,8 @@ class ProductResource extends JsonResource
             'status' => $this->status,
             'category' => new CategoryResource($this->whenLoaded('category')),
             'image_urls' => $this->image_urls,
+            'display_photo_url' => $this->display_photo_url,
+            'display_photo_index' => $this->display_photo_index,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
