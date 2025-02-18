@@ -244,12 +244,14 @@ export async function apiUpdateProduct(
         }
     });
 
-
+    const cookieStore = cookies();
+    const token = cookieStore.get("token")?.value;
     const response = await fetch(`${config.API_URL}/admin/products/${id}`, {
         method: 'POST',
         headers: {
             'X-XSRF-TOKEN': csrfToken,
             'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`,
         },
         body: form,
         credentials: 'include',

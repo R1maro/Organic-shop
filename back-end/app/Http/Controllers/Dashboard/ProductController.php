@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Dashboard;
 
+use App\Helpers\UserActivityLogger;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
@@ -57,9 +58,14 @@ class ProductController extends Controller
 
             $this->clearProductCaches($product->category_id);
 
+            UserActivityLogger::created($product);
+
             return new ProductResource($product->load(['category', 'media']));
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json([
+                'error' => 'Something went wrong',
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -94,6 +100,8 @@ class ProductController extends Controller
             ]);
 
             $oldCategoryId = $product->category_id;
+            UserActivityLogger::prepareForUpdate($product);
+
             $product->update($validated);
 
 
@@ -111,11 +119,16 @@ class ProductController extends Controller
             if ($oldCategoryId !== $product->category_id) {
                 $this->clearProductCaches($product->category_id);
             }
+
+            UserActivityLogger::updated($product);
             Cache::forget('product_' . $product->id);
 
             return new ProductResource($product->load(['category', 'media']));
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json([
+                'error' => 'Something went wrong',
+                'message' => $e->getMessage()
+            ], 500);
         }
 
     }
@@ -147,22 +160,21 @@ class ProductController extends Controller
             Cache::forget('products_all_page_' . $i);
         }
     }
+
     public function deleteImage(Request $request, Product $product)
     {
         try {
-            $imageUrl = $request->input('image_url'); // Thumb URL from the frontend
+            $imageUrl = $request->input('image_url');
             if (!$imageUrl) {
                 return response()->json(['error' => 'Image URL is required.'], 400);
             }
 
-            \Log::info("Image URL from request: $imageUrl");
 
             // Extract the file name without the directory path
-            $thumbFileName = basename($imageUrl); // e.g., "1736637466-ezgif.com-jpg-to-webp-converter-thumb.jpg"
+            $thumbFileName = basename($imageUrl);
 
             // Remove the "-thumb" suffix and get the base file name (without extension)
             $baseFileNameWithoutExtension = pathinfo(str_replace('-thumb', '', $thumbFileName), PATHINFO_FILENAME); // "1736637466-ezgif.com-jpg-to-webp-converter"
-            \Log::info("Base file name (without extension): $baseFileNameWithoutExtension");
 
             // Check if the image is already stored in the media collection
             $media = $product->getMedia('product_image')->first(function ($media) use ($baseFileNameWithoutExtension) {
@@ -172,35 +184,23 @@ class ProductController extends Controller
 
             if ($media) {
                 // Image exists in the media collection
-                \Log::info("Deleting media with file name: {$media->file_name} and URL: {$media->getFullUrl()}");
-                $media->delete(); // Deletes both the main image and its conversions
+                $media->delete();
             } else {
                 // Image might be in temporary storage (not yet saved to the media collection)
                 $temporaryFilePath = storage_path('app/public/temp/' . $thumbFileName);
 
                 if (file_exists($temporaryFilePath)) {
-                    \Log::info("Deleting temporary file: $temporaryFilePath");
                     unlink($temporaryFilePath); // Delete the temporary file
                 } else {
-                    \Log::error("Image not found in media collection or temporary storage: $thumbFileName");
                     return response()->json(['error' => 'Image not found.'], 404);
                 }
             }
 
             return response()->json(['message' => 'Image deleted successfully.']);
         } catch (\Exception $e) {
-            \Log::error('Error deleting image: ' . $e->getMessage());
             return response()->json(['error' => 'Failed to delete image.'], 500);
         }
     }
-
-
-
-
-
-
-
-
 
 
 }
