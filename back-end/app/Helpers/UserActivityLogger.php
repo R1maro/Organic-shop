@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Models\UserActivityLog;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
@@ -298,5 +299,15 @@ class UserActivityLogger
         $level = in_array($level, self::LEVELS) ? $level : self::DEFAULT_LEVEL;
 
         Log::channel('user-activity')->$level($description, $logData);
+        UserActivityLog::create([
+            'action' => Str::snake($action),
+            'description' => $description,
+            'user_id' => $user->id ?? null,
+            'user_email' => $user->email ?? null,
+            'ip' => request()->ip(),
+            'request_url' => request()->fullUrl(),
+            'request_method' => request()->method(),
+            'additional_data' => !empty($additional) ? json_encode($additional) : null,
+        ]);
     }
 }
