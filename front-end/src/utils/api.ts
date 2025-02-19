@@ -7,7 +7,8 @@ import {
 } from '@/types/product';
 import {CategoriesResponse, SingleCategoryResponse, Category} from "@/types/category";
 import {SettingsResponse} from "@/types/setting";
-import {BlogCreatePayload, BlogApiResponse } from '@/types/blog';
+import {BlogCreatePayload, BlogApiResponse} from '@/types/blog';
+import {LogsParams} from "@/types/logs";
 import {cookies} from "next/headers";
 
 
@@ -512,7 +513,11 @@ export async function apiUpdateSetting(
     return responseData;
 }
 
-export async function getBlogs(page: number = 1, categoryId?: string): Promise<{
+export async function getBlogs(page: number = 1,
+                               categoryId?: string,
+                               status?: string,
+                               search?: string
+): Promise<{
     data: BlogApiResponse[];
     meta: {
         current_page: number;
@@ -525,6 +530,13 @@ export async function getBlogs(page: number = 1, categoryId?: string): Promise<{
     url.searchParams.append('page', page.toString());
     if (categoryId) {
         url.searchParams.append('category_id', categoryId);
+    }
+    if (status) {
+        url.searchParams.append('status', status);
+    }
+
+    if (search) {
+        url.searchParams.append('search', search);
     }
 
     const res = await fetch(url.toString(), {
@@ -678,7 +690,62 @@ export async function getAllTags() {
 }
 
 
+export async function getUserActivityLogs({
+                                              page = 1,
+                                              per_page = 10,
+                                          }: LogsParams = {}) {
+    const url = new URL(`${config.API_URL}/admin/user-activity-logs`);
+    url.searchParams.append('page', page.toString());
+    url.searchParams.append('per_page', per_page.toString());
+
+    // Get authentication token from cookies in server component
+    const cookieStore = cookies();
+    const token = cookieStore.get('token')?.value;
+
+    const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+    };
+
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const res = await fetch(url, {
+        cache: 'no-store',
+        headers,
+    });
 
 
+    if (!res.ok) {
+        throw new Error('Failed to fetch user activity logs');
+    }
+
+    return res.json();
+}
+
+export async function getUserActivityLog(id: number) {
+    const cookieStore = cookies();
+    const token = cookieStore.get('token')?.value;
+
+    const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+    };
+
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const res = await fetch(`${config.API_URL}/admin/user-activity-logs/${id}`, {
+        cache: 'no-store',
+        headers,
+    });
+
+    if (!res.ok) {
+        throw new Error('Failed to fetch user activity log');
+    }
+
+    const response = await res.json();
+    return response;
+}
 
 

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class UserActivityLog extends Model
 {
@@ -13,7 +14,6 @@ class UserActivityLog extends Model
         'action',
         'description',
         'user_id',
-        'user_email',
         'ip',
         'request_url',
         'request_method',
@@ -23,4 +23,9 @@ class UserActivityLog extends Model
     protected $casts = [
         'additional_data' => 'array',
     ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 }
