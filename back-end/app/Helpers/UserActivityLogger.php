@@ -305,12 +305,11 @@ class UserActivityLogger
         UserActivityLog::create([
             'action' => Str::snake($action),
             'description' => $description,
-            'user_id' => $user->id ?? null,
-            'user_email' => $user->email ?? null,
+            'user_id' => $user?->id,
             'ip' => request()->ip(),
             'request_url' => request()->fullUrl(),
             'request_method' => request()->method(),
-            'additional_data' => !empty($additional) ? json_encode($additional) : null,
+            'additional_data' => $additional,
         ]);
     }
 }

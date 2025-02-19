@@ -13,6 +13,7 @@ class UserActivityLogController extends Controller
     public function index(Request $request)
     {
         $logs = UserActivityLog::query()
+            ->with('user')
             ->when($request->user_id, function ($query, $userId) {
                 return $query->where('user_id', $userId);
             })
