@@ -512,7 +512,11 @@ export async function apiUpdateSetting(
     return responseData;
 }
 
-export async function getBlogs(page: number = 1, categoryId?: string): Promise<{
+export async function getBlogs(page: number = 1,
+                               categoryId?: string,
+                               status?: string,
+                               search?: string
+): Promise<{
     data: BlogApiResponse[];
     meta: {
         current_page: number;
@@ -525,6 +529,13 @@ export async function getBlogs(page: number = 1, categoryId?: string): Promise<{
     url.searchParams.append('page', page.toString());
     if (categoryId) {
         url.searchParams.append('category_id', categoryId);
+    }
+    if (status) {
+        url.searchParams.append('status', status);
+    }
+
+    if (search) {
+        url.searchParams.append('search', search);
     }
 
     const res = await fetch(url.toString(), {

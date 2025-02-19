@@ -3,25 +3,12 @@ import Pagination from "@/components/Pagination/Pagination";
 import {getProducts} from '@/utils/api'
 
 
-
-
 async function ProductList({page = 1, categoryId,}: {
     page?: number;
     categoryId?: string;
 }) {
     const products = await getProducts(page, categoryId);
 
-    const getProductImage = (product: any) => {
-        if (product.display_photo_url) {
-            return product.display_photo_url;
-        }
-
-        if (product.image_urls && Array.isArray(product.image_urls) && product.image_urls.length > 0) {
-            return product.image_urls[0];
-        }
-
-        return null;
-    };
     return (
         <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
             <div className="mb-6 flex flex-col gap-3">
