@@ -241,9 +241,14 @@ input[type="search"]::-webkit-search-cancel-button {
 [x-cloak] {
     display: none !important;
 }
+
+
 .ck-editor__editable {
     min-height: 400px !important;
     max-height: 600px;
     overflow-y: auto;
+    color: #1a202c;
 }
+
+
 
