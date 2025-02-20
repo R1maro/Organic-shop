@@ -5,116 +5,73 @@ import {
     SingleProductResponse,
     ProductCreateUpdateData
 } from '@/types/product';
-import {CategoriesResponse, SingleCategoryResponse, Category} from "@/types/category";
-import {SettingsResponse} from "@/types/setting";
-import {BlogCreatePayload, BlogApiResponse} from '@/types/blog';
+import {CategoriesResponse, SingleCategoryResponse, Category, CategoryFormData} from "@/types/category";
+import {SettingCreateUpdateData, SettingsResponse} from "@/types/setting";
+import {BlogCreatePayload, BlogApiResponse, BlogApiListResponse} from '@/types/blog';
 import {LogsParams} from "@/types/logs";
+import {PaginatedResponse} from "@/types/order";
+import {InvoicePaginatedResponse} from "@/types/invoice";
 import {cookies} from "next/headers";
+import {apiClient} from "@/lib/apiClient";
 
 
 export async function getUsers(page: number = 1, search: string = '') {
-    const url = new URL(`${config.API_URL}/admin/users`);
-    url.searchParams.append('page', page.toString());
+    let endpoint = `/admin/users?page=${page}`;
     if (search) {
-        url.searchParams.append('search', search);
+        endpoint += `&search=${encodeURIComponent(search)}`;
     }
 
-    const res = await fetch(url, {
-        cache: 'no-store',
+    return await apiClient(endpoint, {
+        method: 'GET',
         headers: {
             'Content-Type': 'application/json',
         },
-    });
-
-
-    if (!res.ok) {
-        throw new Error('Failed to fetch users');
-    }
-
-    return res.json() as Promise<UsersResponse>;
+        cache: 'no-store',
+    }) as Promise<UsersResponse>;
 }
 
 export async function getCategories(page: number = 1): Promise<CategoriesResponse> {
-    const url = new URL(`${config.API_URL}/admin/categories`);
-    url.searchParams.append('page', page.toString());
-
-    const res = await fetch(url, {
-        cache: 'no-store',
+    return apiClient(`/admin/categories?page=${page}`, {
+        method: 'GET',
         headers: {
             'Content-Type': 'application/json',
         },
+        cache: 'no-store',
     });
-
-    if (!res.ok) {
-        throw new Error('Failed to fetch categories');
-    }
-
-    return res.json();
 }
 
 export async function getCategory(id: string): Promise<SingleCategoryResponse> {
-    const res = await fetch(`${config.API_URL}/admin/categories/${id}`, {
+    return apiClient(`/admin/categories/${id}`, {
+        method: 'GET',
         headers: {
             'Accept': 'application/json',
         },
         cache: 'no-store',
     });
-
-    if (!res.ok) {
-        throw new Error('Failed to fetch category');
-    }
-
-    return res.json();
 }
 
 export async function getAllCategories(): Promise<Category[]> {
-    const res = await fetch(`${config.API_URL}/admin/categories`, {
+    const response = await apiClient(`/admin/categories`, {
+        method: 'GET',
         cache: 'no-store',
     });
 
-    if (!res.ok) {
-        throw new Error('Failed to fetch categories');
-    }
-
-    const response = await res.json();
     return response.data || [];
 }
 
-export async function apiCreateCategory(data: {
-    name: string;
-    description: string;
-    status: number;
-    parent_id: string | null;
-}, csrfToken: string) {
-    const response = await fetch(`${config.API_URL}/admin/categories`, {
+export async function apiCreateCategory(data: CategoryFormData) {
+    return apiClient(`/admin/categories`, {
         method: 'POST',
         headers: {
-            'X-XSRF-TOKEN': csrfToken,
-            'Accept': 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
-        credentials: 'include',
+        body: data,
     });
-
-    const responseData = await response.json();
-
-    if (!response.ok) {
-        throw new Error(responseData.error || 'Failed to create category');
-    }
-
-    return responseData;
 }
 
 export async function apiUpdateCategory(
     id: string,
-    data: {
-        name: string | null;
-        description: string | null;
-        status: number;
-        parent_id: string | null;
-    },
-    csrfToken: string
+    data: Partial<CategoryFormData>
 ) {
     const form = new FormData();
     form.append('_method', 'PUT');
@@ -125,65 +82,36 @@ export async function apiUpdateCategory(
         }
     });
 
-    const response = await fetch(`${config.API_URL}/admin/categories/${id}`, {
+    return apiClient(`/admin/categories/${id}`, {
         method: 'POST',
-        headers: {
-            'X-XSRF-TOKEN': csrfToken,
-            'Accept': 'application/json',
-        },
         body: form,
-        credentials: 'include',
     });
-
-    const responseData = await response.json();
-
-    if (!response.ok) {
-        throw new Error(responseData.error || 'Failed to update category');
-    }
-
-    return responseData;
 }
 
 
 export async function getProducts(page: number = 1, categoryId?: string) {
-
-    const url = new URL(`${config.API_URL}/admin/products`);
-
-    url.searchParams.append('page', page.toString());
+    let endpoint = `/admin/products?page=${page}`;
     if (categoryId) {
-        url.searchParams.append('category_id', categoryId);
+        endpoint += `&category_id=${categoryId}`;
     }
 
-    const res = await fetch(url, {
-        cache: 'no-store',
+    return apiClient(endpoint, {
+        method: 'GET',
         headers: {
             'Content-Type': 'application/json',
         },
-    });
-
-    if (!res.ok) {
-        throw new Error('Failed to fetch products');
-    }
-
-    return res.json() as Promise<ProductsResponse>;
+        cache: 'no-store',
+    }) as Promise<ProductsResponse>;
 }
 
 export async function getProduct(id: string): Promise<SingleProductResponse> {
-    const res = await fetch(`${config.API_URL}/admin/products/${id}`, {
-        headers: {
-            'Accept': 'application/json',
-        },
+    return apiClient(`/admin/products/${id}`, {
+        method: 'GET',
         cache: 'no-store',
     });
-
-    if (!res.ok) {
-        throw new Error('Failed to fetch product');
-    }
-
-    return res.json();
 }
 
-export async function apiCreateProduct(data: ProductCreateUpdateData, csrfToken: string) {
+export async function apiCreateProduct(data: ProductCreateUpdateData) {
     const form = new FormData();
 
     Object.entries(data).forEach(([key, value]) => {
@@ -200,23 +128,11 @@ export async function apiCreateProduct(data: ProductCreateUpdateData, csrfToken:
         }
     });
 
-    const response = await fetch(`${config.API_URL}/admin/products`, {
+
+    return apiClient('/admin/products', {
         method: 'POST',
-        headers: {
-            'X-XSRF-TOKEN': csrfToken,
-            'Accept': 'application/json',
-        },
         body: form,
-        credentials: 'include',
     });
-
-    const responseData = await response.json();
-
-    if (!response.ok) {
-        throw new Error(responseData.error || 'Failed to create product');
-    }
-
-    return responseData;
 }
 
 export async function apiUpdateProduct(
@@ -245,26 +161,16 @@ export async function apiUpdateProduct(
         }
     });
 
-    const cookieStore = cookies();
-    const token = cookieStore.get("token")?.value;
-    const response = await fetch(`${config.API_URL}/admin/products/${id}`, {
+    return apiClient(`/admin/products/${id}`, {
         method: 'POST',
-        headers: {
-            'X-XSRF-TOKEN': csrfToken,
-            'Accept': 'application/json',
-            'Authorization': `Bearer ${token}`,
-        },
         body: form,
-        credentials: 'include',
     });
+}
 
-    const responseData = await response.json();
-
-    if (!response.ok) {
-        throw new Error(responseData.error || 'Failed to update product');
-    }
-
-    return responseData;
+export async function apiDeleteProduct(id: string) {
+    return apiClient(`/admin/products/${id}`, {
+        method: 'DELETE',
+    });
 }
 
 export async function getOrders({page = 1, per_page = 10, status, payment_status}: {
@@ -273,41 +179,29 @@ export async function getOrders({page = 1, per_page = 10, status, payment_status
     status?: string;
     payment_status?: string;
 }) {
-    const url = new URL(`${config.API_URL}/admin/orders`);
-    url.searchParams.append('page', page.toString());
-    url.searchParams.append('per_page', per_page.toString());
+    let endpoint = `/admin/orders?page=${page}&per_page=${per_page}`;
 
-    if (status) url.searchParams.append('status', status);
-    if (payment_status) url.searchParams.append('payment_status', payment_status);
+    if (status) endpoint += `&status=${encodeURIComponent(status)}`;
+    if (payment_status) endpoint += `&payment_status=${encodeURIComponent(payment_status)}`;
 
-    const res = await fetch(url, {
-        cache: 'no-store',
+    return await apiClient(endpoint, {
+        method: 'GET',
         headers: {
             'Content-Type': 'application/json',
         },
-    });
-
-
-    if (!res.ok) {
-        throw new Error('Failed to fetch orders');
-    }
-
-    return res.json();
+        cache: 'no-store',
+    }) as Promise<PaginatedResponse<any>>;
 }
 
 export async function getOrder(id: number) {
-    const res = await fetch(`${config.API_URL}/admin/orders/${id}`, {
-        cache: 'no-store',
+    const response = await apiClient(`/admin/orders/${id}`, {
+        method: 'GET',
         headers: {
             'Content-Type': 'application/json',
         },
+        cache: 'no-store',
     });
 
-    if (!res.ok) {
-        throw new Error('Failed to fetch order');
-    }
-
-    const response = await res.json();
     return response.data;
 }
 
@@ -316,135 +210,97 @@ export async function getInvoices({page = 1, per_page = 10, status,}: {
     per_page?: number;
     status?: string;
 }) {
-    const url = new URL(`${config.API_URL}/admin/invoices`);
-    url.searchParams.append('page', page.toString());
-    url.searchParams.append('per_page', per_page.toString());
+    let endpoint = `/admin/invoices?page=${page}&per_page=${per_page}`;
 
-    if (status) url.searchParams.append('status', status);
+    if (status) endpoint += `&status=${encodeURIComponent(status)}`;
 
-    const res = await fetch(url, {
-        cache: 'no-store',
+    return apiClient(endpoint, {
+        method: 'GET',
         headers: {
             'Content-Type': 'application/json',
         },
-    });
-
-    if (!res.ok) {
-        throw new Error('Failed to fetch invoices');
-    }
-
-    return res.json();
+        cache: 'no-store',
+    }) as Promise<InvoicePaginatedResponse<any>>;
 }
 
 export async function getInvoice(id: number) {
-    const res = await fetch(`${config.API_URL}/admin/invoices/${id}`, {
-        cache: 'no-store',
+    const response = await apiClient(`/admin/invoices/${id}`, {
+        method: 'GET',
         headers: {
             'Content-Type': 'application/json',
         },
+        cache: 'no-store',
     });
 
-    if (!res.ok) {
-        throw new Error('Failed to fetch invoice');
-    }
-
-    const response = await res.json();
     return response.data;
 }
 
 export async function getUserInvoices(userId: number, page = 1, per_page = 15) {
-    const url = new URL(`${config.API_URL}/admin/users/${userId}/invoices`);
-    url.searchParams.append('page', page.toString());
-    url.searchParams.append('per_page', per_page.toString());
-
-    const res = await fetch(url, {
-        cache: 'no-store',
+    return apiClient(`/admin/users/${userId}/invoices?page=${page}&per_page=${per_page}`, {
+        method: 'GET',
         headers: {
             'Content-Type': 'application/json',
         },
+        cache: 'no-store',
     });
-
-    if (!res.ok) {
-        throw new Error('Failed to fetch user invoices');
-    }
-
-    return res.json();
 }
 
 export async function getSettings(page: number = 1, group?: string, search?: string): Promise<SettingsResponse> {
-    const url = new URL(`${config.API_URL}/admin/settings`);
+    let endpoint = `/admin/settings?page=${page}`;
 
-    url.searchParams.append('page', page.toString());
     if (group) {
-        url.searchParams.append('group', group);
-    }
-    if (search) {
-        url.searchParams.append('search', search);
+        endpoint += `&group=${encodeURIComponent(group)}`;
     }
 
-    const res = await fetch(url, {
-        cache: 'no-store',
+    if (search) {
+        endpoint += `&search=${encodeURIComponent(search)}`;
+    }
+
+    return apiClient(endpoint, {
+        method: 'GET',
         headers: {
             'Content-Type': 'application/json',
         },
+        cache: 'no-store',
     });
-
-    if (!res.ok) {
-        throw new Error('Failed to fetch settings');
-    }
-
-    return res.json();
 }
 
 export async function getSetting(id: string) {
-    const response = await fetch(`${config.API_URL}/admin/settings/${id}`, {
-        cache: 'no-store',
+    return apiClient(`/admin/settings/${id}`, {
+        method: 'GET',
         headers: {
             'Content-Type': 'application/json',
         },
+        cache: 'no-store',
     });
-
-    if (!response.ok) {
-        throw new Error('Failed to fetch setting');
-    }
-
-    return response.json();
 }
 
 export async function getSettingGroups() {
-    const res = await fetch(`${config.API_URL}/admin/settings/groups`, {
-        cache: 'no-store',
+    const response = await apiClient(`/admin/settings/groups`, {
+        method: 'GET',
         headers: {
             'Content-Type': 'application/json',
         },
+        cache: 'no-store',
     });
 
-    if (!res.ok) {
-        throw new Error('Failed to fetch setting groups');
-    }
-
-    const response = await res.json();
     return response.data as string[];
 }
 
 export async function getSettingTypes() {
-    const res = await fetch(`${config.API_URL}/admin/settings/types`, {
-        cache: 'no-store',
+    const response = await apiClient(`/admin/settings/types`, {
+        method: 'GET',
         headers: {
             'Content-Type': 'application/json',
         },
+        cache: 'no-store',
     });
 
-    if (!res.ok) {
-        throw new Error('Failed to fetch setting types');
-    }
-
-    const response = await res.json();
     return response.data as string[];
 }
 
 
-export async function apiCreateSetting(data: any, csrfToken: string) {
+export async function apiCreateSetting(data: SettingCreateUpdateData) {
     const form = new FormData();
 
     Object.entries(data).forEach(([key, value]) => {
@@ -457,29 +313,16 @@ export async function apiCreateSetting(data: any, csrfToken: string) {
         }
     });
 
-    const response = await fetch(`${config.API_URL}/admin/settings`, {
+
+    return apiClient(`/admin/settings`, {
         method: 'POST',
-        headers: {
-            'X-XSRF-TOKEN': csrfToken,
-            'Accept': 'application/json',
-        },
         body: form,
-        credentials: 'include',
     });
-
-    const responseData = await response.json();
-
-    if (!response.ok) {
-        throw new Error(responseData.error || 'Failed to create setting');
-    }
-
-    return responseData;
 }
 
 export async function apiUpdateSetting(
     id: string,
-    data: any,
-    csrfToken: string
+    data: SettingCreateUpdateData,
 ) {
     const form = new FormData();
     form.append('_method', 'PUT');
@@ -494,74 +337,54 @@ export async function apiUpdateSetting(
         }
     });
 
-    const response = await fetch(`${config.API_URL}/admin/settings/${id}`, {
+    return apiClient(`/admin/settings/${id}`, {
         method: 'POST',
-        headers: {
-            'X-XSRF-TOKEN': csrfToken,
-            'Accept': 'application/json',
-        },
         body: form,
-        credentials: 'include',
     });
+}
 
-    const responseData = await response.json();
-
-    if (!response.ok) {
-        throw new Error(responseData.error || 'Failed to update setting');
-    }
-
-    return responseData;
+export async function apiDeleteSetting(id: string) {
+    return apiClient(`/admin/settings/${id}`, {
+        method: 'DELETE',
+    });
 }
 
 export async function getBlogs(page: number = 1,
                                categoryId?: string,
                                status?: string,
                                search?: string
-): Promise<{
-    data: BlogApiResponse[];
-    meta: {
-        current_page: number;
-        total: number;
-        per_page: number;
-    };
-}> {
-    const url = new URL(`${config.API_URL}/admin/blogs`);
+): Promise<BlogApiListResponse> {
+    let endpoint = `/admin/blogs?page=${page}`;
 
-    url.searchParams.append('page', page.toString());
     if (categoryId) {
-        url.searchParams.append('category_id', categoryId);
+        endpoint += `&category_id=${encodeURIComponent(categoryId)}`;
     }
+
     if (status) {
-        url.searchParams.append('status', status);
+        endpoint += `&status=${encodeURIComponent(status)}`;
     }
 
     if (search) {
-        url.searchParams.append('search', search);
+        endpoint += `&search=${encodeURIComponent(search)}`;
     }
 
-    const res = await fetch(url.toString(), {
-        cache: 'no-store',
+    return apiClient(endpoint, {
+        method: 'GET',
         headers: {
             'Content-Type': 'application/json',
         },
+        cache: 'no-store',
     });
-
-    const response = await res.json()
-    if (!res.ok) {
-        throw new Error(response.message || 'Failed to fetch blogs');
-    }
-
-    return response;
 }
 
+export async function getBlog(id: string) {
+    return apiClient(`/admin/blogs/${id}`, {
+        method: 'GET',
+        cache: 'no-store',
+    });
+}
 
 export async function apiCreateBlog(data: BlogCreatePayload) {
-    const cookieStore = cookies();
-    const token = cookieStore.get("token")?.value;
-
-    if (!token) {
-        throw new Error('Authentication token is missing');
-    }
 
     const formData = new FormData();
     try {
@@ -581,27 +404,10 @@ export async function apiCreateBlog(data: BlogCreatePayload) {
             }
         });
 
-        const response = await fetch(`${config.API_URL}/admin/blogs`, {
+        return apiClient('/admin/blogs', {
             method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Accept': 'application/json',
-            },
             body: formData,
-            credentials: 'include',
         });
-
-        const responseData = await response.json();
-
-        if (!response.ok) {
-            throw new Error(
-                responseData.message ||
-                responseData.error ||
-                `Server error: ${response.status}`
-            );
-        }
-
-        return responseData;
     } catch (error) {
 
         if (error instanceof Error) {
@@ -611,13 +417,7 @@ export async function apiCreateBlog(data: BlogCreatePayload) {
     }
 }
 
-export async function apiUpdateBlog(id: string, data: Partial<BlogApiResponse>): Promise<void> {
-    const cookieStore = cookies();
-    const token = cookieStore.get("token")?.value;
-
-    if (!token) {
-        throw new Error('Authentication token is missing');
-    }
+export async function apiUpdateBlog(id: string, data: Partial<BlogApiResponse>) {
 
     const formData = new FormData();
     try {
@@ -637,115 +437,49 @@ export async function apiUpdateBlog(id: string, data: Partial<BlogApiResponse>):
 
         formData.append('_method', 'PUT');
 
-        const response = await fetch(`${config.API_URL}/admin/blogs/${id}`, {
+        return apiClient(`/admin/blogs/${id}`, {
             method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Accept': 'application/json',
-            },
             body: formData,
-            credentials: 'include',
         });
-
-        const responseData = await response.json();
-
-        if (!response.ok) {
-            throw new Error(
-                responseData.message ||
-                responseData.error ||
-                `Server error: ${response.status}`
-            );
-        }
-
-        return responseData;
     } catch (error) {
         throw new Error(String(error));
     }
 }
 
-
-export async function getBlog(id: string) {
-    const response = await fetch(`${config.API_URL}/admin/blogs/${id}`, {
-        credentials: 'include',
-        cache: 'no-store',
+export async function apiDeleteBlog(id: string) {
+    return apiClient(`/admin/blogs/${id}`, {
+        method: 'DELETE',
     });
-
-    if (!response.ok) {
-        throw new Error('Failed to fetch blog');
-    }
-
-    return response.json();
 }
+
 
 export async function getAllTags() {
-    const res = await fetch(`${config.API_URL}/admin/tags`, {
-        credentials: 'include',
+    return apiClient('/admin/tags', {
+        method: 'GET',
     });
-
-    if (!res.ok) {
-        throw new Error('Failed to fetch tags');
-    }
-
-    return await res.json();
 }
-
 
 export async function getUserActivityLogs({
                                               page = 1,
                                               per_page = 10,
                                           }: LogsParams = {}) {
-    const url = new URL(`${config.API_URL}/admin/user-activity-logs`);
-    url.searchParams.append('page', page.toString());
-    url.searchParams.append('per_page', per_page.toString());
-
-    // Get authentication token from cookies in server component
-    const cookieStore = cookies();
-    const token = cookieStore.get('token')?.value;
-
-    const headers: HeadersInit = {
-        'Content-Type': 'application/json',
-    };
-
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const res = await fetch(url, {
+    return apiClient(`/admin/user-activity-logs?page=${page}&per_page=${per_page}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
         cache: 'no-store',
-        headers,
     });
-
-
-    if (!res.ok) {
-        throw new Error('Failed to fetch user activity logs');
-    }
-
-    return res.json();
 }
 
 export async function getUserActivityLog(id: number) {
-    const cookieStore = cookies();
-    const token = cookieStore.get('token')?.value;
-
-    const headers: HeadersInit = {
-        'Content-Type': 'application/json',
-    };
-
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const res = await fetch(`${config.API_URL}/admin/user-activity-logs/${id}`, {
+    return apiClient(`/admin/user-activity-logs/${id}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
         cache: 'no-store',
-        headers,
     });
-
-    if (!res.ok) {
-        throw new Error('Failed to fetch user activity log');
-    }
-
-    const response = await res.json();
-    return response;
 }
 
 

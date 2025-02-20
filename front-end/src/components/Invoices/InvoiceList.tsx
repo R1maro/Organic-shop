@@ -1,11 +1,11 @@
-import {Invoice,PaginatedResponse} from "@/types/invoice";
+import {Invoice,InvoicePaginatedResponse} from "@/types/invoice";
 import Link from "next/link";
 import {InvoiceStatusBadge} from "@/components/Invoices/InvoiceStatusBadge";
 import {InvoiceActions} from "@/components/Invoices/InvoiceActions";
 import Pagination from "@/components/Pagination/Pagination";
 
 interface InvoiceListProps {
-    invoices: PaginatedResponse<Invoice>;
+    invoices: InvoicePaginatedResponse<Invoice>;
 }
 
 export default function InvoiceList({ invoices }: InvoiceListProps) {
