@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Dashboard;
 
+use App\Helpers\UserActivityLogger;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
@@ -90,6 +91,7 @@ class OrderController extends Controller
             DB::commit();
 
             $this->clearOrderCaches($userId);
+            UserActivityLogger::created($order);
             return new OrderResource($order->fresh()->load('items.product'));
         } catch (\Exception $e) {
             DB::rollBack();
@@ -132,6 +134,7 @@ class OrderController extends Controller
 
 
         $oldUserId = $order->user_id;
+        UserActivityLogger::prepareForUpdate($order);
         $order->update($updateData);
 
 
@@ -177,8 +180,6 @@ class OrderController extends Controller
                 $order->invoice()->update([
                     'subtotal' => $subtotal,
                     'tax' => $tax,
-                    // shipping_cost remains unchanged
-                    // total will be auto-calculated by Invoice model boot method
                 ]);
             }
         }
@@ -195,6 +196,7 @@ class OrderController extends Controller
             Cache::forget("invoice_{$order->invoice->id}");
             app(InvoiceController::class)->clearInvoiceCaches($order->user_id);
         }
+        UserActivityLogger::updated($order);
 
         return new OrderResource($order->fresh()->load('items.product'));
     }

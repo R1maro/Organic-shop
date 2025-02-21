@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Dashboard;
 
+use App\Helpers\UserActivityLogger;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\InvoiceResource;
 use App\Models\Invoice;
@@ -34,7 +35,7 @@ class InvoiceController extends Controller
         return InvoiceResource::collection($invoices);
     }
 
-    public function store(Request $request, Order $order)
+    public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'order_id' => 'required|exists:orders,id',
@@ -79,6 +80,7 @@ class InvoiceController extends Controller
 
             $this->clearInvoiceCaches($order->user_id);
 
+            UserActivityLogger::created($invoice);
             return new InvoiceResource($invoice->load('order.items'));
 
         } catch (\Exception $e) {
@@ -153,6 +155,7 @@ class InvoiceController extends Controller
             }
 
             $oldUserId = $invoice->user_id;
+            UserActivityLogger::prepareForUpdate($invoice);
             $invoice->update($updateData);
 
             if ($request->status === 'paid') {
@@ -170,6 +173,7 @@ class InvoiceController extends Controller
 
             DB::commit();
 
+            UserActivityLogger::updated($invoice);
             return new InvoiceResource($invoice->fresh()->load('order.items'));
 
         } catch (\Exception $e) {

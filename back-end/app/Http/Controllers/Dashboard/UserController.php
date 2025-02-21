@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Dashboard;
 
+use App\Helpers\UserActivityLogger;
 use App\Models\User;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
@@ -68,6 +69,7 @@ class UserController extends Controller
             // Clear relevant caches
             $this->clearUsersCache();
 
+            UserActivityLogger::created($user);
             return response()->json([
                 'message' => 'User created successfully',
                 'data' => new UserResource($user)
@@ -110,6 +112,7 @@ class UserController extends Controller
 
         DB::beginTransaction();
         try {
+            UserActivityLogger::prepareForUpdate($user);
             $user->update($validated);
 
             if (isset($validated['roles'])) {
@@ -120,6 +123,7 @@ class UserController extends Controller
 
             $this->clearUsersCache();
             Cache::forget($this->getCacheKey("user_{$user->id}"));
+            UserActivityLogger::updated($user);
 
             return response()->json([
                 'message' => 'User updated successfully',
