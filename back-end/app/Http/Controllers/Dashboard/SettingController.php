@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Dashboard;
 
+use App\Helpers\UserActivityLogger;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SettingRequest;
 use App\Http\Resources\SettingResource;
@@ -42,6 +43,7 @@ class SettingController extends Controller
 
             $setting->update(['value' => $media->getUrl()]);
         }
+        UserActivityLogger::created($setting);
 
         return response()->json([
             'message' => 'Setting created successfully',
@@ -58,6 +60,7 @@ class SettingController extends Controller
 
     public function update(SettingRequest $request, Setting $setting)
     {
+        UserActivityLogger::prepareForUpdate($setting);
         $setting->update($request->validated());
 
         if ($request->hasFile('image') && $setting->type === 'image') {
@@ -68,6 +71,7 @@ class SettingController extends Controller
             $setting->update(['value' => $media->getUrl()]);
 
         }
+        UserActivityLogger::updated($setting);
 
         return response()->json([
             'message' => 'Setting updated successfully',

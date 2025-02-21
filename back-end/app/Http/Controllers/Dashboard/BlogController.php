@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Dashboard;
 
+use App\Helpers\UserActivityLogger;
 use App\Http\Controllers\Controller;
 use App\Models\Blog;
 use App\Models\TemporaryUpload;
@@ -70,6 +71,7 @@ class BlogController extends Controller
             if ($request->has('tags')) {
                 $blog->tags()->sync($request->tags);
             }
+            UserActivityLogger::created($blog);
 
             return new BlogResource($blog);
         } catch (\Exception $exception) {
@@ -90,6 +92,7 @@ class BlogController extends Controller
 
         unset($validated['featured_image']);
 
+        UserActivityLogger::prepareForUpdate($blog);
         $blog->update($validated);
 
         if ($request->hasFile('featured_image')) {
@@ -110,6 +113,8 @@ class BlogController extends Controller
         if ($request->has('tags')) {
             $blog->tags()->sync($request->tags);
         }
+
+        UserActivityLogger::updated($blog);
 
         return new BlogResource($blog->fresh(['categories', 'tags', 'user']));
     }

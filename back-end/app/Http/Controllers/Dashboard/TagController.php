@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Dashboard;
 
+use App\Helpers\UserActivityLogger;
 use App\Http\Controllers\Controller;
 use App\Models\Tag;
 use App\Http\Requests\StoreTagRequest;
@@ -20,6 +21,7 @@ class TagController extends Controller
     {
         try {
             $tag = Tag::create($request->validated());
+            UserActivityLogger::created($tag);
             return new TagResource($tag);
         } catch (\Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
@@ -34,7 +36,9 @@ class TagController extends Controller
     public function update(UpdateTagRequest $request, Tag $tag)
     {
         try {
+            UserActivityLogger::prepareForUpdate($tag);
             $tag->update($request->validated());
+            UserActivityLogger::updated($tag);
             return new TagResource($tag->fresh());
         } catch (\Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
