@@ -4,7 +4,7 @@ export interface Category {
     slug: string;
     description: string;
     status: number;
-    parent_id?: number;
+    parent_id?: string;
     parent?: {
         id: number;
         name: string;
@@ -19,11 +19,11 @@ export interface SingleCategoryResponse {
 }
 
 export interface CategoryFormData {
-    id: number;
+    id?: number;
     name: string;
     description: string;
     status: number;
-    parent_id?: number | null;
+    parent_id?: string | null;
 }
 export interface CategoriesResponse {
     data: Category[];

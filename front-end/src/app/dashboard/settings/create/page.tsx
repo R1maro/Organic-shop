@@ -15,32 +15,25 @@ export const metadata: Metadata = {
 async function createSettingAction(formData: FormData) {
     'use server'
 
-    const cookieStore = cookies();
-    const csrfToken = cookieStore.get('XSRF-TOKEN')?.value || '';
 
     try {
-        const type = formData.get('type')?.toString();
+        const type = formData.get('type')?.toString() || '';
         const imageFile = formData.get('image') as File;
 
         const data = {
-            key: formData.get('key')?.toString(),
-            label: formData.get('label')?.toString(),
-            description: formData.get('description')?.toString(),
+            key: formData.get('key')?.toString() || '',
+            label: formData.get('label')?.toString() || '',
+            value: formData.get('value')?.toString() || '',
             type: type,
-            group: formData.get('group')?.toString(),
-            // Only include value if it's not an image type or if no image file is uploaded
-            ...(type !== 'image' || !imageFile || imageFile.size === 0
-                    ? { value: formData.get('value')?.toString() }
-                    : {}
-            ),
-            // Only include image if it's an image type and a file is uploaded
+            description: formData.get('description')?.toString(),
+            group: formData.get('group')?.toString() || '',
             ...(type === 'image' && imageFile && imageFile.size > 0
                     ? { image: imageFile }
                     : {}
             ),
         };
 
-        await apiCreateSetting(data, csrfToken);
+        await apiCreateSetting(data);
 
         revalidatePath('/dashboard/settings');
         redirect('/dashboard/settings');
