@@ -1,4 +1,4 @@
-import { getUserActivityLogs } from "@/utils/api";
+import { getUserActivityLogs } from "@/utils/userActivity";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import { Suspense } from "react";
