@@ -1,9 +1,9 @@
 import {redirect} from 'next/navigation';
 import {revalidatePath} from 'next/cache';
-import {cookies} from 'next/headers';
 import ProductForm from '@/components/Product/ProductForm';
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import {apiCreateProduct , getAllCategories} from "@/utils/api";
+import {apiCreateProduct } from "@/utils/product";
+import {getAllCategories} from "@/utils/category";
 import {Metadata} from "next";
 
 

@@ -1,8 +1,8 @@
 import {redirect} from 'next/navigation';
 import {revalidatePath} from 'next/cache';
-import {cookies} from 'next/headers';
 import ProductForm from '@/components/Product/ProductForm';
-import {apiUpdateProduct , getCategories , getProduct} from "@/utils/api";
+import {apiUpdateProduct  , getProduct} from "@/utils/product";
+import {getCategories} from "@/utils/category";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import {Metadata} from "next";
 import {ProductApiData, ProductFormData} from "@/types/product";
@@ -15,8 +15,6 @@ export const metadata: Metadata = {
 async function updateProductAction(id: string, formData: FormData) {
     'use server'
 
-    const cookieStore = cookies();
-    const csrfToken = cookieStore.get('XSRF-TOKEN')?.value || '';
 
     try {
         const imageFiles = formData.getAll('images[]');
@@ -40,7 +38,7 @@ async function updateProductAction(id: string, formData: FormData) {
 
         };
 
-        await apiUpdateProduct(id, data, csrfToken);
+        await apiUpdateProduct(id, data);
 
         revalidatePath('/dashboard/products');
         redirect('/dashboard/products');
