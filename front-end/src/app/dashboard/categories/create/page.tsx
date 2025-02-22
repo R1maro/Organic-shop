@@ -1,9 +1,8 @@
 import {redirect} from 'next/navigation';
 import {revalidatePath} from 'next/cache';
-import {cookies} from 'next/headers';
 import CategoryForm from '@/components/Categories/CategoryForm';
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import {apiCreateCategory , getAllCategories} from "@/utils/api";
+import {apiCreateCategory , getAllCategories} from "@/utils/category";
 import {Metadata} from "next";
 
 export const metadata: Metadata = {
