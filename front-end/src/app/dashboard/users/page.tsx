@@ -2,7 +2,7 @@ import UserList from '@/components/Users/UserList';
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import {Metadata} from 'next';
 import SearchForm from "@/components/Users/SearchForm";
-import {getUsers} from "@/utils/api";
+import {getUsers} from "@/utils/user";
 import Link from "next/link";
 import {Suspense} from "react";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";

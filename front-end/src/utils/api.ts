@@ -11,24 +11,10 @@ import {BlogCreatePayload, BlogApiResponse, BlogApiListResponse} from '@/types/b
 import {LogsParams} from "@/types/logs";
 import {PaginatedResponse} from "@/types/order";
 import {InvoicePaginatedResponse} from "@/types/invoice";
-import {cookies} from "next/headers";
 import {apiClient} from "@/lib/apiClient";
 
 
-export async function getUsers(page: number = 1, search: string = '') {
-    let endpoint = `/admin/users?page=${page}`;
-    if (search) {
-        endpoint += `&search=${encodeURIComponent(search)}`;
-    }
 
-    return await apiClient(endpoint, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        cache: 'no-store',
-    }) as Promise<UsersResponse>;
-}
 
 export async function getCategories(page: number = 1): Promise<CategoriesResponse> {
     return apiClient(`/admin/categories?page=${page}`, {
