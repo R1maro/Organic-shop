@@ -1,7 +1,8 @@
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import BlogForm from '@/components/Blogs/BlogForm';
-import { apiUpdateBlog, getCategories, getAllTags, getBlog } from "@/utils/api";
+import { apiUpdateBlog, getAllTags, getBlog } from "@/utils/blog";
+import {getCategories} from "@/utils/category";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import { Metadata } from "next";
 import {BlogApiResponse, BlogFormData, MediaUrls} from "@/types/blog";
