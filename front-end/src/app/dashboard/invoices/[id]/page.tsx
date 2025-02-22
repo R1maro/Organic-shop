@@ -1,7 +1,7 @@
 import {notFound} from 'next/navigation';
 import InvoiceDetails from '@/components/Invoices/InvoiceDetails';
 import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb';
-import {getInvoice} from '@/utils/api';
+import {getInvoice} from '@/utils/invoice';
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 
 interface InvoicePageProps {
