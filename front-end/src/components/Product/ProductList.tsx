@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Pagination from "@/components/Pagination/Pagination";
-import {getProducts} from '@/utils/api'
+import {getProducts} from '@/utils/product';
 
 
 async function ProductList({page = 1, categoryId,}: {
