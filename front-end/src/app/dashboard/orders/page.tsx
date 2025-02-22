@@ -2,7 +2,7 @@ import {Suspense} from 'react';
 import Link from "next/link";
 import OrderList from "@/components/Orders/OrderList";
 import OrderFilters from "@/components/Orders/OrderFilter";
-import {getOrders} from "@/utils/api";
+import {getOrders} from "@/utils/order";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import {Metadata} from "next";
 
