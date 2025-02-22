@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Pagination from "@/components/Pagination/Pagination";
-import {getSettings , getSettingGroups} from '@/utils/api';
+import {getSettings , getSettingGroups} from '@/utils/setting';
 import SearchForm from "@/components/Settings/SearchForm";
 import GroupSelector from "@/components/Settings/GroupSelector";
 import config from "@/config/config";
