@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Pagination from '@/components/Pagination/Pagination';
-import {getBlogs} from '@/utils/api';
+import {getBlogs} from '@/utils/blog';
 import {BlogApiListResponse, BlogApiResponse, MediaUrls} from "@/types/blog";
 import config from "@/config/config";
 import BlogActions from "@/components/Blogs/BlogActions";
