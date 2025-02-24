@@ -1,4 +1,3 @@
-// components/Invoices/InvoiceDetails.tsx
 import React from 'react';
 import Link from 'next/link';
 import { Invoice } from "@/types/invoice";

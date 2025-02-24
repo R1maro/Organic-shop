@@ -1,9 +1,9 @@
 import {redirect} from 'next/navigation';
 import {revalidatePath} from 'next/cache';
-import {cookies} from 'next/headers';
 import ProductForm from '@/components/Product/ProductForm';
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import {apiCreateProduct , getAllCategories} from "@/utils/api";
+import {apiCreateProduct } from "@/utils/product";
+import {getAllCategories} from "@/utils/category";
 import {Metadata} from "next";
 
 
@@ -14,8 +14,6 @@ export const metadata: Metadata = {
 async function createProductAction(formData: FormData) {
     'use server'
 
-    const cookieStore = cookies();
-    const csrfToken = cookieStore.get('XSRF-TOKEN')?.value || '';
 
     try {
         const imageFiles = formData.getAll('images[]');
@@ -33,7 +31,7 @@ async function createProductAction(formData: FormData) {
             display_photo_index: formData.get('display_photo_index') || 0,
         };
 
-        await apiCreateProduct(data, csrfToken);
+        await apiCreateProduct(data);
 
         revalidatePath('/dashboard/products');
         redirect('/dashboard/products');

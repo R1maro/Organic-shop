@@ -1,8 +1,7 @@
 import {redirect} from 'next/navigation';
 import {revalidatePath} from 'next/cache';
-import {cookies} from 'next/headers';
 import SettingForm from '@/components/Settings/SettingForm';
-import {apiUpdateSetting, getSettingGroups, getSettingTypes, getSetting} from "@/utils/api";
+import {apiUpdateSetting, getSettingGroups, getSettingTypes, getSetting} from "@/utils/setting";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import {Metadata} from "next";
 
@@ -14,32 +13,25 @@ export const metadata: Metadata = {
 async function updateSettingAction(id: string, formData: FormData) {
     'use server'
 
-    const cookieStore = cookies();
-    const csrfToken = cookieStore.get('XSRF-TOKEN')?.value || '';
 
     try {
-        const type = formData.get('type')?.toString();
+        const type = formData.get('type')?.toString() || '';
         const imageFile = formData.get('image') as File;
 
         const data = {
-            key: formData.get('key')?.toString(),
-            label: formData.get('label')?.toString(),
+            key: formData.get('key')?.toString() || '',
+            label: formData.get('label')?.toString() || '',
+            value: formData.get('value')?.toString() || '',
             description: formData.get('description')?.toString(),
             type: type,
-            group: formData.get('group')?.toString(),
-            // Only include value if it's not an image type or if no image file is uploaded
-            ...(type !== 'image' || !imageFile || imageFile.size === 0
-                    ? { value: formData.get('value')?.toString() }
-                    : {}
-            ),
-            // Only include image if it's an image type and a file is uploaded
+            group: formData.get('group')?.toString() || '',
             ...(type === 'image' && imageFile && imageFile.size > 0
                     ? { image: imageFile }
                     : {}
             ),
         };
 
-        await apiUpdateSetting(id, data, csrfToken);
+        await apiUpdateSetting(id, data);
 
         revalidatePath('/dashboard/settings');
         redirect('/dashboard/settings');

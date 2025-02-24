@@ -1,10 +1,8 @@
-// app/dashboard/settings/create/page.tsx
 import {redirect} from 'next/navigation';
 import {revalidatePath} from 'next/cache';
-import {cookies} from 'next/headers';
 import SettingForm from '@/components/Settings/SettingForm';
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import {apiCreateSetting, getSettingGroups, getSettingTypes} from "@/utils/api";
+import {apiCreateSetting, getSettingGroups, getSettingTypes} from "@/utils/setting";
 import {Metadata} from "next";
 
 export const metadata: Metadata = {
@@ -15,32 +13,25 @@ export const metadata: Metadata = {
 async function createSettingAction(formData: FormData) {
     'use server'
 
-    const cookieStore = cookies();
-    const csrfToken = cookieStore.get('XSRF-TOKEN')?.value || '';
 
     try {
-        const type = formData.get('type')?.toString();
+        const type = formData.get('type')?.toString() || '';
         const imageFile = formData.get('image') as File;
 
         const data = {
-            key: formData.get('key')?.toString(),
-            label: formData.get('label')?.toString(),
-            description: formData.get('description')?.toString(),
+            key: formData.get('key')?.toString() || '',
+            label: formData.get('label')?.toString() || '',
+            value: formData.get('value')?.toString() || '',
             type: type,
-            group: formData.get('group')?.toString(),
-            // Only include value if it's not an image type or if no image file is uploaded
-            ...(type !== 'image' || !imageFile || imageFile.size === 0
-                    ? { value: formData.get('value')?.toString() }
-                    : {}
-            ),
-            // Only include image if it's an image type and a file is uploaded
+            description: formData.get('description')?.toString(),
+            group: formData.get('group')?.toString() || '',
             ...(type === 'image' && imageFile && imageFile.size > 0
                     ? { image: imageFile }
                     : {}
             ),
         };
 
-        await apiCreateSetting(data, csrfToken);
+        await apiCreateSetting(data);
 
         revalidatePath('/dashboard/settings');
         redirect('/dashboard/settings');

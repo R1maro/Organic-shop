@@ -2,7 +2,7 @@ import {Suspense} from 'react';
 import SettingsList from '@/components/Settings/SettingList'
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import {Metadata} from 'next';
-// import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
+import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 
 export const metadata: Metadata = {
     title: 'Settings | TailAdmin Next.js',
@@ -27,7 +27,7 @@ export default async function SettingsPage({searchParams,}: {
         <DefaultLayout>
             <div className="min-h-screen mx-auto px-4 py-8">
                 <div className="ms-10">
-                    {/*<Breadcrumb pageName="Settings"/>*/}
+                    <Breadcrumb pageName="Settings"/>
                 </div>
                 <Suspense fallback={<Loader/>}>
                     <SettingsList page={page} group={group} search={search}/>

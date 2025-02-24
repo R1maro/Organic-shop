@@ -1,9 +1,8 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
 import { Category } from '@/types/blog';
-import { getAllCategories } from '@/utils/api';
 
 interface BlogFiltersProps {
     initialStatus?: string;

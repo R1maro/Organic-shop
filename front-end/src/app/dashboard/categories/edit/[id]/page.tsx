@@ -1,8 +1,7 @@
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
-import { cookies } from 'next/headers';
 import CategoryForm from '@/components/Categories/CategoryForm';
-import {apiUpdateCategory, getCategories, getCategory} from "@/utils/api";
+import {apiUpdateCategory, getCategories, getCategory} from "@/utils/category";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import { Metadata } from "next";
 
@@ -14,18 +13,16 @@ export const metadata: Metadata = {
 async function updateCategory(id: string, formData: FormData) {
     'use server'
 
-    const cookieStore = cookies();
-    const csrfToken = cookieStore.get('XSRF-TOKEN')?.value || '';
 
     try {
         const data = {
-            name: formData.get('name')?.toString() || null,
-            description: formData.get('description')?.toString() || null,
+            name: formData.get('name')?.toString() || undefined,
+            description: formData.get('description')?.toString() || undefined,
             status: formData.get('status') !== null ? 1 : 0,
             parent_id: formData.get('parent_id')?.toString() || null,
         };
 
-        await apiUpdateCategory(id, data, csrfToken);
+        await apiUpdateCategory(id, data);
 
         revalidatePath('/dashboard/categories');
         redirect('/dashboard/categories');

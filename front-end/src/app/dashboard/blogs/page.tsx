@@ -4,7 +4,7 @@ import DefaultLayout from '@/components/Layouts/DefaultLayout';
 import {Metadata} from 'next';
 import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb';
 import BlogFilters from "@/components/Blogs/BlogFilters";
-import {getAllCategories} from '@/utils/api';
+import {getAllCategories} from '@/utils/category';
 import {Category} from '@/types/blog';
 
 

@@ -58,7 +58,7 @@ export interface Invoice {
 }
 
 
-export interface PaginatedResponse<T> {
+export interface InvoicePaginatedResponse<T> {
     data: T[];
     meta: {
         current_page: number;

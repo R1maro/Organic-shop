@@ -1,9 +1,8 @@
 import {redirect} from 'next/navigation';
 import {revalidatePath} from 'next/cache';
-import {cookies} from 'next/headers';
 import CategoryForm from '@/components/Categories/CategoryForm';
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import {apiCreateCategory , getAllCategories} from "@/utils/api";
+import {apiCreateCategory , getAllCategories} from "@/utils/category";
 import {Metadata} from "next";
 
 export const metadata: Metadata = {
@@ -15,8 +14,6 @@ export const metadata: Metadata = {
 async function createCategory(formData: FormData) {
     'use server'
 
-    const cookieStore = cookies();
-    const csrfToken = cookieStore.get('XSRF-TOKEN')?.value || '';
 
     try {
         const data = {
@@ -26,7 +23,7 @@ async function createCategory(formData: FormData) {
             parent_id: formData.get('parent_id')?.toString() || null,
         };
 
-        await apiCreateCategory(data, csrfToken);
+        await apiCreateCategory(data);
 
         revalidatePath('/dashboard/categories');
         redirect('/dashboard/categories');

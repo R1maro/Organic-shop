@@ -1,4 +1,4 @@
-import {getInvoice} from "@/utils/api";
+import {getInvoice} from "@/utils/invoice";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import Link from "next/link";
 import {Suspense} from "react";

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Dashboard;
 
+use App\Helpers\UserActivityLogger;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
@@ -42,7 +43,7 @@ class CategoryController extends Controller
         $category = Category::create($validated);
 
         $this->clearCategoryCache();
-
+        UserActivityLogger::created($category);
         return new CategoryResource($category);
     }
 
@@ -74,10 +75,13 @@ class CategoryController extends Controller
         if (isset($validated['name'])) {
             $validated['slug'] = Str::slug($validated['name']);
         }
+        UserActivityLogger::prepareForUpdate($category);
         $category->update($validated);
 
         $this->clearCategoryCache();
         Cache::forget('category_' . $category->id);
+        UserActivityLogger::updated($category);
+
 
         return new CategoryResource($category);
     }
@@ -91,7 +95,7 @@ class CategoryController extends Controller
 
         return response()->json([
             'message' => 'Category deleted successfully!'
-        ],200);
+        ], 200);
     }
 
     private function clearCategoryCache()

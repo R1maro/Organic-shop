@@ -1,4 +1,4 @@
-import {getOrder} from "@/utils/api";
+import {getOrder} from "@/utils/order";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import Link from "next/link";
 import OrderDetails from "@/components/Orders/OrderDetails";

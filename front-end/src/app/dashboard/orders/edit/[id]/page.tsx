@@ -1,5 +1,5 @@
 import OrderForm from "@/components/Orders/OrderForm";
-import {getOrder} from '@/utils/api';
+import {getOrder} from '@/utils/order';
 import {notFound} from "next/navigation";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import {Metadata} from "next";

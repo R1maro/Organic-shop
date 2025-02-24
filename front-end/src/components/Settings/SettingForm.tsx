@@ -1,5 +1,4 @@
 'use client';
-// components/Setting/SettingForm.tsx
 import { useState, useEffect } from 'react';
 import config from "@/config/config";
 
