@@ -8,11 +8,17 @@ export interface LogEntry {
     }
     ip: string;
     created_at: string;
+    action:string;
 }
 
 export interface LogsParams {
     page?: number;
     per_page?: number;
+    user_id?: string | number;
+    action?: string;
+    search?: string;
+    sort?: string;
+    order?: 'asc' | 'desc';
 }
 export interface LogsResponse {
     data: LogEntry[];
