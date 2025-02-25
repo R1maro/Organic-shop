@@ -43,4 +43,5 @@ Route::prefix('admin')->group(function () {
 
     Route::get('/user-activity-logs', [UserActivityLogController::class, 'index']);
     Route::get('/user-activity-logs/{id}', [UserActivityLogController::class, 'show']);
+    Route::get('/log-filter-options', [UserActivityLogController::class, 'getFilterOptions']);
 })->middleware(['auth:sanctum' , 'role:admin']);
