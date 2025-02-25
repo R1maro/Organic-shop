@@ -245,7 +245,7 @@ class UserActivityLogger
         }
 
         self::log(
-            "{$type}_{$action}_{$modelName}",
+            "{$action}_{$modelName}",
             $message,
             $model,
             $additional
