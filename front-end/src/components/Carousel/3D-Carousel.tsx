@@ -17,6 +17,7 @@ const Carousel: React.FC<CarouselProps> = ({slides, isPageBackground}) => {
     return (
         <section className="slidesWrapper">
             <div className="slides">
+
                 <button className="prevSlideBtn" onClick={handlePrevSlide}>
                     &#60;
                 </button>
