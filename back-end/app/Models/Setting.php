@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection;
 
 class Setting extends Model implements HasMedia
 {
-    use InteractsWithMedia, SoftDeletes , HasFactory;
+    use InteractsWithMedia, SoftDeletes, HasFactory;
 
     protected $fillable = [
         'key',
@@ -49,5 +50,43 @@ class Setting extends Model implements HasMedia
     {
         $setting = self::where('key', 'logo')->first();
         return $setting->value;
+    }
+
+    /**
+     * Get all slider image settings
+     *
+     * @return Collection
+     */
+    public static function getSliderImages(): Collection
+    {
+        return self::where('key', 'like', 'slider_image_%')
+            ->where('is_public', true)
+            ->get(['key', 'value']);
+    }
+
+    /**
+     * Get all slider image settings with media URLs
+     *
+     * @return Collection
+     */
+    public static function getSliderImagesWithMedia(): Collection
+    {
+        $sliderImages = self::where('key', 'like', 'slider_image_%')
+            ->where('is_public', true)
+            ->get();
+
+        return $sliderImages->map(function ($setting) {
+            $mediaUrl = null;
+
+            if ($setting->type === 'image' && $setting->hasMedia('setting_image')) {
+                $mediaUrl = $setting->getFirstMediaUrl('setting_image');
+            }
+
+            return [
+                'key' => $setting->key,
+                'value' => $setting->value,
+                'image_url' => $mediaUrl
+            ];
+        });
     }
 }
