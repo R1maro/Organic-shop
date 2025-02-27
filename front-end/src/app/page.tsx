@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar/Navbar"
 import {Metadata} from "next";
 import Carousel from "@/components/Carousel/3D-Carousel";
+import {getSliderImages} from "@/utils/website/setting";
 
 export const metadata: Metadata = {
     title:
@@ -8,7 +9,7 @@ export const metadata: Metadata = {
     description: "This is Next.js Home for TailAdmin Dashboard Template",
 };
 
-const slides = [
+const fallbackSlides = [
     {
         id: 1,
         title: 'First',
@@ -31,14 +32,18 @@ const slides = [
         image: 'https://picsum.photos/id/790/500/500',
     },
 ];
+export default async function Index() {
 
-export default function Index() {
+    const slides = await getSliderImages();
+
+    // Use fetched slides if available, otherwise use fallback
+    const carouselSlides = slides.length > 0 ? slides : fallbackSlides;
     return (
         <>
             <Navbar/>
 
             <div className="carousel-container">
-                <Carousel slides={slides} isPageBackground={true}/>
+                <Carousel slides={carouselSlides} isPageBackground={true}/>
             </div>
         </>
     );
