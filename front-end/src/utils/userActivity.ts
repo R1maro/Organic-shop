@@ -50,9 +50,7 @@ export async function getLogFilterOptions(): Promise<LogFilterOptions> {
             },
             cache: 'no-store',
         });
-        console.log("Filter options response:", response);
 
-        // Return a properly formatted object even if the API response is incorrect
         return {
             users: response.users || [],
             actions: response.actions || []
