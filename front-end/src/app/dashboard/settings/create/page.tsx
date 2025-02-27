@@ -2,7 +2,7 @@ import {redirect} from 'next/navigation';
 import {revalidatePath} from 'next/cache';
 import SettingForm from '@/components/Settings/SettingForm';
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import {apiCreateSetting, getSettingGroups, getSettingTypes} from "@/utils/setting";
+import {apiCreateSetting, getSettingGroups, getSettingTypes} from "@/utils/dashboard/setting";
 import {Metadata} from "next";
 
 export const metadata: Metadata = {

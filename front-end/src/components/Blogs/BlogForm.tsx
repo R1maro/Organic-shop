@@ -1,7 +1,7 @@
 'use client';
 import {useState, useEffect} from 'react';
 import {BlogFormProps} from "@/types/blog";
-import ImageUploadAdapter from '@/utils/ImageUploadAdapter';
+import ImageUploadAdapter from '@/utils/dashboard/ImageUploadAdapter';
 import config from "@/config/config";
 
 import {CKEditor} from '@ckeditor/ckeditor5-react';

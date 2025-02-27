@@ -1,6 +1,6 @@
 import {redirect} from 'next/navigation';
 import {revalidatePath} from 'next/cache';
-import {CreateUserData, createUser , fetchRoles} from "@/utils/user";
+import {CreateUserData, createUser , fetchRoles} from "@/utils/dashboard/user";
 import UserForm from '@/components/Users/UserForm';
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import {Metadata} from "next";
