@@ -14,6 +14,11 @@ export interface SlideData {
     subtitle?: string;
     description?: string;
 }
+export interface SliderImage {
+    key: string;
+    value: string;
+    image_url: string;
+}
 
 export interface CarouselProps {
     slides: SlideData[];

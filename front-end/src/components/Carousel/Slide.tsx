@@ -2,6 +2,7 @@
 import React  from 'react';
 import {SlideProps} from "@/types/carousel";
 import useTilt from "@/hooks/useTilt"
+import config from "@/config/config";
 
 const Slide: React.FC<SlideProps> = ({
                                          image,
@@ -28,7 +29,7 @@ const Slide: React.FC<SlideProps> = ({
                 <div
                     className="slideBackground"
                     style={{
-                        backgroundImage: `url('${image}')`,
+                        backgroundImage: `url('${config.PUBLIC_URL}${image}')`,
                         height: '650px',
                     }}
                 />
@@ -36,7 +37,7 @@ const Slide: React.FC<SlideProps> = ({
             <div
                 className="slideContent"
                 style={{
-                    backgroundImage: `url('${image}')`,
+                    backgroundImage: `url('${config.PUBLIC_URL}${image}')`,
                 }}
             >
                 <div className="slideContentInner">
