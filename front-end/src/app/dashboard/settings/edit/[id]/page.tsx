@@ -1,7 +1,7 @@
 import {redirect} from 'next/navigation';
 import {revalidatePath} from 'next/cache';
 import SettingForm from '@/components/Settings/SettingForm';
-import {apiUpdateSetting, getSettingGroups, getSettingTypes, getSetting} from "@/utils/setting";
+import {apiUpdateSetting, getSettingGroups, getSettingTypes, getSetting} from "@/utils/dashboard/setting";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import {Metadata} from "next";
 

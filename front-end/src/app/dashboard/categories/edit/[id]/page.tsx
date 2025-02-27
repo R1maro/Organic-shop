@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import CategoryForm from '@/components/Categories/CategoryForm';
-import {apiUpdateCategory, getCategories, getCategory} from "@/utils/category";
+import {apiUpdateCategory, getCategories, getCategory} from "@/utils/dashboard/category";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import { Metadata } from "next";
 

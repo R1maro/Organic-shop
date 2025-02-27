@@ -1,4 +1,4 @@
-import { getUserActivityLogs , getLogFilterOptions  } from "@/utils/userActivity";
+import { getUserActivityLogs , getLogFilterOptions  } from "@/utils/dashboard/userActivity";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import { Suspense } from "react";

@@ -1,4 +1,4 @@
-import {getOrder} from "@/utils/order";
+import {getOrder} from "@/utils/dashboard/order";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import Link from "next/link";
 import OrderDetails from "@/components/Orders/OrderDetails";

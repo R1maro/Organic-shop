@@ -2,8 +2,8 @@ import {redirect} from 'next/navigation';
 import {revalidatePath} from 'next/cache';
 import BlogForm from '@/components/Blogs/BlogForm';
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import {apiCreateBlog, getAllTags} from "@/utils/blog";
-import {getAllCategories} from "@/utils/category";
+import {apiCreateBlog, getAllTags} from "@/utils/dashboard/blog";
+import {getAllCategories} from "@/utils/dashboard/category";
 import {Metadata} from "next";
 
 export const metadata: Metadata = {

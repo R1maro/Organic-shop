@@ -3,7 +3,7 @@ import {revalidatePath} from 'next/cache';
 import UserForm from '@/components/Users/UserForm';
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import {Metadata} from "next";
-import {fetchRoles, getUser, updateUser, UpdateUserData} from '@/utils/user';
+import {fetchRoles, getUser, updateUser, UpdateUserData} from '@/utils/dashboard/user';
 
 export const metadata: Metadata = {
     title: 'Edit User | TailAdmin Next.js',
