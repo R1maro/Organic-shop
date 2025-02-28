@@ -85,6 +85,7 @@ class Setting extends Model implements HasMedia
             return [
                 'key' => $setting->key,
                 'value' => $setting->value,
+                'label' => $setting->label,
                 'image_url' => $mediaUrl
             ];
         });
