@@ -1,6 +1,6 @@
 export interface SlideProps {
     image: string;
-    title?: string;
+    label?: string;
     subtitle?: string;
     description?: string;
     offset: number;
@@ -10,13 +10,14 @@ export interface SlideProps {
 export interface SlideData {
     id: number;
     image: string;
-    title?: string;
+    label?: string;
     subtitle?: string;
     description?: string;
 }
 export interface SliderImage {
     key: string;
     value: string;
+    label:string;
     image_url: string;
 }
 

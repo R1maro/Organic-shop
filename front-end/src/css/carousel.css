@@ -54,7 +54,7 @@
 
 .slideBackground {
     position: fixed !important;
-    top: 0;
+    top: 15%;
     left: -10%;
     right: -10%;
     bottom: 0;
@@ -64,7 +64,6 @@
     opacity: 0;
     transition: opacity 0.3s linear, transform 0.3s ease-in-out;
     pointer-events: none;
-    transform: translateX(calc(10% * var(--dir)));
 }
 
 .slide[data-active] {

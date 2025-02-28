@@ -36,11 +36,12 @@ export default async function Index() {
 
     const slides = await getSliderImages();
 
-    // Use fetched slides if available, otherwise use fallback
     const carouselSlides = slides.length > 0 ? slides : fallbackSlides;
     return (
         <>
-            <Navbar/>
+            <div>
+                <Navbar/>
+            </div>
 
             <div className="carousel-container">
                 <Carousel slides={carouselSlides} isPageBackground={true}/>

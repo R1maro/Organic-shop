@@ -29,7 +29,7 @@ const Carousel: React.FC<CarouselProps> = ({slides, isPageBackground}) => {
                             <Slide
                                 key={`slide-${i}`}
                                 image={slide.image}
-                                title={slide.title}
+                                label={slide.label}
                                 subtitle={slide.subtitle}
                                 description={slide.description}
                                 offset={offset}

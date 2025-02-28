@@ -6,7 +6,7 @@ import config from "@/config/config";
 
 const Slide: React.FC<SlideProps> = ({
                                          image,
-                                         title,
+                                         label,
                                          subtitle,
                                          description,
                                          offset,
@@ -30,7 +30,7 @@ const Slide: React.FC<SlideProps> = ({
                     className="slideBackground"
                     style={{
                         backgroundImage: `url('${config.PUBLIC_URL}${image}')`,
-                        height: '650px',
+                        height: '450px',
                     }}
                 />
             )}
@@ -41,9 +41,9 @@ const Slide: React.FC<SlideProps> = ({
                 }}
             >
                 <div className="slideContentInner">
-                    {title && (
+                    {label && (
                         <h2 className="slideTitle" dir="auto">
-                            {title}
+                            {label}
                         </h2>
                     )}
                     {subtitle && (
