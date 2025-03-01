@@ -1,0 +1,143 @@
+:root {
+    --body-color: #2c2d2a;
+    --beach-bg: #D0DDD0;
+    --hover-bg: rgb( 121, 111, 99);
+}
+
+img {
+    max-width: 100%;
+}
+
+a {
+    text-decoration: none;
+    color: var(--body-color);
+}
+
+
+
+.logo {
+    width: 68px;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    height: 70px;
+    width: 100%;
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-weight: 600;
+    font-size: 15px;
+    border-bottom: 1px solid rgba(44, 45, 42, 0.1);
+    position: sticky;
+    top: 0;
+    left: 0;
+    background-color: var(--beach-bg);
+    z-index: 6;
+}
+@media (max-width: 575px) {
+    .header {
+        width: calc(100% + 20px);
+        margin-left: -10px;
+    }
+}
+.header-menu {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+}
+@media screen and (max-width: 740px) {
+    .header-menu {
+        display: none;
+    }
+}
+.header-menu a:not(:first-child) {
+    margin-left: 30px;
+}
+.header .menu-icon {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+}
+
+.header-menu a {
+    position: relative;
+    text-decoration: none;
+    padding: 5px 0;
+    transition: color 0.5s ease;
+}
+.header-menu a:hover {
+    color: var(--hover-bg);
+}
+
+/* Animated underline */
+.header-menu a::before {
+    content: '';
+    position: absolute;
+    width: 0%;
+    height: 1px;
+    bottom: 0;
+    left: 0;
+    background: var(--body-color);
+    transition: width 0.5s ease-in-out;
+}
+
+.header-menu a:hover::before {
+    width: 100%;
+}
+.header .menu-icon svg {
+    width: 22px;
+}
+.header-icons {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+
+.header-icons svg {
+    width: 18px;
+    margin: 10px;
+}
+.header-icons svg:not(:last-child) {
+    margin-right: 20px;
+}
+
+.search {
+    cursor: pointer;
+    transition: transform 0.5s ease-in-out;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    position: absolute;
+    right: 110px;
+    transition: transform 0.5s ease-in-out;
+}
+
+.search-container .search-input {
+    width: 0;
+    opacity: 0;
+    border: none;
+    padding: 0;
+    transition: width 0.5s ease-in-out, opacity 0.5s ease-in-out;
+    pointer-events: none;
+    outline: none;
+}
+
+
+.search-container.search-active {
+    right: 50%;
+    transform: translateX(50%);
+}
+
+.search-container.search-active .search-input {
+    width: 600px;
+    opacity: 1;
+    border: 1px solid #ccc;
+    padding: 5px 10px;
+    border-radius: 7px;
+    pointer-events: auto;
+}
+

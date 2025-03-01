@@ -8,8 +8,9 @@ use App\Models\Product;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Http\JsonResponse;
 
-class IndexController extends Controller
+class SettingController extends Controller
 {
     public function getProducts(Request $request)
     {
@@ -95,6 +96,17 @@ class IndexController extends Controller
     {
         $logoUrl = Setting::getLogoUrl();
         return response()->json(['logo_url' => $logoUrl]);
+    }
+
+    public function getSliderImages()
+    {
+        // Use the model method to get slider images with media
+        $result = Setting::getSliderImagesWithMedia();
+
+        return response()->json([
+            'success' => true,
+            'data' => $result
+        ]);
     }
 
 }

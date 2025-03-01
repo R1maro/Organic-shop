@@ -1,9 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Website\IndexController;
+use App\Http\Controllers\Website\SettingController;
 
-Route::get('/products', [IndexController::class, 'getProducts']);
-Route::get('/settings', [IndexController::class, 'getPublicSettings']);
-Route::get('/categories', [IndexController::class, 'getCategoriesWithProducts']);
-Route::get('/settings/logo', [IndexController::class, 'getLogo']);
+Route::get('/products', [SettingController::class, 'getProducts']);
+Route::get('/categories', [SettingController::class, 'getCategoriesWithProducts']);
+Route::prefix('settings')->group(function () {
+    Route::get('/', [SettingController::class, 'getPublicSettings']);
+    Route::get('/logo', [SettingController::class, 'getLogo']);
+    Route::get('/slider', [SettingController::class, 'getSliderImages']);
+
+
+});

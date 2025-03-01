@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Pagination from "@/components/Pagination/Pagination";
-import { getCategories} from "@/utils/category";
+import { getCategories} from "@/utils/dashboard/category";
 
 
 async function CategoryList({page = 1}: { page?: number }) {
