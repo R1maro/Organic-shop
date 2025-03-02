@@ -17,6 +17,9 @@ async function createSettingAction(formData: FormData) {
     try {
         const type = formData.get('type')?.toString() || '';
         const imageFile = formData.get('image') as File;
+        const isPublicValue = formData.get('is_public')?.toString();
+        // The API expects a boolean, not a string
+        const isPublic = isPublicValue === 'true';
 
         const data = {
             key: formData.get('key')?.toString() || '',
@@ -25,11 +28,13 @@ async function createSettingAction(formData: FormData) {
             type: type,
             description: formData.get('description')?.toString(),
             group: formData.get('group')?.toString() || '',
+            is_public: isPublic,
             ...(type === 'image' && imageFile && imageFile.size > 0
                     ? { image: imageFile }
                     : {}
             ),
         };
+
 
         await apiCreateSetting(data);
 

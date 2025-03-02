@@ -38,7 +38,7 @@ class Setting extends Model implements HasMedia
 
     public static function getGroups(): array
     {
-        return ['general', 'social', 'slider', 'seo', 'contact'];
+        return ['General', 'Social', 'Slider', 'Seo', 'Contact'];
     }
 
     public static function getTypes(): array

@@ -59,6 +59,10 @@ export async function getSettingTypes() {
 export async function apiCreateSetting(data: SettingCreateUpdateData) {
     const form = new FormData();
 
+    const is_public = data.is_public;
+
+    const { is_public: _, ...restData } = data;
+
     Object.entries(data).forEach(([key, value]) => {
         if (value !== null && value !== undefined) {
             if (key === 'image' && value instanceof File) {
@@ -68,6 +72,12 @@ export async function apiCreateSetting(data: SettingCreateUpdateData) {
             }
         }
     });
+
+    if (is_public !== undefined) {
+
+        form.append('is_public', is_public ? '1' : '0');
+
+    }
 
 
     return apiClient(`/admin/settings`, {
@@ -82,6 +92,11 @@ export async function apiUpdateSetting(
 ) {
     const form = new FormData();
     form.append('_method', 'PUT');
+    const is_public = data.is_public;
+
+    // Remove is_public from data to handle it separately
+    const { is_public: _, ...restData } = data;
+
 
     Object.entries(data).forEach(([key, value]) => {
         if (value !== null && value !== undefined) {
@@ -92,6 +107,11 @@ export async function apiUpdateSetting(
             }
         }
     });
+
+    if (is_public !== undefined) {
+        form.append('is_public', is_public ? '1' : '0');
+
+    }
 
     return apiClient(`/admin/settings/${id}`, {
         method: 'POST',

@@ -6,6 +6,7 @@ interface Setting {
     type: string;
     group: string;
     description?: string;
+    is_public?: boolean;
 }
 export interface SettingFormData {
     key: string;
@@ -23,6 +24,7 @@ export interface SettingCreateUpdateData {
     type: string;
     group: string;
     description?: string;
+    is_public?: boolean;
     image?: File;
 }
 export interface SettingResponse {
