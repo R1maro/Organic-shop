@@ -1,8 +1,8 @@
-import {Suspense} from 'react';
-import SettingsList from '@/components/Settings/SettingList'
+import { Suspense } from 'react';
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import {Metadata} from 'next';
+import { Metadata } from 'next';
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
+import SettingsList from '@/components/Settings/SettingList';
 
 export const metadata: Metadata = {
     title: 'Settings | TailAdmin Next.js',
@@ -17,20 +17,21 @@ function Loader() {
     );
 }
 
-export default async function SettingsPage({searchParams,}: {
-    searchParams: { page?: string; group?: string; search?: string };
+export default async function SettingsPage({
+                                               searchParams,
+                                           }: {
+    searchParams: { search?: string };
 }) {
-    const page = searchParams.page ? parseInt(searchParams.page) : 1;
-    const {group, search} = searchParams;
+    const { search } = searchParams;
 
     return (
         <DefaultLayout>
             <div className="min-h-screen mx-auto px-4 py-8">
                 <div className="ms-10">
-                    <Breadcrumb pageName="Settings"/>
+                    <Breadcrumb pageName="Settings" />
                 </div>
-                <Suspense fallback={<Loader/>}>
-                    <SettingsList page={page} group={group} search={search}/>
+                <Suspense fallback={<Loader />}>
+                    <SettingsList search={search} />
                 </Suspense>
             </div>
         </DefaultLayout>
