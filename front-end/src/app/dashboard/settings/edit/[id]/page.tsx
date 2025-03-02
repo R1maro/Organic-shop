@@ -17,6 +17,10 @@ async function updateSettingAction(id: string, formData: FormData) {
     try {
         const type = formData.get('type')?.toString() || '';
         const imageFile = formData.get('image') as File;
+        const isPublicValue = formData.get('is_public')?.toString();
+        // The API expects a boolean, not a string
+        const isPublic = isPublicValue === 'true';
+
 
         const data = {
             key: formData.get('key')?.toString() || '',
@@ -25,11 +29,13 @@ async function updateSettingAction(id: string, formData: FormData) {
             description: formData.get('description')?.toString(),
             type: type,
             group: formData.get('group')?.toString() || '',
+            is_public: isPublic,
             ...(type === 'image' && imageFile && imageFile.size > 0
                     ? { image: imageFile }
                     : {}
             ),
         };
+
 
         await apiUpdateSetting(id, data);
 
@@ -51,6 +57,15 @@ export default async function EditSettingPage({params: {id},}: {
     ]);
 
     const setting = settingResponse.data;
+    if (setting && setting.is_public !== undefined) {
+        // If it's a string (like 'true'/'false'), convert it to boolean
+        if (typeof setting.is_public === 'string') {
+            setting.is_public = setting.is_public === 'true';
+        }
+    } else {
+        // Default to false if not present
+        setting.is_public = false;
+    }
 
     return (
         <DefaultLayout>

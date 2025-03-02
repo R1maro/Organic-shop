@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import {useState, useEffect} from 'react';
 import config from "@/config/config";
 
 interface SettingFormProps {
@@ -13,6 +13,7 @@ interface SettingFormProps {
         group: string;
         description?: string;
         image_url?: string;
+        is_public?: boolean;
     };
     action: (formData: FormData) => Promise<void>;
 }
@@ -31,12 +32,17 @@ export default function SettingForm({
             ? `${config.PUBLIC_URL}${initialData.value}`
             : null
     );
+    const [isPublic, setIsPublic] = useState<boolean>(initialData?.is_public ?? false);
 
     useEffect(() => {
         if (initialData?.type) {
             setSelectedType(initialData.type);
         }
-    }, [initialData?.type]);
+        if (initialData?.is_public !== undefined) {
+            setIsPublic(initialData.is_public);
+        }
+    }, [initialData?.type, initialData?.is_public]);
+
 
     const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -69,7 +75,14 @@ export default function SettingForm({
             }
         }
 
-        await action(formData);
+        formData.set('is_public', isPublic ? 'true' : 'false');
+
+        try {
+            await action(formData);
+        } catch (error) {
+            console.error('Error submitting form:', error);
+            alert('An error occurred: ' + (error as Error).message);
+        }
     };
 
     return (
@@ -198,6 +211,22 @@ export default function SettingForm({
                         />
                     </div>
                 )}
+                <div className="flex items-center">
+                    <input
+                        type="checkbox"
+                        id="is_public"
+                        checked={isPublic}
+                        onChange={(e) => setIsPublic(e.target.checked)}
+                        className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
+                    />
+                    <label htmlFor="is_public"
+                           className="ml-2 block text-sm font-medium text-black dark:text-white cursor-pointer">
+                        Public Setting
+                    </label>
+                    <div className="ml-2 text-xs text-gray-500 dark:text-gray-400">
+                        (Make this setting accessible to the public API)
+                    </div>
+                </div>
 
                 <div className="flex justify-end gap-4">
                     <button
