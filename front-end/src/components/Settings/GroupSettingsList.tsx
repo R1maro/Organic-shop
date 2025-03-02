@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Pagination from "@/components/Pagination/Pagination";
 import config from "@/config/config";
-import { getSettings } from '@/utils/dashboard/setting';
+import {getSettings} from '@/utils/dashboard/setting';
 
 interface GroupSettingsListProps {
     groupName: string;
@@ -9,7 +9,7 @@ interface GroupSettingsListProps {
     search?: string;
 }
 
-export default async function GroupSettingsList({ groupName, page = 1, search }: GroupSettingsListProps) {
+export default async function GroupSettingsList({groupName, page = 1, search}: GroupSettingsListProps) {
     const settings = await getSettings(page, groupName, search);
 
     return (
@@ -35,7 +35,7 @@ export default async function GroupSettingsList({ groupName, page = 1, search }:
                     <Link
                         href={{
                             pathname: "/dashboard/settings/create",
-                            query: { group: groupName }
+                            query: {group: groupName}
                         }}
                         className="inline-flex items-center justify-center gap-2.5 rounded-md bg-primary py-4 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
                     >
@@ -98,7 +98,8 @@ export default async function GroupSettingsList({ groupName, page = 1, search }:
                 </form>
             </div>
 
-            <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
+            <div
+                className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
                 {settings.data.length > 0 ? (
                     <div className="max-w-full overflow-x-auto">
                         <table className="w-full table-auto">
@@ -115,6 +116,9 @@ export default async function GroupSettingsList({ groupName, page = 1, search }:
                                 </th>
                                 <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">
                                     Value
+                                </th>
+                                <th className="min-w-[80px] py-4 px-4 font-medium text-black dark:text-white">
+                                    Public
                                 </th>
                                 <th className="py-4 px-4 font-medium text-black dark:text-white">
                                     Actions
@@ -149,6 +153,17 @@ export default async function GroupSettingsList({ groupName, page = 1, search }:
                                             setting.value === 'true' ? 'Yes' : 'No'
                                         ) : (
                                             setting.value
+                                        )}
+                                    </td>
+                                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                        {setting.is_public ? (
+                                            <span className="inline-flex px-3 py-1 text-xs font-medium rounded-full bg-success bg-opacity-10 text-success">
+                                                Yes
+                                            </span>
+                                        ) : (
+                                            <span className="inline-flex px-3 py-1 text-xs font-medium rounded-full bg-danger bg-opacity-10 text-danger">
+                                                No
+                                            </span>
                                         )}
                                     </td>
                                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
