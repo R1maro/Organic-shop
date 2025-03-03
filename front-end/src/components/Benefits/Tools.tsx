@@ -1,8 +1,5 @@
-"use client";
-
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import config from "@/config/config";
-
 
 interface Benefit {
     id: number;
@@ -13,43 +10,42 @@ interface Benefit {
     description?: string;
 }
 
-interface BenefitsResponse {
-    data: Benefit[];
+async function getBenefits(): Promise<Benefit[]> {
+    // Server-side API call
+    const response = await fetch(`${config.API_URL}/settings/benefits`, {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        cache: 'no-store'
+    });
+
+    if (!response.ok) {
+        throw new Error('Failed to fetch benefits');
+    }
+
+    const data = await response.json();
+    return data.data;
 }
 
-const Tools: React.FC = () => {
-    const [benefits, setBenefits] = useState<Benefit[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
+// Server Component - notice no hooks
+const Tools = async () => {
+    // Server-side data fetching
+    let benefits: Benefit[] = [];
+    let error = null;
 
-    useEffect(() => {
-        const fetchBenefits = async () => {
-            try {
-                setLoading(true);
-                const response = await fetch(`${config.API_URL}/settings/benefits`);
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch benefits');
-                }
-
-                const data: BenefitsResponse = await response.json();
-                setBenefits(data.data);
-            } catch (err) {
-                setError(err instanceof Error ? err.message : 'An error occurred');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchBenefits();
-    }, []);
-
-    if (loading) {
-        return <div className="flex justify-center py-8">Loading benefits...</div>;
+    try {
+        benefits = await getBenefits();
+    } catch (err) {
+        error = err instanceof Error ? err.message : 'An error occurred';
+        console.error('Error fetching benefits:', error);
     }
 
     if (error) {
         return <div className="flex justify-center py-8 text-red-500">Error: {error}</div>;
+    }
+
+    if (benefits.length === 0) {
+        return <div className="flex justify-center py-8">No benefits found</div>;
     }
 
     return (
@@ -65,11 +61,9 @@ const Tools: React.FC = () => {
 
             <div className="tools-container">
                 {benefits.map((benefit) => {
-                    const styles: React.CSSProperties = {
+                    const styles = {
                         backgroundImage: `url(${config.PUBLIC_URL}${benefit.image_url})`,
                         backgroundSize: 'cover',
-                        objectFit: 'cover',
-
                     };
 
                     return (
