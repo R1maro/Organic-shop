@@ -9,6 +9,8 @@ Route::prefix('settings')->group(function () {
     Route::get('/', [SettingController::class, 'getPublicSettings']);
     Route::get('/logo', [SettingController::class, 'getLogo']);
     Route::get('/slider', [SettingController::class, 'getSliderImages']);
+    Route::get('/benefits', [SettingController::class, 'getBenefits']);
+
 
 
 });

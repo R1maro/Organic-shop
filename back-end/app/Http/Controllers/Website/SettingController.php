@@ -109,4 +109,16 @@ class SettingController extends Controller
         ]);
     }
 
+    /**
+     * Get all benefit settings
+     *
+     * @return JsonResponse
+     */
+    public function getBenefits(): JsonResponse
+    {
+        $benefits = Setting::getBenefits();
+
+        return response()->json(['data' => $benefits]);
+    }
+
 }

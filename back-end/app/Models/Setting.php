@@ -90,4 +90,33 @@ class Setting extends Model implements HasMedia
             ];
         });
     }
+
+    /**
+     * Get all benefit settings with media URLs
+     *
+     * @return Collection
+     */
+    public static function getBenefits(): Collection
+    {
+        $benefitSettings = self::where('key', 'like', 'benefit_%')
+            ->where('is_public', true)
+            ->get();
+
+        return $benefitSettings->map(function ($setting) {
+            $mediaUrl = null;
+
+            if ($setting->type === 'image' && $setting->hasMedia('setting_image')) {
+                $mediaUrl = $setting->getFirstMediaUrl('setting_image');
+            }
+
+            return [
+                'id' => $setting->id,
+                'key' => $setting->key,
+                'label' => $setting->label,
+                'value' => $setting->value,
+                'description' => $setting->description,
+                'image_url' => $mediaUrl
+            ];
+        });
+    }
 }
