@@ -85,6 +85,7 @@ class SettingSeeder extends Seeder
         }
         $this->addLogoImage();
         $this->addSliderImages();
+        $this->addBenefitImages();
     }
 
     protected function addLogoImage()
@@ -127,6 +128,38 @@ class SettingSeeder extends Seeder
                 'group' => 'slider',
                 'label' => ucfirst(str_replace('_', ' ', $key)),
                 'description' => "Slider image for $key",
+            ]);
+
+            if (file_exists($imagePath)) {
+
+                $setting->clearMediaCollection('setting_image');
+
+                $setting->clearMediaCollection('setting_image');
+
+                $media = $setting->addMedia($imagePath)
+                    ->preservingOriginal()
+                    ->toMediaCollection('setting_image');
+
+                $setting->update([
+                    'value' => $media->getUrl(),
+                ]);
+            }
+        }
+    }
+    protected function addBenefitImages()
+    {
+        $benefitImages = [
+            'benefit_image_1' => public_path('images/benefit_1.webp'),
+            'benefit_image_2' => public_path('images/benefit_2.webp'),
+            'benefit_image_3' => public_path('images/benefit_3.webp'),
+        ];
+
+        foreach ($benefitImages as $key => $imagePath) {
+            $setting = Setting::firstOrCreate(['key' => $key], [
+                'type' => 'image',
+                'group' => 'General',
+                'label' => ucfirst(str_replace('_', ' ', $key)),
+                'description' => "Benefit image for $key",
             ]);
 
             if (file_exists($imagePath)) {
