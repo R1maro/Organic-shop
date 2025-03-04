@@ -130,6 +130,9 @@ class SettingSeeder extends Seeder
             ]);
 
             if (file_exists($imagePath)) {
+
+                $setting->clearMediaCollection('setting_image');
+
                 $setting->clearMediaCollection('setting_image');
 
                 $media = $setting->addMedia($imagePath)
