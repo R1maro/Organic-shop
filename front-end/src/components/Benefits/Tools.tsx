@@ -51,10 +51,9 @@ const Tools = async () => {
     return (
         <div>
             <span className="flex justify-center font-bold text-2xl my-4">
-                <span className="flex">
+                <span className="flex my-4">
                     Benefits of
-                </span>
-                <span className="flex">
+
                     buying from us
                 </span>
             </span>

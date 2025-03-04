@@ -29,7 +29,7 @@ a {
     font-weight: 600;
     font-size: 15px;
     border-bottom: 1px solid rgba(44, 45, 42, 0.1);
-    position: sticky;
+    position: fixed;
     top: 0;
     left: 0;
     background-color: var(--beach-bg);
@@ -74,7 +74,7 @@ a {
 .header-menu a::before {
     content: '';
     position: absolute;
-    width: 0%;
+    width: 0;
     height: 1px;
     bottom: 0;
     left: 0;
