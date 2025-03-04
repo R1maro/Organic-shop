@@ -28,14 +28,6 @@ class SettingSeeder extends Seeder
                 'description' => 'A brief description of your website'
             ],
             [
-                'key' => 'logo',
-                'value' => '/public/images/logo.webp',
-                'type' => 'image',
-                'group' => 'general',
-                'label' => 'Site Logo',
-                'description' => 'Your website logo (recommended size: 200x50px)'
-            ],
-            [
                 'key' => 'telegram_address',
                 'value' => '',
                 'type' => 'text',
@@ -43,30 +35,6 @@ class SettingSeeder extends Seeder
                 'label' => 'Telegram Address',
                 'description' => 'Your Telegram channel or contact'
             ],
-//            [
-//                'key' => 'slider_image_1',
-//                'value' => null,
-//                'type' => 'image',
-//                'group' => 'slider',
-//                'label' => 'Slider Image 1',
-//                'description' => 'First slider image (recommended size: 1920x1080px)'
-//            ],
-//            [
-//                'key' => 'slider_image_2',
-//                'value' => null,
-//                'type' => 'image',
-//                'group' => 'slider',
-//                'label' => 'Slider Image 2',
-//                'description' => 'Second slider image (recommended size: 1920x1080px)'
-//            ],
-//            [
-//                'key' => 'slider_image_3',
-//                'value' => null,
-//                'type' => 'image',
-//                'group' => 'slider',
-//                'label' => 'Slider Image 3',
-//                'description' => 'Third slider image (recommended size: 1920x1080px)'
-//            ],
             [
                 'key' => 'slider_autoplay_speed',
                 'value' => 6000,
@@ -162,15 +130,12 @@ class SettingSeeder extends Seeder
             ]);
 
             if (file_exists($imagePath)) {
-                // Remove previous media if exists
                 $setting->clearMediaCollection('setting_image');
 
-                // Add new media
                 $media = $setting->addMedia($imagePath)
                     ->preservingOriginal()
                     ->toMediaCollection('setting_image');
 
-                // Update setting value with the correct path from Spatie
                 $setting->update([
                     'value' => $media->getUrl(),
                 ]);
