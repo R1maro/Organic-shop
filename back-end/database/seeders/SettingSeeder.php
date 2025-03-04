@@ -29,7 +29,7 @@ class SettingSeeder extends Seeder
             ],
             [
                 'key' => 'logo',
-                'value' => null,
+                'value' => '/public/images/logo.webp',
                 'type' => 'image',
                 'group' => 'general',
                 'label' => 'Site Logo',
@@ -43,30 +43,30 @@ class SettingSeeder extends Seeder
                 'label' => 'Telegram Address',
                 'description' => 'Your Telegram channel or contact'
             ],
-            [
-                'key' => 'slider_image_1',
-                'value' => null,
-                'type' => 'image',
-                'group' => 'slider',
-                'label' => 'Slider Image 1',
-                'description' => 'First slider image (recommended size: 1920x1080px)'
-            ],
-            [
-                'key' => 'slider_image_2',
-                'value' => null,
-                'type' => 'image',
-                'group' => 'slider',
-                'label' => 'Slider Image 2',
-                'description' => 'Second slider image (recommended size: 1920x1080px)'
-            ],
-            [
-                'key' => 'slider_image_3',
-                'value' => null,
-                'type' => 'image',
-                'group' => 'slider',
-                'label' => 'Slider Image 3',
-                'description' => 'Third slider image (recommended size: 1920x1080px)'
-            ],
+//            [
+//                'key' => 'slider_image_1',
+//                'value' => null,
+//                'type' => 'image',
+//                'group' => 'slider',
+//                'label' => 'Slider Image 1',
+//                'description' => 'First slider image (recommended size: 1920x1080px)'
+//            ],
+//            [
+//                'key' => 'slider_image_2',
+//                'value' => null,
+//                'type' => 'image',
+//                'group' => 'slider',
+//                'label' => 'Slider Image 2',
+//                'description' => 'Second slider image (recommended size: 1920x1080px)'
+//            ],
+//            [
+//                'key' => 'slider_image_3',
+//                'value' => null,
+//                'type' => 'image',
+//                'group' => 'slider',
+//                'label' => 'Slider Image 3',
+//                'description' => 'Third slider image (recommended size: 1920x1080px)'
+//            ],
             [
                 'key' => 'slider_autoplay_speed',
                 'value' => 6000,
@@ -114,6 +114,67 @@ class SettingSeeder extends Seeder
                 ['key' => $setting['key']],
                 $setting
             );
+        }
+        $this->addLogoImage();
+        $this->addSliderImages();
+    }
+
+    protected function addLogoImage()
+    {
+        $setting = Setting::firstOrCreate(['key' => 'logo'], [
+            'type' => 'image',
+            'group' => 'general',
+            'label' => 'Site Logo',
+            'description' => 'Your website logo (recommended size: 200x50px)'
+        ]);
+
+        $imagePath = public_path('images/logo.webp');
+
+        if (file_exists($imagePath)) {
+            $setting->clearMediaCollection('setting_image');
+
+            $media = $setting->addMedia($imagePath)
+                ->preservingOriginal()
+                ->toMediaCollection('setting_image');
+
+            $setting->update([
+                'value' => $media->getUrl(),
+            ]);
+
+        }
+
+    }
+
+    protected function addSliderImages()
+    {
+        $sliderImages = [
+            'slider_image_1' => public_path('images/slider_1.webp'),
+            'slider_image_2' => public_path('images/slider_2.webp'),
+            'slider_image_3' => public_path('images/slider_3.webp'),
+        ];
+
+        foreach ($sliderImages as $key => $imagePath) {
+            $setting = Setting::firstOrCreate(['key' => $key], [
+                'type' => 'image',
+                'group' => 'slider',
+                'label' => ucfirst(str_replace('_', ' ', $key)),
+                'description' => "Slider image for $key",
+            ]);
+
+            if (file_exists($imagePath)) {
+                // Remove previous media if exists
+                $setting->clearMediaCollection('setting_image');
+
+                // Add new media
+                $media = $setting->addMedia($imagePath)
+                    ->preservingOriginal()
+                    ->toMediaCollection('setting_image');
+
+                // Update setting value with the correct path from Spatie
+                $setting->update([
+                    'value' => $media->getUrl(),
+                ]);
+            }
         }
     }
 }
