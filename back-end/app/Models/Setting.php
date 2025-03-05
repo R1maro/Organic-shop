@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\JsonResponse;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -52,17 +53,6 @@ class Setting extends Model implements HasMedia
         return $setting->value;
     }
 
-    /**
-     * Get all slider image settings
-     *
-     * @return Collection
-     */
-    public static function getSliderImages(): Collection
-    {
-        return self::where('key', 'like', 'slider_image_%')
-            ->where('is_public', true)
-            ->get(['key', 'value']);
-    }
 
     /**
      * Get all slider image settings with media URLs
@@ -119,4 +109,19 @@ class Setting extends Model implements HasMedia
             ];
         });
     }
+
+    /**
+     * Get all benefit settings with media URLs
+     *
+     * @return Collection
+     */
+
+    public static function getSliderAutoPlay() : Collection
+    {
+        return self::where('key', 'like', 'slider_autoplay_speed')
+            ->where('is_public', true)
+            ->get(['key', 'value']);
+
+    }
+
 }

@@ -100,13 +100,29 @@ class SettingController extends Controller
 
     public function getSliderImages()
     {
-        // Use the model method to get slider images with media
         $result = Setting::getSliderImagesWithMedia();
 
         return response()->json([
             'success' => true,
             'data' => $result
         ]);
+    }
+
+    /**
+     * Get all benefit settings
+     *
+     * @return JsonResponse
+     */
+    public function getSliderAutoPlay():JsonResponse
+    {
+        $settings = Setting::getSliderAutoPlay();
+
+        if ($settings->isNotEmpty()) {
+            $value = $settings->first()->value;
+            return response()->json(['value' => $value]);
+        }
+
+        return response()->json(['value' => null]);
     }
 
     /**
