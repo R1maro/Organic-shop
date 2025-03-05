@@ -27,10 +27,9 @@ const Carousel: React.FC<CarouselProps> = ({slides, isPageBackground}) => {
                 }
 
                 const data = await response.json();
-                console.log("Fetched Autoplay Speed:", data);
 
-                if (data.slider_autoplay_speed) {
-                    setAutoplayInterval(data.slider_autoplay_speed);
+                if (data.value) {
+                    setAutoplayInterval(data.value);
                 }
             } catch (error) {
                 console.error("Error fetching autoplay speed:", error);
