@@ -10,6 +10,7 @@ Route::prefix('settings')->group(function () {
     Route::get('/logo', [SettingController::class, 'getLogo']);
     Route::get('/slider', [SettingController::class, 'getSliderImages']);
     Route::get('/benefits', [SettingController::class, 'getBenefits']);
+    Route::get('/slider_autoplay_speed', [SettingController::class, 'getSliderAutoPlay']);
 
 
 
