@@ -28,44 +28,12 @@ class SettingSeeder extends Seeder
                 'description' => 'A brief description of your website'
             ],
             [
-                'key' => 'logo',
-                'value' => null,
-                'type' => 'image',
-                'group' => 'general',
-                'label' => 'Site Logo',
-                'description' => 'Your website logo (recommended size: 200x50px)'
-            ],
-            [
                 'key' => 'telegram_address',
                 'value' => '',
                 'type' => 'text',
                 'group' => 'social',
                 'label' => 'Telegram Address',
                 'description' => 'Your Telegram channel or contact'
-            ],
-            [
-                'key' => 'slider_image_1',
-                'value' => null,
-                'type' => 'image',
-                'group' => 'slider',
-                'label' => 'Slider Image 1',
-                'description' => 'First slider image (recommended size: 1920x1080px)'
-            ],
-            [
-                'key' => 'slider_image_2',
-                'value' => null,
-                'type' => 'image',
-                'group' => 'slider',
-                'label' => 'Slider Image 2',
-                'description' => 'Second slider image (recommended size: 1920x1080px)'
-            ],
-            [
-                'key' => 'slider_image_3',
-                'value' => null,
-                'type' => 'image',
-                'group' => 'slider',
-                'label' => 'Slider Image 3',
-                'description' => 'Third slider image (recommended size: 1920x1080px)'
             ],
             [
                 'key' => 'slider_autoplay_speed',
@@ -114,6 +82,100 @@ class SettingSeeder extends Seeder
                 ['key' => $setting['key']],
                 $setting
             );
+        }
+        $this->addLogoImage();
+        $this->addSliderImages();
+        $this->addBenefitImages();
+    }
+
+    protected function addLogoImage()
+    {
+        $setting = Setting::firstOrCreate(['key' => 'logo'], [
+            'type' => 'image',
+            'group' => 'general',
+            'label' => 'Site Logo',
+            'description' => 'Your website logo (recommended size: 200x50px)'
+        ]);
+
+        $imagePath = public_path('images/logo.webp');
+
+        if (file_exists($imagePath)) {
+            $setting->clearMediaCollection('setting_image');
+
+            $media = $setting->addMedia($imagePath)
+                ->preservingOriginal()
+                ->toMediaCollection('setting_image');
+
+            $setting->update([
+                'value' => $media->getUrl(),
+            ]);
+
+        }
+
+    }
+
+    protected function addSliderImages()
+    {
+        $sliderImages = [
+            'slider_image_1' => public_path('images/slider_1.webp'),
+            'slider_image_2' => public_path('images/slider_2.webp'),
+            'slider_image_3' => public_path('images/slider_3.webp'),
+        ];
+
+        foreach ($sliderImages as $key => $imagePath) {
+            $setting = Setting::firstOrCreate(['key' => $key], [
+                'type' => 'image',
+                'group' => 'slider',
+                'label' => ucfirst(str_replace('_', ' ', $key)),
+                'description' => "Slider image for $key",
+            ]);
+
+            if (file_exists($imagePath)) {
+
+                $setting->clearMediaCollection('setting_image');
+
+                $setting->clearMediaCollection('setting_image');
+
+                $media = $setting->addMedia($imagePath)
+                    ->preservingOriginal()
+                    ->toMediaCollection('setting_image');
+
+                $setting->update([
+                    'value' => $media->getUrl(),
+                ]);
+            }
+        }
+    }
+    protected function addBenefitImages()
+    {
+        $benefitImages = [
+            'benefit_image_1' => public_path('images/benefit_1.webp'),
+            'benefit_image_2' => public_path('images/benefit_2.webp'),
+            'benefit_image_3' => public_path('images/benefit_3.webp'),
+        ];
+
+        foreach ($benefitImages as $key => $imagePath) {
+            $setting = Setting::firstOrCreate(['key' => $key], [
+                'type' => 'image',
+                'group' => 'General',
+                'label' => ucfirst(str_replace('_', ' ', $key)),
+                'description' => "Benefit image for $key",
+            ]);
+
+            if (file_exists($imagePath)) {
+
+                $setting->clearMediaCollection('setting_image');
+
+                $setting->clearMediaCollection('setting_image');
+
+                $media = $setting->addMedia($imagePath)
+                    ->preservingOriginal()
+                    ->toMediaCollection('setting_image');
+
+                $setting->update([
+                    'value' => $media->getUrl(),
+                ]);
+            }
         }
     }
 }
