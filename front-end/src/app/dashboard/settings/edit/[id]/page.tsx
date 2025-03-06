@@ -20,6 +20,8 @@ async function updateSettingAction(id: string, formData: FormData) {
         const isPublicValue = formData.get('is_public')?.toString();
         // The API expects a boolean, not a string
         const isPublic = isPublicValue === 'true';
+        const group = formData.get('group');
+
 
 
         const data = {
@@ -39,8 +41,8 @@ async function updateSettingAction(id: string, formData: FormData) {
 
         await apiUpdateSetting(id, data);
 
-        revalidatePath('/dashboard/settings');
-        redirect('/dashboard/settings');
+        revalidatePath(`/dashboard/settings/group/${group}`);
+        redirect(`/dashboard/settings/group/${group}`);
     } catch (error) {
         console.error('Error updating setting:', error);
         throw error;

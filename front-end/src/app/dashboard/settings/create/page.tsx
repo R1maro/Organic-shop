@@ -20,6 +20,7 @@ async function createSettingAction(formData: FormData) {
         const isPublicValue = formData.get('is_public')?.toString();
         // The API expects a boolean, not a string
         const isPublic = isPublicValue === 'true';
+        const group = formData.get('group');
 
         const data = {
             key: formData.get('key')?.toString() || '',
@@ -38,8 +39,8 @@ async function createSettingAction(formData: FormData) {
 
         await apiCreateSetting(data);
 
-        revalidatePath('/dashboard/settings');
-        redirect('/dashboard/settings');
+        revalidatePath(`/dashboard/settings/group/${group}`);
+        redirect(`/dashboard/settings/group/${group}`);
     } catch (error) {
         console.error('Error creating setting:', error);
         throw error;
