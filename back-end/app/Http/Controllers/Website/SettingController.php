@@ -7,44 +7,45 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\Setting;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\JsonResponse;
 
 class SettingController extends Controller
 {
-    public function getProducts(Request $request)
-    {
-
-        $cacheKey = 'products_main_page';
-
-
-        return Cache::remember($cacheKey, now()->addHours(2), function () {
-
-            // Only fetching the necessary fields (name, price, discount, and media)
-            return response()->json(
-                Product::with('media')
-                    ->select('id', 'name', 'price', 'discount') // Adjust based on the fields you need
-                    ->where('status', true) // Only active products
-
-                    ->orderBy('id', 'desc')
-                    ->get(9)
-                    ->map(function ($product) {
-                        // Get the product image URL, if available
-                        $imageUrl = $product->media->isNotEmpty()
-                            ? asset($product->media[0]->original_url)
-                            : null;
-
-                        return [
-                            'id' => $product->id,
-                            'name' => $product->name,
-                            'price' => $product->price,
-                            'discount' => $product->discount,
-                            'image_url' => $imageUrl,
-                        ];
-                    })
-            );
-        });
-    }
+//    public function getProducts(Request $request)
+//    {
+//
+//        $cacheKey = 'products_main_page';
+//
+//
+//        return Cache::remember($cacheKey, now()->addHours(2), function () {
+//
+//            // Only fetching the necessary fields (name, price, discount, and media)
+//            return response()->json(
+//                Product::with('media')
+//                    ->select('id', 'name', 'price', 'discount') // Adjust based on the fields you need
+//                    ->where('status', true) // Only active products
+//
+//                    ->orderBy('id', 'desc')
+//                    ->get(9)
+//                    ->map(function ($product) {
+//                        // Get the product image URL, if available
+//                        $imageUrl = $product->media->isNotEmpty()
+//                            ? asset($product->media[0]->original_url)
+//                            : null;
+//
+//                        return [
+//                            'id' => $product->id,
+//                            'name' => $product->name,
+//                            'price' => $product->price,
+//                            'discount' => $product->discount,
+//                            'image_url' => $imageUrl,
+//                        ];
+//                    })
+//            );
+//        });
+//    }
 
     public function getPublicSettings()
     {
@@ -136,5 +137,7 @@ class SettingController extends Controller
 
         return response()->json(['data' => $benefits]);
     }
+
+
 
 }

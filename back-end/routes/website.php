@@ -2,8 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Website\SettingController;
+use App\Http\Controllers\Website\ProductController;
 
-Route::get('/products', [SettingController::class, 'getProducts']);
+Route::get('/products', [ProductController::class, 'getProducts']);
 Route::get('/categories', [SettingController::class, 'getCategoriesWithProducts']);
 Route::prefix('settings')->group(function () {
     Route::get('/', [SettingController::class, 'getPublicSettings']);
