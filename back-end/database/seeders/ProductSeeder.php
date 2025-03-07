@@ -26,7 +26,7 @@ class ProductSeeder extends Seeder
                 'description' => '',
                 'discount' => 0,
                 'quantity' => rand(1, 100),
-                'sku' =>  $key,
+                'shipping_time' =>  "7 Day",
                 'status' => 1,
                 'category_id' => 1,
             ]);
