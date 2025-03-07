@@ -222,14 +222,15 @@ export default function ProductForm({
                     </div>
 
                     <div>
-                        <label htmlFor="sku" className="mb-3 block text-sm font-medium text-black dark:text-white">
-                            SKU
+                        <label htmlFor="shipping_time" className="mb-3 block text-sm font-medium text-black dark:text-white">
+                            Shipping Time
                         </label>
                         <input
                             type="text"
-                            id="sku"
-                            name="sku"
-                            defaultValue={initialData?.sku}
+                            id="shipping_time"
+                            name="shipping_time"
+                            placeholder="7 Day"
+                            defaultValue={initialData?.shipping_time}
                             required
                             className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                         />

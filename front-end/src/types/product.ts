@@ -7,7 +7,7 @@ export interface Product {
   discount: number;
   final_price: number;
   quantity: number;
-  sku: string;
+  shipping_time: string;
   status: number;
   category_id: number;
   formatted_price: string;
@@ -27,7 +27,7 @@ export interface ProductApiData {
   price: number;
   discount: number;
   quantity: number;
-  sku: string;
+  shipping_time: string;
   category_id: number;
   status: number;
   images?: File[];
@@ -41,7 +41,7 @@ export interface ProductFormData {
   price: number;
   discount: number;
   quantity: number;
-  sku: string;
+  shipping_time: string;
   category_id: number;
   status: boolean;
   image_urls?: string;
@@ -53,7 +53,7 @@ export interface ProductCreateUpdateData {
   price: number;
   discount: number;
   quantity: number;
-  sku: string | null;
+  shipping_time: string | null;
   category_id: number;
   status: number;
   images?: File[];
