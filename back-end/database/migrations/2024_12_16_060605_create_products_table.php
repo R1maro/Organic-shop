@@ -19,7 +19,7 @@ return new class extends Migration {
             $table->unsignedInteger('discount')->default(0);
             $table->unsignedInteger('final_price')->default(0);
             $table->unsignedInteger('quantity')->default(0);
-            $table->string('sku')->unique();
+            $table->string('shipping_time');
             $table->boolean('status')->default(1);
             $table->integer('display_photo_index')->default(0);
             $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');

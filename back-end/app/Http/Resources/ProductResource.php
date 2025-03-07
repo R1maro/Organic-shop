@@ -18,7 +18,7 @@ class ProductResource extends JsonResource
             'final_price' => $this->final_price,
             'formatted_final_price' => $this->formatted_final_price,
             'quantity' => $this->quantity,
-            'sku' => $this->sku,
+            'shipping_time' => $this->shipping_time,
             'status' => $this->status,
             'category' => new CategoryResource($this->whenLoaded('category')),
             'image_urls' => $this->image_urls,
