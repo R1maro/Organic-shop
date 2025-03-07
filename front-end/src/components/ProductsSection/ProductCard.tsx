@@ -2,7 +2,6 @@ import React from 'react';
 import Link from 'next/link';
 import config from "@/config/config";
 
-// Define the Product type based on your PHP model
 interface Product {
     id: number;
     name: string;
@@ -12,7 +11,7 @@ interface Product {
     discount: number;
     final_price: number;
     quantity: number;
-    sku: string;
+    shipping_time: string;
     status: number;
     category_id: number;
     display_photo_url: string;
@@ -21,7 +20,6 @@ interface Product {
     formatted_final_price: string;
 }
 
-// Fetch products from your API
 async function getProducts(): Promise<Product[]> {
     const res = await fetch(`${config.API_URL}/products`, {
         cache: 'no-store',
@@ -35,7 +33,6 @@ async function getProducts(): Promise<Product[]> {
     return response.success ? response.data : [];
 }
 
-// Single product card component
 function SingleProductCard({product}: { product: Product }) {
     return (
         <div className="card my-10">
@@ -61,14 +58,25 @@ function SingleProductCard({product}: { product: Product }) {
                 <div className="card-price">
                     {product.discount > 0 ? (
                         <>
-                            <span className="original-price">{product.formatted_price}</span>
-                            <span className="final-price">{product.formatted_final_price}</span>
+                            <span className="original-price line-through ">{product.formatted_price}</span>
+                            <span className="final-price flex">{product.formatted_final_price}</span>
                         </>
                     ) : (
                         <span>{product.formatted_price}</span>
                     )}
                 </div>
-                <p className="card-description">{product.description}</p>
+                {product.description ? (
+                    <>
+                        <p className="card-description">
+                            Description: {product.description}
+                        </p>
+                    </>
+                ):(
+                    <p></p>
+                )}f
+                <p className="card-description">
+                    Shipping time: {product.shipping_time}
+                </p>
                 <Link href={`/products/${product.slug}`} className="card-button">
                     Buy Now
                 </Link>
@@ -77,7 +85,6 @@ function SingleProductCard({product}: { product: Product }) {
     );
 }
 
-// Main ProductCard component (server component)
 const ProductCard = async () => {
     let products: Product[] = [];
     try {

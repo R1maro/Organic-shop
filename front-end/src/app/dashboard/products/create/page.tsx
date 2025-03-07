@@ -24,7 +24,7 @@ async function createProductAction(formData: FormData) {
             price: parseFloat((formData.get('price') as string)?.replace(/,/g, '')),
             discount: parseFloat((formData.get('discount') as string)?.replace(/,/g, '')) || 0,
             quantity: parseInt(formData.get('quantity') as string),
-            sku: formData.get('sku')?.toString() || null,
+            shipping_time: formData.get('shipping_time')?.toString() || null,
             category_id: parseInt(formData.get('category_id') as string),
             status: formData.get('status') !== null ? 1 : 0,
             images: imageFiles as File[],
