@@ -3,12 +3,9 @@
     --first-color: #F2A20C;
     --white-color: #E9EAEC;
     --dark-color: #272D40;
-    --dark-color-lighten: #F2F5FF;
 
-    --body-font: 'Poppins', sans-serif;
     --h1-font-size: 1.5rem;
     --h2-font-size: 1.25rem;
-    --normal-font-size: 1rem;
     --small-font-size: .875rem;
 }
 
@@ -19,9 +16,6 @@
     background-color: var(--dark-color);
     border-radius: 1rem;
     padding: 4rem 2rem 0;
-    display: flex;
-    justify-content: center;
-    /*margin: 150px 0 0 0;*/
     color: var(--white-color);
     overflow-y: hidden;
 }
@@ -55,10 +49,12 @@
     font-size: var(--h1-font-size);
     color: var(--first-color);
     margin-bottom: 0.5rem;
+    font-weight: 800;
+
 }
 
 .card:hover .card-title {
-    transform: translateX(-2.3rem);
+    transform: translateX(-1.5rem);
     margin-bottom: 0;
 }
 
@@ -67,15 +63,16 @@
     font-size: var(--h2-font-size);
     font-weight: 500;
     margin-bottom: 1.25rem;
+    margin-top: .8rem;
 }
 
 .card:hover .card-price {
-    transform: translateX(-1.8rem);
+    transform: translateX(-5rem);
 }
 
 .card-description {
     font-size: var(--small-font-size);
-    margin-bottom: 1.25rem;
+    margin-bottom: 1rem;
     text-align: initial;
     opacity: 0;
 }
