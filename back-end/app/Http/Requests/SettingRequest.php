@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Setting;
+use App\Models\SettingGroup;
 use Illuminate\Foundation\Http\FormRequest;
 
 class SettingRequest extends FormRequest
@@ -18,15 +19,25 @@ class SettingRequest extends FormRequest
             'key' => ['required', 'string', 'max:255'],
             'label' => 'required|string|max:255',
             'type' => 'required|string|in:' . implode(',', Setting::getTypes()),
-            'group' => 'required|string|in:' . implode(',', Setting::getGroups()),
+            'group' => 'required|string',
             'description' => 'nullable|string',
             'is_public' => 'boolean',
             'value' => 'nullable'
         ];
 
-        // Make key unique only on creation
         if ($this->isMethod('post')) {
-            $rules['key'][] = 'unique:settings,key';
+            if ($this->has('group')) {
+                $rules['group'] = [
+                    'required',
+                    'string',
+                    function ($attribute, $value, $fail) {
+                        $exists = SettingGroup::where('name', $value)->exists();
+                        if (!$exists) {
+                            $fail('The selected group is invalid.');
+                        }
+                    }
+                ];
+            }
         } else {
             $rules['key'][] = 'unique:settings,key,' . $this->setting->id;
         }
