@@ -39,7 +39,13 @@ class Setting extends Model implements HasMedia
 
     public static function getGroups(): array
     {
-        return ['General', 'Social', 'Slider', 'Seo', 'Contact'];
+        $groups = SettingGroup::pluck('name')->toArray();
+
+        if (empty($groups)) {
+            return ['General', 'Social', 'Slider', 'Seo', 'Contact'];
+        }
+
+        return $groups;
     }
 
     public static function getTypes(): array

@@ -6,6 +6,7 @@ use App\Http\Controllers\Dashboard\InvoiceController;
 use App\Http\Controllers\Dashboard\OrderController;
 use App\Http\Controllers\Dashboard\ProductController;
 use App\Http\Controllers\Dashboard\SettingController;
+use App\Http\Controllers\Dashboard\SettingGroupController;
 use App\Http\Controllers\Dashboard\TagController;
 use App\Http\Controllers\Dashboard\UserActivityLogController;
 use App\Http\Controllers\Dashboard\UserController;
@@ -40,8 +41,11 @@ Route::prefix('admin')->group(function () {
     Route::get('settings/types', [SettingController::class, 'getTypes']);
     Route::post('settings/bulk-update', [SettingController::class, 'bulkUpdate']);
     Route::apiResource('settings', SettingController::class);
+    Route::apiResource('setting-groups', SettingGroupController::class)->only(['index', 'store', 'destroy']);
+
 
     Route::get('/user-activity-logs', [UserActivityLogController::class, 'index']);
     Route::get('/user-activity-logs/{id}', [UserActivityLogController::class, 'show']);
     Route::get('/log-filter-options', [UserActivityLogController::class, 'getFilterOptions']);
+
 })->middleware(['auth:sanctum' , 'role:admin']);

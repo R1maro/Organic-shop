@@ -15,7 +15,7 @@ class SettingSeeder extends Seeder
                 'key' => 'site_name',
                 'value' => 'My Website',
                 'type' => 'text',
-                'group' => 'general',
+                'group' => 'General',
                 'label' => 'Site Name',
                 'description' => 'The name of your website'
             ],
@@ -23,7 +23,7 @@ class SettingSeeder extends Seeder
                 'key' => 'site_description',
                 'value' => 'Welcome to my website',
                 'type' => 'textarea',
-                'group' => 'general',
+                'group' => 'General',
                 'label' => 'Site Description',
                 'description' => 'A brief description of your website'
             ],
@@ -31,7 +31,7 @@ class SettingSeeder extends Seeder
                 'key' => 'telegram_address',
                 'value' => '',
                 'type' => 'text',
-                'group' => 'social',
+                'group' => 'Social',
                 'label' => 'Telegram Address',
                 'description' => 'Your Telegram channel or contact'
             ],
@@ -39,7 +39,7 @@ class SettingSeeder extends Seeder
                 'key' => 'slider_autoplay_speed',
                 'value' => 6000,
                 'type' => 'number',
-                'group' => 'slider',
+                'group' => 'Slider',
                 'label' => 'Slider Autoplay Speed',
                 'description' => 'Slider autoplay speed (in milliseconds,recommended 666)'
             ],
@@ -55,7 +55,7 @@ class SettingSeeder extends Seeder
                 'key' => 'slider_show_indicators',
                 'value' => true,
                 'type' => 'boolean',
-                'group' => 'slider',
+                'group' => 'Slider',
                 'label' => 'Slider Indicator Show',
                 'description' => 'Slider indicator show'
             ],
@@ -63,7 +63,7 @@ class SettingSeeder extends Seeder
                 'key' => 'advertisement_image_1',
                 'value' => null,
                 'type' => 'image',
-                'group' => 'slider',
+                'group' => 'Slider',
                 'label' => 'Advertisement Image 1',
                 'description' => 'Advertisement image (recommended size: 1920x1080px)'
             ],
@@ -71,7 +71,7 @@ class SettingSeeder extends Seeder
                 'key' => 'advertisement_image_2',
                 'value' => null,
                 'type' => 'image',
-                'group' => 'slider',
+                'group' => 'Slider',
                 'label' => 'Advertisement Image 2',
                 'description' => 'Advertisement image (recommended size: 1920x1080px)'
             ],
@@ -92,7 +92,7 @@ class SettingSeeder extends Seeder
     {
         $setting = Setting::firstOrCreate(['key' => 'logo'], [
             'type' => 'image',
-            'group' => 'general',
+            'group' => 'General',
             'label' => 'Site Logo',
             'description' => 'Your website logo (recommended size: 200x50px)'
         ]);
@@ -125,7 +125,7 @@ class SettingSeeder extends Seeder
         foreach ($sliderImages as $key => $imagePath) {
             $setting = Setting::firstOrCreate(['key' => $key], [
                 'type' => 'image',
-                'group' => 'slider',
+                'group' => 'Slider',
                 'label' => ucfirst(str_replace('_', ' ', $key)),
                 'description' => "Slider image for $key",
             ]);
