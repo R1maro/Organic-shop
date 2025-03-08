@@ -73,7 +73,7 @@ function SingleProductCard({product}: { product: Product }) {
                     </>
                 ):(
                     <p></p>
-                )}f
+                )}
                 <p className="card-description">
                     Shipping time: {product.shipping_time}
                 </p>
