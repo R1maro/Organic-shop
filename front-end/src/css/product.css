@@ -62,8 +62,7 @@
     display: inline-block;
     font-size: var(--h2-font-size);
     font-weight: 500;
-    margin-bottom: 1.25rem;
-    margin-top: .8rem;
+    margin: 0.8rem;
 }
 
 .card:hover .card-price {
@@ -72,8 +71,14 @@
 
 .card-description {
     font-size: var(--small-font-size);
-    margin-bottom: 1rem;
+    margin-bottom: .7rem;
     text-align: initial;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
     opacity: 0;
 }
 
