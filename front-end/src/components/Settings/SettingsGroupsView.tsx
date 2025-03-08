@@ -1,6 +1,7 @@
 'use client';
 import Link from "next/link";
 import { useState } from "react";
+import CreateSettingGroupModal from "@/components/Settings/CreateSettingGroupModal";
 
 interface SettingsGroupsViewProps {
     groups: string[];
@@ -9,6 +10,7 @@ interface SettingsGroupsViewProps {
 
 export default function SettingsGroupsView({ groups, search }: SettingsGroupsViewProps) {
     const [searchTerm, setSearchTerm] = useState(search || '');
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
     const filteredGroups = searchTerm
         ? groups.filter(group => group.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -21,13 +23,20 @@ export default function SettingsGroupsView({ groups, search }: SettingsGroupsVie
     return (
         <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
             <div className="mb-6 flex flex-col gap-3">
-                <div className="mb-6 flex flex-col gap-3">
+                <div className="mb-6 flex flex-row gap-3 flex-wrap">
                     <Link
                         href="/dashboard/settings/create"
-                        className="inline-flex items-center justify-center gap-2.5 rounded-md bg-primary py-4 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
+                        className="flex items-center justify-center gap-2.5 rounded-md bg-primary py-4 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
                     >
                         Add Setting
                     </Link>
+
+                    <button
+                        onClick={() => setIsCreateModalOpen(true)}
+                        className="flex items-center justify-center gap-2.5 rounded-md bg-success py-4 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
+                    >
+                        Create Group
+                    </button>
 
                     <div className="w-full max-w-md">
                         <input
@@ -81,6 +90,10 @@ export default function SettingsGroupsView({ groups, search }: SettingsGroupsVie
                     </div>
                 )}
             </div>
+            <CreateSettingGroupModal
+                isOpen={isCreateModalOpen}
+                onClose={() => setIsCreateModalOpen(false)}
+            />
         </div>
     );
 }
