@@ -1,15 +1,9 @@
-import Navbar from "@/components/Navbar/Navbar";
-import "@/css/carousel.css";
-import "@/css/navbar.css";
-import "@/css/benefits.css";
-import "@/css/product.css";
-import "@/css/footer.css";
+
 import {Metadata} from "next";
 import Carousel from "@/components/Carousel/3D-Carousel";
 import {getSliderImages} from "@/utils/website/setting";
 import Tools from "@/components/Benefits/Tools";
 import ProductCard from "@/components/ProductsSection/ProductCard";
-import Footer from "@/components/Footer/Footer";
 
 export const metadata: Metadata = {
     title:
@@ -48,9 +42,6 @@ export default async function Index() {
     return (
         <>
             <div className="bg-green-100/20">
-                <div>
-                    <Navbar/>
-                </div>
 
                 <div className="carousel-container">
                     <Carousel slides={carouselSlides} isPageBackground={false}/>
@@ -65,9 +56,7 @@ export default async function Index() {
                 <div className="pb-30">
                     <Tools/>
                 </div>
-                <div>
-                    <Footer/>
-                </div>
+
 
             </div>
         </>
