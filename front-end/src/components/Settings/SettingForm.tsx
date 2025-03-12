@@ -1,6 +1,7 @@
 'use client';
-import {useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import config from "@/config/config";
+import { IconField } from '@/components/Settings/IconField';
 
 interface SettingFormProps {
     types: string[];
@@ -13,6 +14,7 @@ interface SettingFormProps {
         group: string;
         description?: string;
         image_url?: string;
+        icon?: string;
         is_public?: boolean;
     };
     action: (formData: FormData) => Promise<void>;
@@ -33,6 +35,7 @@ export default function SettingForm({
             : null
     );
     const [isPublic, setIsPublic] = useState<boolean>(initialData?.is_public ?? false);
+    const [selectedIcon, setSelectedIcon] = useState<string>(initialData?.icon || '');
 
     useEffect(() => {
         if (initialData?.type) {
@@ -41,7 +44,10 @@ export default function SettingForm({
         if (initialData?.is_public !== undefined) {
             setIsPublic(initialData.is_public);
         }
-    }, [initialData?.type, initialData?.is_public]);
+        if (initialData?.icon) {
+            setSelectedIcon(initialData.icon);
+        }
+    }, [initialData?.type, initialData?.is_public, initialData?.icon]);
 
 
     const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,16 +69,18 @@ export default function SettingForm({
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
 
-        // If type is image and there's a file selected, don't include the value field
         if (selectedType === 'image') {
             const imageFile = formData.get('image') as File;
             if (!imageFile || imageFile.size === 0) {
-                // If no new image is selected, keep the existing value
                 formData.set('value', initialData?.value || '');
             } else {
-                // If new image is selected, remove the value field as it will be handled by the backend
                 formData.delete('value');
             }
+        }
+
+        if (selectedType === 'icon' && selectedIcon) {
+            formData.set('icon', selectedIcon);
+            formData.set('value', selectedIcon);
         }
 
         formData.set('is_public', isPublic ? 'true' : 'false');
@@ -84,6 +92,8 @@ export default function SettingForm({
             alert('An error occurred: ' + (error as Error).message);
         }
     };
+
+    const allTypes = types.includes('icon') ? types : [...types, 'icon'];
 
     return (
         <form onSubmit={handleSubmit}>
@@ -143,7 +153,7 @@ export default function SettingForm({
                             className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                         >
                             <option value="">Select type</option>
-                            {types.map((type) => (
+                            {allTypes.map((type) => (
                                 <option key={type} value={type}>
                                     {type}
                                 </option>
@@ -196,6 +206,19 @@ export default function SettingForm({
                             </div>
                         )}
                     </div>
+                ) : selectedType === 'icon' ? (
+                    <>
+                        <IconField
+                            selectedIcon={selectedIcon}
+                            onChange={setSelectedIcon}
+                        />
+                        {/* Hidden input to store the icon value */}
+                        <input
+                            type="hidden"
+                            name="icon"
+                            value={selectedIcon}
+                        />
+                    </>
                 ) : (
                     <div>
                         <label htmlFor="value" className="mb-3 block text-sm font-medium text-black dark:text-white">
@@ -206,7 +229,7 @@ export default function SettingForm({
                             id="value"
                             name="value"
                             defaultValue={initialData?.value}
-                            required={selectedType !== 'image'}
+                            required={selectedType !== 'image' && selectedType !== 'icon'}
                             className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                         />
                     </div>
