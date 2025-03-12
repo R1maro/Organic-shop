@@ -50,7 +50,7 @@ class Setting extends Model implements HasMedia
 
     public static function getTypes(): array
     {
-        return ['text', 'textarea', 'image', 'boolean', 'email', 'url', 'number'];
+        return ['Text', 'Textarea', 'Image', 'Icon', 'Boolean', 'Email', 'Url', 'Number'];
     }
 
     public static function getLogoUrl(): ?string
@@ -122,7 +122,7 @@ class Setting extends Model implements HasMedia
      * @return Collection
      */
 
-    public static function getSliderAutoPlay() : Collection
+    public static function getSliderAutoPlay(): Collection
     {
         return self::where('key', 'like', 'slider_autoplay_speed')
             ->where('is_public', true)
