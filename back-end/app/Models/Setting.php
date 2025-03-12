@@ -50,7 +50,7 @@ class Setting extends Model implements HasMedia
 
     public static function getTypes(): array
     {
-        return ['Text', 'Textarea', 'Image', 'Icon', 'Boolean', 'Email', 'Url', 'Number'];
+        return ['Text', 'Textarea', 'Image', 'icon', 'Boolean', 'Email', 'Url', 'Number'];
     }
 
     public static function getLogoUrl(): ?string
