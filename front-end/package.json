@@ -16,6 +16,7 @@
     "ckeditor5": "^44.1.0",
     "flatpickr": "^4.6.13",
     "jsvectormap": "^1.6.0",
+    "lucide-react": "^0.479.0",
     "next": "^14.2.4",
     "react": "^18",
     "react-apexcharts": "^1.7.0",
