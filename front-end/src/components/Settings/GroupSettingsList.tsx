@@ -2,6 +2,8 @@ import Link from "next/link";
 import Pagination from "@/components/Pagination/Pagination";
 import config from "@/config/config";
 import {getSettings} from '@/utils/dashboard/setting';
+import {SettingCreateUpdateData} from "@/types/setting";
+import {IconDisplay} from '@/components/Settings/IconSelector';
 
 interface GroupSettingsListProps {
     groupName: string;
@@ -11,6 +13,32 @@ interface GroupSettingsListProps {
 
 export default async function GroupSettingsList({groupName, page = 1, search}: GroupSettingsListProps) {
     const settings = await getSettings(page, groupName, search);
+
+
+    const renderSettingValue = (setting: SettingCreateUpdateData) => {
+        switch(setting.type) {
+            case 'image':
+                return (
+                    <img
+                        src={`${config.PUBLIC_URL}${setting.value}`}
+                        alt={setting.label}
+                        className="h-20 w-20 object-cover rounded-md"
+                    />
+                );
+            case 'icon':
+                // Render the icon using your existing IconDisplay component
+                return (
+                    <div className="flex items-center gap-2">
+                        <IconDisplay iconName={setting.value} size={24} />
+                        <span className="text-sm text-gray-600 dark:text-gray-400">{setting.value}</span>
+                    </div>
+                );
+            case 'boolean':
+                return setting.value === 'true' ? 'Yes' : 'No';
+            default:
+                return setting.value;
+        }
+    };
 
     return (
         <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
@@ -143,17 +171,7 @@ export default async function GroupSettingsList({groupName, page = 1, search}: G
                                         {setting.type}
                                     </td>
                                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                        {setting.type === 'image' ? (
-                                            <img
-                                                src={`${config.PUBLIC_URL}${setting.value}`}
-                                                alt={setting.label}
-                                                className="h-20 w-20 object-cover rounded-md"
-                                            />
-                                        ) : setting.type === 'boolean' ? (
-                                            setting.value === 'true' ? 'Yes' : 'No'
-                                        ) : (
-                                            setting.value
-                                        )}
+                                        {renderSettingValue(setting)}
                                     </td>
                                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                         {setting.is_public ? (
