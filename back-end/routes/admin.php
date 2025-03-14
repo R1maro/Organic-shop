@@ -3,6 +3,7 @@
 use App\Http\Controllers\Dashboard\BlogController;
 use App\Http\Controllers\Dashboard\CategoryController;
 use App\Http\Controllers\Dashboard\InvoiceController;
+use App\Http\Controllers\Dashboard\MenuItemController;
 use App\Http\Controllers\Dashboard\OrderController;
 use App\Http\Controllers\Dashboard\ProductController;
 use App\Http\Controllers\Dashboard\SettingController;
@@ -21,6 +22,14 @@ Route::prefix('admin')->group(function () {
     Route::post('users/{id}/restore', [UserController::class, 'restore']);
 
     Route::get('roles', [RoleController::class, 'index']);
+
+    Route::apiResource('menu-items', MenuItemController::class);
+
+    Route::post('menu-items/reorder', [MenuItemController::class, 'reorder']);
+    Route::get('menu-items/trashed', [MenuItemController::class, 'trashed']);
+    Route::patch('menu-items/{id}/toggle-active', [MenuItemController::class, 'toggleActive']);
+    Route::patch('menu-items/{id}/restore', [MenuItemController::class, 'restore']);
+    Route::delete('menu-items/{id}/force', [MenuItemController::class, 'forceDelete']);
 
     Route::apiResource('categories', CategoryController::class);
 
