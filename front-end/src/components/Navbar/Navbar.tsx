@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import {SearchButton} from '@/components/Navbar/SearchButton';
 import Logo from "@/components/Logo/Logo";
+import Menu from "@/components/Navbar/Menu";
 
 async function Navbar() {
 
@@ -21,12 +22,7 @@ async function Navbar() {
 
                 <Logo/>
 
-                <div className="header-menu">
-                    <a href="#">Mask</a>
-                    <a href="#">Helmet</a>
-                    <a href="#">Bottle</a>
-                    <a href="#">Accessories</a>
-                </div>
+                <Menu />
 
                 <div className="header-icons">
                     <SearchButton/>
