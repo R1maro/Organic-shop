@@ -182,7 +182,7 @@ export default function SettingForm({
                     </div>
                 </div>
 
-                {selectedType === 'Image' ? (
+                {selectedType === 'image' ? (
                     <div>
                         <label htmlFor="image" className="mb-3 block text-sm font-medium text-black dark:text-white">
                             Image
