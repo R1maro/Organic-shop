@@ -1,16 +1,8 @@
 import Link from 'next/link';
-import config from '@/config/config';
-import { SearchButton } from '@/components/Navbar/SearchButton';
+import {SearchButton} from '@/components/Navbar/SearchButton';
+import Logo from "@/components/Logo/Logo";
 
 async function Navbar() {
-    let logoUrl = null;
-    try {
-        const response = await fetch(`${config.API_URL}/settings/logo/`, { cache: 'no-store' });
-        const data = await response.json();
-        logoUrl = data.logo_url || null;
-    } catch (error) {
-        console.error('Error fetching logo:', error);
-    }
 
     return (
         <>
@@ -26,7 +18,8 @@ async function Navbar() {
                     </svg>
                 </a>
 
-                <img className="logo" src={`${config.PUBLIC_URL}${logoUrl}`} alt="Logo" />
+
+                <Logo/>
 
                 <div className="header-menu">
                     <a href="#">Mask</a>
@@ -36,7 +29,7 @@ async function Navbar() {
                 </div>
 
                 <div className="header-icons">
-                    <SearchButton />
+                    <SearchButton/>
 
                     <Link href={"/dashboard"}>
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
