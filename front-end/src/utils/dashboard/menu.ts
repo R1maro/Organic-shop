@@ -4,7 +4,8 @@ export interface MenuItem {
     id: number;
     name: string;
     url: string;
-    order: number;
+    order?: number;
+    icon?:string;
     parent_id: number | null;
     is_active: boolean;
     created_at?: string;

@@ -73,7 +73,7 @@ export default function MenuActionBar({ initialSearch }: MenuActionBarProps) {
 
                 <button
                     onClick={() => setIsReorderModalOpen(true)}
-                    className="flex items-center justify-center gap-2.5 rounded-md bg-info py-4 px-10 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
+                    className="flex items-center justify-center gap-2.5 rounded-md bg-info py-4 px-10 text-center font-medium text-meta-4 dark:text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import config from '@/config/config';
 import {MenuItem} from "@/types/menuItem";
+import {IconDisplay} from "@/components/Settings/IconSelector";
 
 export default function Menu({ className = 'header-menu' }) {
     const [menuItems, setMenuItems] = useState([]);
@@ -53,8 +54,10 @@ export default function Menu({ className = 'header-menu' }) {
                     <Link
                         key={item.id}
                         href={item.url || '#'}
+                        className="flex items-center gap-1"
                     >
-                        {item.name}
+                        {item.icon && <IconDisplay iconName={item.icon} size={18} />}
+                        <span>{item.name}</span>
                     </Link>
                 ))
             ) : (
