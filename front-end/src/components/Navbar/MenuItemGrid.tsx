@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { MenuItem } from "@/utils/dashboard/menu";
+import {IconDisplay} from "@/components/Settings/IconSelector";
 
 interface MenuItemGridProps {
     items: MenuItem[];
@@ -55,8 +56,9 @@ export default function MenuItemGrid({ items, allItems }: MenuItemGridProps) {
                             </svg>
                         </div>
                         <div className="flex justify-between items-start mb-2">
-                            <h3 className="text-xl font-semibold text-black dark:text-white">
+                            <h3 className="text-xl flex gap-3 items-center font-semibold text-black dark:text-white">
                                 {item.name}
+                                {item.icon && <IconDisplay iconName={item.icon} size={18} />}
                             </h3>
                             {!item.is_active && (
                                 <span className="text-xs bg-danger bg-opacity-20 text-danger px-2 py-1 rounded">
