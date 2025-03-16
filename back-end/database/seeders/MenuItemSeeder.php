@@ -16,6 +16,7 @@ class MenuItemSeeder extends Seeder
             [
                 'name' => 'Home',
                 'url' => '/',
+                'icon' => 'Home',
                 'order' => 1,
                 'parent_id' => null,
                 'is_active' => true,
@@ -25,12 +26,15 @@ class MenuItemSeeder extends Seeder
             [
                 'name' => 'About Us',
                 'url' => '/about',
+                'icon' => 'User',
                 'order' => 2,
                 'parent_id' => null,
                 'is_active' => true,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+        ]);
+        MenuItem::insert([
             [
                 'name' => 'Services',
                 'url' => '/services',
