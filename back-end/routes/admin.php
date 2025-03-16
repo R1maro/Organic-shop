@@ -23,13 +23,18 @@ Route::prefix('admin')->group(function () {
 
     Route::get('roles', [RoleController::class, 'index']);
 
-    Route::apiResource('menu-items', MenuItemController::class);
 
-    Route::post('menu-items/reorder', [MenuItemController::class, 'reorder']);
-    Route::get('menu-items/trashed', [MenuItemController::class, 'trashed']);
-    Route::patch('menu-items/{id}/toggle-active', [MenuItemController::class, 'toggleActive']);
-    Route::patch('menu-items/{id}/restore', [MenuItemController::class, 'restore']);
-    Route::delete('menu-items/{id}/force', [MenuItemController::class, 'forceDelete']);
+    Route::prefix('menu-items')->group(function () {
+        Route::apiResource('/', MenuItemController::class);
+        Route::post('/reorder', [MenuItemController::class, 'reorder']);
+        Route::get('/trashed', [MenuItemController::class, 'trashed']);
+        Route::patch('/{id}/toggle-active', [MenuItemController::class, 'toggleActive']);
+        Route::patch('/{id}/restore', [MenuItemController::class, 'restore']);
+        Route::delete('/{id}/force', [MenuItemController::class, 'forceDelete']);
+
+
+    });
+
 
     Route::apiResource('categories', CategoryController::class);
 
@@ -57,4 +62,4 @@ Route::prefix('admin')->group(function () {
     Route::get('/user-activity-logs/{id}', [UserActivityLogController::class, 'show']);
     Route::get('/log-filter-options', [UserActivityLogController::class, 'getFilterOptions']);
 
-})->middleware(['auth:sanctum' , 'role:admin']);
+})->middleware(['auth:sanctum', 'role:admin']);
