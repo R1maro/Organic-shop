@@ -92,6 +92,34 @@ const menuGroups = [
             },
             {
                 icon: (
+                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24"
+                         viewBox="0 0 48 48" >
+                        <path fill="none" stroke="#dddd" strokeLinecap="round" strokeLinejoin="round"
+                              strokeMiterlimit="10" strokeWidth="3"
+                              d="M36.1,7.5h2.4c1.1,0,2,0.9,2,2v3c0,1.1-0.9,2-2,2H18"></path>
+                        <path fill="none" stroke="#dddd" strokeLinecap="round" strokeLinejoin="round"
+                              strokeMiterlimit="10" strokeWidth="3"
+                              d="M13,14.5H9.5c-1.1,0-2-0.9-2-2v-3c0-1.1,0.9-2,2-2h21.3"></path>
+                        <path fill="none" stroke="#dddd" strokeLinecap="round" strokeLinejoin="round"
+                              strokeMiterlimit="10" strokeWidth="3"
+                              d="M13.3,27.5H9.5c-1.1,0-2-0.9-2-2v-3c0-1.1,0.9-2,2-2h20"></path>
+                        <path fill="none" stroke="#dddd" strokeLinecap="round" strokeLinejoin="round"
+                              strokeMiterlimit="10" strokeWidth="3"
+                              d="M35,20.5h3.5c1.1,0,2,0.9,2,2v3c0,1.1-0.9,2-2,2h-20"></path>
+                        <path fill="none" stroke="#dddd" strokeLinecap="round" strokeLinejoin="round"
+                              strokeMiterlimit="10" strokeWidth="3"
+                              d="M13.5,40.5h-4c-1.1,0-2-0.9-2-2v-3c0-1.1,0.9-2,2-2h19.6"></path>
+                        <path fill="none" stroke="#dddd" strokeLinecap="round" strokeLinejoin="round"
+                              strokeMiterlimit="10" strokeWidth="3"
+                              d="M34.2,33.5h4.3c1.1,0,2,0.9,2,2v3c0,1.1-0.9,2-2,2h-20"></path>
+                    </svg>
+
+                ),
+                label: "Menu-Items",
+                route: "dashboard/menu-items",
+            },
+            {
+                icon: (
                     <svg className="w-6 h-6 text-white" aria-hidden="true"
                          xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
                          viewBox="0 0 24 24">
