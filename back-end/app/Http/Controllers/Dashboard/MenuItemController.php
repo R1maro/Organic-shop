@@ -46,6 +46,7 @@ class MenuItemController extends Controller
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
                 'url' => 'nullable|string|max:255',
+                'icon' => 'nullable|string|max:255',
                 'order' => 'nullable|integer',
                 'parent_id' => 'nullable|exists:menu_items,id',
                 'is_active' => 'nullable|boolean'
@@ -59,7 +60,6 @@ class MenuItemController extends Controller
                 ], 422);
             }
 
-            // If no order specified, place at the end
             if (!$request->has('order')) {
                 $maxOrder = MenuItem::max('order') ?? 0;
                 $request->merge(['order' => $maxOrder + 1]);
@@ -120,11 +120,12 @@ class MenuItemController extends Controller
             $validator = Validator::make($request->all(), [
                 'name' => 'nullable|string|max:255',
                 'url' => 'nullable|string|max:255',
+                'icon' => 'nullable|string|max:255',
                 'order' => 'nullable|integer',
                 'parent_id' => [
                     'nullable',
                     'exists:menu_items,id',
-                    Rule::notIn([$id]) // Prevent self-reference
+                    Rule::notIn([$id])
                 ],
                 'is_active' => 'nullable|boolean'
             ]);
@@ -137,7 +138,6 @@ class MenuItemController extends Controller
                 ], 422);
             }
 
-            // Check if this would create a cyclical reference in the menu hierarchy
             if ($request->has('parent_id') && $request->parent_id) {
                 $parentId = $request->parent_id;
                 $visited = [$id];
@@ -183,17 +183,13 @@ class MenuItemController extends Controller
         try {
             $menuItem = MenuItem::findOrFail($id);
 
-            // Handle children items
             $childrenStrategy = request('children_strategy', 'delete');
 
             if ($childrenStrategy === 'orphan') {
-                // Move children to no parent
                 MenuItem::where('parent_id', $id)->update(['parent_id' => null]);
             } elseif ($childrenStrategy === 'promote') {
-                // Move children to this item's parent
                 MenuItem::where('parent_id', $id)->update(['parent_id' => $menuItem->parent_id]);
             }
-            // Default is 'delete' (cascade delete will happen automatically due to foreign key)
 
             $menuItem->delete();
 

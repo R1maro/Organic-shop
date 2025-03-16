@@ -18,7 +18,7 @@ class MenuController extends Controller
         try {
             $menuItems = MenuItem::where('is_active', true)
                 ->orderBy('order', 'asc')
-                ->get(['id', 'name', 'url', 'order']);
+                ->get(['id', 'name', 'icon' , 'url', 'order']);
 
             return response()->json([
                 'status' => 'success',
