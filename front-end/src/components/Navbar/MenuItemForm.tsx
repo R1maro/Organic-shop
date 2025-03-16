@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { IconSelector, IconDisplay } from '@/components/Settings/IconSelector';
 import {
     MenuItem,
     getMenuItems,
@@ -22,9 +23,10 @@ export default function MenuItemForm({ initialData, isEdit = false }: MenuItemFo
     const [formData, setFormData] = useState({
         name: initialData?.name || '',
         url: initialData?.url || '',
+        icon: initialData?.icon || '',
         order: initialData?.order?.toString() || '',
         parent_id: initialData?.parent_id?.toString() || '',
-        is_active: initialData?.is_active ?? true
+        is_active: initialData?.is_active ?? true,
     });
 
     const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
@@ -32,6 +34,7 @@ export default function MenuItemForm({ initialData, isEdit = false }: MenuItemFo
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
+    const [showIconSelector, setShowIconSelector] = useState<boolean>(false);
     const [deleteOptions, setDeleteOptions] = useState({
         isOpen: false,
         strategy: 'delete' as 'delete' | 'orphan' | 'promote',
@@ -74,6 +77,21 @@ export default function MenuItemForm({ initialData, isEdit = false }: MenuItemFo
         }
     };
 
+    const handleIconSelect = (iconName: string) => {
+        setFormData(prev => ({
+            ...prev,
+            icon: iconName
+        }));
+        setShowIconSelector(false);
+    };
+
+    const clearIcon = () => {
+        setFormData(prev => ({
+            ...prev,
+            icon: ''
+        }));
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
@@ -103,7 +121,8 @@ export default function MenuItemForm({ initialData, isEdit = false }: MenuItemFo
                     url: '',
                     order: '',
                     parent_id: '',
-                    is_active: true
+                    is_active: true,
+                    icon: ''
                 });
             }
 
@@ -222,8 +241,43 @@ export default function MenuItemForm({ initialData, isEdit = false }: MenuItemFo
                                 value={formData.name}
                                 onChange={handleChange}
                                 required
-                                className="w-full rounded border-stroke bg-white py-3 px-4 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                className="w-full rounded border border-stroke bg-white py-3 px-4 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                             />
+                        </div>
+
+                        <div className="mb-5">
+                            <label htmlFor="icon" className="mb-2 block text-black dark:text-white">
+                                Icon
+                            </label>
+                            <div className="flex gap-3 items-center">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowIconSelector(true)}
+                                    className="flex items-center gap-2 rounded border border-stroke bg-white py-3 px-4 text-black hover:bg-gray-100 dark:border-strokedark dark:bg-meta-4 dark:text-white dark:hover:bg-opacity-10"
+                                >
+                                    {formData.icon ? (
+                                        <>
+                                            <IconDisplay iconName={formData.icon} size={20} />
+                                            <span>{formData.icon}</span>
+                                        </>
+                                    ) : (
+                                        "Select an icon"
+                                    )}
+                                </button>
+
+                                {formData.icon && (
+                                    <button
+                                        type="button"
+                                        onClick={clearIcon}
+                                        className="rounded border border-stroke bg-white py-3 px-4 text-black hover:bg-gray-100 dark:border-strokedark dark:bg-meta-4 dark:text-white dark:hover:bg-opacity-10"
+                                    >
+                                        Clear
+                                    </button>
+                                )}
+                            </div>
+                            <p className="mt-1 text-xs text-gray-500">
+                                Optional. Select an icon to display with the menu item.
+                            </p>
                         </div>
 
                         <div className="mb-5">
@@ -238,7 +292,7 @@ export default function MenuItemForm({ initialData, isEdit = false }: MenuItemFo
                                 value={formData.url}
                                 onChange={handleChange}
                                 required
-                                className="w-full rounded border-stroke bg-white py-3 px-4 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                className="w-full rounded border border-stroke bg-white py-3 px-4 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                             />
                             <p className="mt-1 text-xs text-gray-500">
                                 For internal links, use relative paths like '/products'. For external links, use the full URL including 'https://'.
@@ -256,7 +310,7 @@ export default function MenuItemForm({ initialData, isEdit = false }: MenuItemFo
                                 placeholder="Enter display order (leave blank for auto)"
                                 value={formData.order}
                                 onChange={handleChange}
-                                className="w-full rounded border-stroke bg-white py-3 px-4 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                className="w-full rounded border border-stroke bg-white py-3 px-4 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                             />
                             <p className="mt-1 text-xs text-gray-500">
                                 Controls the order in which menu items appear. Lower numbers appear first.
@@ -272,7 +326,7 @@ export default function MenuItemForm({ initialData, isEdit = false }: MenuItemFo
                                 name="parent_id"
                                 value={formData.parent_id}
                                 onChange={handleChange}
-                                className="w-full rounded border-stroke bg-white py-3 px-4 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+                                className="w-full rounded border border-stroke bg-white py-3 px-4 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                             >
                                 <option value="">None (Top Level)</option>
                                 {isLoading ? (
@@ -297,7 +351,7 @@ export default function MenuItemForm({ initialData, isEdit = false }: MenuItemFo
                                 name="is_active"
                                 checked={formData.is_active}
                                 onChange={handleChange}
-                                className="mr-2 h-5 w-5 rounded border-stroke bg-transparent text-primary focus:border-primary focus:ring-primary dark:border-strokedark"
+                                className="mr-2 h-5 w-5 rounded border border-stroke bg-transparent text-primary focus:border-primary focus:ring-primary dark:border-strokedark"
                             />
                             <label htmlFor="is_active" className="text-black dark:text-white">
                                 Active (visible in navigation)
@@ -412,6 +466,14 @@ export default function MenuItemForm({ initialData, isEdit = false }: MenuItemFo
                     </div>
                 </form>
             </div>
+
+            {/* Icon Selector Modal */}
+            <IconSelector
+                selectedIcon={formData.icon}
+                onSelectIcon={handleIconSelect}
+                isOpen={showIconSelector}
+                onClose={() => setShowIconSelector(false)}
+            />
 
             {/* Delete confirmation modal */}
             {deleteOptions.isOpen && (

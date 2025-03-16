@@ -6,7 +6,8 @@ interface MenuItem {
     id: number;
     name: string;
     url: string;
-    order: number;
+    icon?:string;
+    order?: number;
     parent_id: number | null;
     is_active: boolean;
 }
