@@ -25,12 +25,16 @@ Route::prefix('admin')->group(function () {
 
 
     Route::prefix('menu-items')->group(function () {
-        Route::apiResource('/', MenuItemController::class);
         Route::post('/reorder', [MenuItemController::class, 'reorder']);
         Route::get('/trashed', [MenuItemController::class, 'trashed']);
         Route::patch('/{id}/toggle-active', [MenuItemController::class, 'toggleActive']);
         Route::patch('/{id}/restore', [MenuItemController::class, 'restore']);
         Route::delete('/{id}/force', [MenuItemController::class, 'forceDelete']);
+        Route::get('/', [MenuItemController::class, 'index']);
+        Route::get('/{id}', [MenuItemController::class, 'show']);
+        Route::post('/', [MenuItemController::class, 'store']);
+        Route::put('/{id}', [MenuItemController::class, 'update']);
+
 
 
     });
