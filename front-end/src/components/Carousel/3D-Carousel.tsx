@@ -10,7 +10,6 @@ const Carousel: React.FC<CarouselProps> = ({slides, isPageBackground}) => {
     const [autoplayInterval, setAutoplayInterval] = useState(3000);
 
 
-
     useEffect(() => {
         async function fetchAutoplaySpeed() {
             try {
