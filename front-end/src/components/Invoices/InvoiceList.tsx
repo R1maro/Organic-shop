@@ -18,28 +18,28 @@ export default function InvoiceList({ invoices }: InvoiceListProps) {
                         <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">
                             Invoice Number
                         </th>
-                        <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">
+                        <th className="min-w-[150px] py-4 px-1 font-medium text-black dark:text-white">
                             Order Number
                         </th>
-                        <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">
+                        <th className="min-w-[100px] py-4 px-1 font-medium text-black dark:text-white">
                             Customer
                         </th>
-                        <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">
-                            Subtotal
-                        </th>
-                        <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">
-                            Tax
-                        </th>
-                        <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">
+                        {/*<th className="min-w-[90px] py-4 px-1 font-medium text-black dark:text-white">*/}
+                        {/*    Subtotal*/}
+                        {/*</th>*/}
+                        {/*<th className="min-w-[90px] py-4 px-1 font-medium text-black dark:text-white">*/}
+                        {/*    Tax*/}
+                        {/*</th>*/}
+                        <th className="min-w-[110px] py-4 px-1 font-medium text-black dark:text-white">
                             Total
                         </th>
-                        <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">
+                        <th className="min-w-[100px] py-4 px-1 font-medium text-black dark:text-white">
                             Status
                         </th>
-                        <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">
+                        <th className="min-w-[100px] py-4 px-1 font-medium text-black dark:text-white">
                             Due Date
                         </th>
-                        <th className="min-w-[100px] py-4 px-4 font-medium text-black dark:text-white">
+                        <th className="min-w-[100px] py-4 px-1 font-medium text-black dark:text-white">
                             Actions
                         </th>
                     </tr>
@@ -57,25 +57,25 @@ export default function InvoiceList({ invoices }: InvoiceListProps) {
                                     {invoice.order.order_number}
                                 </Link>
                             </td>
-                            <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                            <td className="border-b border-[#eee] py-5 px-1 dark:border-strokedark">
                                 {invoice.user.name}
                             </td>
-                            <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                {invoice.formatted_subtotal}
-                            </td>
-                            <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                {invoice.formatted_tax}
-                            </td>
-                            <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                            {/*<td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">*/}
+                            {/*    {invoice.formatted_subtotal}*/}
+                            {/*</td>*/}
+                            {/*<td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">*/}
+                            {/*    {invoice.formatted_tax}*/}
+                            {/*</td>*/}
+                            <td className="border-b border-[#eee] py-5 px-1 dark:border-strokedark">
                                 {invoice.formatted_total}
                             </td>
-                            <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                            <td className="border-b border-[#eee] py-5 px-1 dark:border-strokedark">
                                 <InvoiceStatusBadge status={invoice.status} />
                             </td>
-                            <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                            <td className="border-b border-[#eee] py-5 px-1 dark:border-strokedark">
                                 {invoice.due_date ? new Date(invoice.due_date).toLocaleDateString() : '-'}
                             </td>
-                            <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                            <td className="border-b border-[#eee] py-5 px-1 dark:border-strokedark">
                                 <InvoiceActions invoice={invoice} />
                             </td>
                         </tr>
