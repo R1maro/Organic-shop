@@ -20,7 +20,7 @@ export default async function InvoicesPage({searchParams}: {
 
     return (
         <DefaultLayout>
-            <div className="mx-auto min-h-screen max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+            <div className="mx-auto min-h-screen max-w-screen p-4 md:p-3 2xl:p-10">
                 <div className="mb-6 flex flex-col gap-3">
                     <Link
                         href="/dashboard/invoices/create"
