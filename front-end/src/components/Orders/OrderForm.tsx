@@ -72,12 +72,14 @@ export default function OrderForm({ initialData }: OrderFormProps) {
             }
 
 
-
+            const token = sessionStorage.getItem('authToken');
+            console.log(token);
             const response = await fetch(endpoint, {
                 method,
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
+                    'Authorization': `Bearer ${token}`,
                 },
                 credentials: 'include', // Include if using session cookies
                 body: JSON.stringify({
@@ -103,7 +105,7 @@ export default function OrderForm({ initialData }: OrderFormProps) {
                 throw new Error(errorMessage);
             }
 
-            const data = await response.json();
+            await response.json();
 
             // Show success message
             alert('Order saved successfully!');
