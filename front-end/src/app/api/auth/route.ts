@@ -25,7 +25,6 @@ export async function POST(request: Request) {
             );
         }
 
-        // Set the token in an HTTP-only cookie
         cookies().set('token', data.access_token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
@@ -36,6 +35,7 @@ export async function POST(request: Request) {
         return NextResponse.json({
             success: true,
             user: data.user,
+            token: data.access_token
         });
     } catch (error) {
         return NextResponse.json(

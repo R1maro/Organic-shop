@@ -131,6 +131,7 @@ export default function MenuItemForm({ initialData, isEdit = false }: MenuItemFo
                     router.push('/dashboard/menu-items');
                 }, 1500);
             }
+            router.refresh();
         } else {
             setError(result.error || `Failed to ${isEdit ? 'update' : 'create'} menu item`);
         }
@@ -170,6 +171,7 @@ export default function MenuItemForm({ initialData, isEdit = false }: MenuItemFo
 
         if (result.success) {
             router.push('/dashboard/menu-items');
+            router.refresh();
         } else {
             setError(result.error || 'Failed to delete menu item');
             setIsSubmitting(false);
