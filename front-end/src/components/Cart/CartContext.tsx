@@ -37,7 +37,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     const [itemsCount, setItemsCount] = useState<number>(0);
     const [total, setTotal] = useState<number>(0);
     const [formattedTotal, setFormattedTotal] = useState<string>('$ 0');
-    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+
 
 
     const handleCartResponse = (response: CartResponse) => {
@@ -48,7 +48,6 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     };
 
     const refreshCart = async () => {
-        if (!isAuthenticated) return;
 
         setLoading(true);
         try {
@@ -56,7 +55,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
             handleCartResponse(response);
         } catch (error) {
             console.error('Error fetching cart:', error);
-            // If the error is due to authentication, we won't show an error message
+
             if (error instanceof Error && !error.message.includes('authenticated')) {
                 toast.error('Failed to load shopping cart');
             }
