@@ -39,6 +39,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     const [formattedTotal, setFormattedTotal] = useState<string>('$ 0');
 
 
+
     const handleCartResponse = (response: CartResponse) => {
         setCart(response.cart);
         setItemsCount(response.items_count);
@@ -54,6 +55,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
             handleCartResponse(response);
         } catch (error) {
             console.error('Error fetching cart:', error);
+
             if (error instanceof Error && !error.message.includes('authenticated')) {
                 toast.error('Failed to load shopping cart');
             }

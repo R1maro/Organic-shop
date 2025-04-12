@@ -37,7 +37,9 @@ async function Navbar() {
                     </Link>
 
 
+
                     <div>
+
                         <CartIndicator />
                     </div>
                 </div>

@@ -1,6 +1,8 @@
 'use client';
 
+
 import React, { useState, useEffect } from 'react';
+
 import Link from 'next/link';
 import config from "@/config/config";
 import { useCart } from '@/components/Cart/CartContext';
@@ -36,8 +38,12 @@ async function fetchProducts(): Promise<Product[]> {
     return response.success ? response.data : [];
 }
 
+
+
 function SingleProductCard({product}: { product: Product }) {
+
     const { addItem } = useCart();
+
     const [isAdding, setIsAdding] = useState(false);
 
     const handleAddToCart = async (e: React.MouseEvent<HTMLButtonElement>) => {
