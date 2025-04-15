@@ -7,6 +7,7 @@ export async function GET() {
         const cookieStore = cookies();
         const token = cookieStore.get('token')?.value;
 
+
         if (!token) {
             return NextResponse.json({
                 isAuthenticated: false,
@@ -14,31 +15,49 @@ export async function GET() {
             });
         }
 
-        const response = await fetch(`${config.API_URL}/auth-check`, {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Accept': 'application/json',
-            },
-            cache: 'no-store',
-        });
+        console.log('API route: Calling backend auth-check');
 
-        if (!response.ok) {
+        try {
+            const response = await fetch(`${config.API_URL}/auth-check`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                cache: 'no-store',
+            });
+
+
+            let responseText = await response.text();
+
+            let data;
+            try {
+                data = JSON.parse(responseText);
+            } catch (e) {
+                console.error('Failed to parse response as JSON');
+                data = { error: 'Invalid JSON response' };
+            }
+
+
+            return NextResponse.json({
+                isAuthenticated: data.authenticated,
+                user: data.user
+            });
+        } catch (error) {
             return NextResponse.json({
                 isAuthenticated: false,
-                user: null
+                user: null,
+                error: 'Failed to verify authentication status'
             });
         }
-
-        const data = await response.json();
-
-        return NextResponse.json({
-            isAuthenticated: data.authenticated,
-            user: data.user
-        });
     } catch (error) {
-        console.error('Auth check error:', error);
         return NextResponse.json(
-            { isAuthenticated: false, user: null },
+            {
+                isAuthenticated: false,
+                user: null,
+                error: 'Authentication verification failed'
+            },
             { status: 500 }
         );
     }

@@ -1,11 +1,19 @@
-import {NextResponse} from 'next/server';
-import {cookies} from 'next/headers';
+import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import config from "@/config/config";
 
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const {email, password} = body;
+        const { email, password } = body;
+
+        if (!email || !password) {
+            return NextResponse.json(
+                { error: 'Email and password are required' },
+                { status: 400 }
+            );
+        }
+
 
         const response = await fetch(`${config.API_URL}/login`, {
             method: 'POST',
@@ -13,34 +21,53 @@ export async function POST(request: Request) {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
             },
-            body: JSON.stringify({email, password}),
+            body: JSON.stringify({ email, password }),
         });
 
         const data = await response.json();
 
         if (!response.ok) {
             return NextResponse.json(
-                {error: data.message || 'Authentication failed'},
-                {status: response.status}
+                { error: data.message || data.error || 'Authentication failed' },
+                { status: response.status }
             );
         }
+
 
         cookies().set('token', data.access_token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax',
             path: '/',
+            maxAge: 60 * 60 * 24, // 24 hours in seconds
+        });
+
+        cookies().set('auth_status', 'logged_in', {
+            httpOnly: false,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            path: '/',
+            maxAge: 60 * 60 * 24, // 24 hours in seconds
         });
 
         return NextResponse.json({
             success: true,
             user: data.user,
-            token: data.access_token
+            token: data.access_token,
+            expires_at: data.expires_at
         });
     } catch (error) {
+
+        if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+            return NextResponse.json(
+                { error: 'Unable to connect to the authentication server. Please check your connection.' },
+                { status: 503 }
+            );
+        }
+
         return NextResponse.json(
-            {error: 'Internal server error'},
-            {status: 500}
+            { error: 'An unexpected error occurred during login. Please try again later.' },
+            { status: 500 }
         );
     }
 }
@@ -50,9 +77,12 @@ export async function DELETE() {
         const cookieStore = cookies();
         const token = cookieStore.get('token');
 
-        if (token) {
-            // Call Laravel logout endpoint
-            await fetch(`${config.API_URL}/logout`, {
+        if (!token) {
+            return NextResponse.json({ success: true, message: 'Already logged out' });
+        }
+
+        try {
+            const response = await fetch(`${config.API_URL}/logout`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token.value}`,
@@ -60,15 +90,24 @@ export async function DELETE() {
                 },
             });
 
-            // Remove the token cookie
-            cookies().delete('token');
+            if (!response.ok) {
+                console.warn('Backend logout failed, but proceeding with client-side logout');
+            }
+        } catch (error) {
+            console.error('Error calling logout endpoint:', error);
         }
 
-        return NextResponse.json({success: true});
+        cookies().delete('token');
+        cookies().delete('auth_status');
+
+        return NextResponse.json({
+            success: true,
+            message: 'Logged out successfully'
+        });
     } catch (error) {
         return NextResponse.json(
-            {error: 'Logout failed'},
-            {status: 500}
+            { error: 'Logout process failed, please clear your cookies manually' },
+            { status: 500 }
         );
     }
 }
