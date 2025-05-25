@@ -26,6 +26,7 @@ const SignIn: React.FC = () => {
             });
 
             const data = await response.json();
+            localStorage.setItem('token', data.token);
 
             if (!response.ok) {
                 throw new Error(data.error || "Authentication failed");

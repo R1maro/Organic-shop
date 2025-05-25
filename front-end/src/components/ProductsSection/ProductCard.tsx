@@ -1,6 +1,9 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import Link from 'next/link';
 import config from "@/config/config";
+import { useCart } from '@/components/Cart/CartContext';
 
 interface Product {
     id: number;
@@ -33,7 +36,26 @@ async function getProducts(): Promise<Product[]> {
     return response.success ? response.data : [];
 }
 
+
+
 function SingleProductCard({product}: { product: Product }) {
+    const { addItem, loading } = useCart();
+    const [isAdding, setIsAdding] = useState(false);
+
+    const handleAddToCart = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        if (isAdding) return;
+
+        setIsAdding(true);
+        try {
+            await addItem(product.id, 1);
+        } catch (error) {
+            console.error('Failed to add product to cart:', error);
+        } finally {
+            setIsAdding(false);
+        }
+    };
+
     return (
         <div className="card my-10">
             <div className="card-img">
@@ -77,9 +99,18 @@ function SingleProductCard({product}: { product: Product }) {
                 <p className="card-description">
                     Shipping time: {product.shipping_time}
                 </p>
-                <Link href={`/products/${product.slug}`} className="card-button">
-                    Buy Now
-                </Link>
+                <div className="flex flex-col sm:flex-row gap-2">
+                    <Link href={`/products/${product.slug}`} className="card-button">
+                        View details
+                    </Link>
+                    <button
+                        onClick={handleAddToCart}
+                        disabled={isAdding}
+                        className={`card-button ${isAdding ? 'opacity-70 cursor-not-allowed' : ''}`}
+                    >
+                        {isAdding ? 'Adding...' : 'Add to cart'}
+                    </button>
+                </div>
             </div>
         </div>
     );
