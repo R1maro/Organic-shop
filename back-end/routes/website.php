@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Dashboard\CartController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Website\SettingController;
 use App\Http\Controllers\Website\ProductController;
@@ -17,4 +18,12 @@ Route::prefix('settings')->group(function () {
 
 
 
+});
+
+Route::prefix('cart')->group(function () {
+    Route::get('/', [CartController::class, 'getCart']);
+    Route::post('/add', [CartController::class, 'addItem']);
+    Route::put('/update', [CartController::class, 'updateItem']);
+    Route::delete('/remove/{cartItemId}', [CartController::class, 'removeItem']);
+    Route::delete('/clear', [CartController::class, 'clearCart']);
 });

@@ -18,7 +18,7 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $user = Auth::user()->load('roles');
-        $token = $user->createToken('authToken')->plainTextToken;
+        $token = $user->createToken('token')->plainTextToken;
 
         return response()->json([
             'message' => 'Login successful.',
