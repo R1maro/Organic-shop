@@ -6,6 +6,8 @@ import "@/css/footer.css";
 import React from "react";
 import Navbar from "@/components/Navbar/Navbar";
 import Footer from "@/components/Footer/Footer";
+import {Toaster} from "react-hot-toast";
+import {CartProvider} from "@/components/Cart/CartContext";
 
 export default function SiteLayout({
                                        children,
@@ -14,9 +16,13 @@ export default function SiteLayout({
 }>) {
     return (
         <>
-            <Navbar/>
-            <main>{children}</main>
-            <Footer/>
+            <CartProvider>
+                <Navbar/>
+                <main>{children}</main>
+                <Toaster position="top-center"/>
+                <Footer/>
+            </CartProvider>
         </>
+
     );
 }

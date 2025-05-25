@@ -2,6 +2,8 @@
 import "@/css/satoshi.css";
 import "@/css/style.css";
 import React from "react";
+import { Toaster } from 'react-hot-toast';
+import { CartProvider } from '@/components/Cart/CartContext';
 
 export default function RootLayout({
                                        children,
@@ -11,7 +13,7 @@ export default function RootLayout({
     return (
         <html lang="en">
         <body suppressHydrationWarning={true}>
-        {children}
+            {children}
         </body>
         </html>
     );
