@@ -34,9 +34,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/{id}', [MenuItemController::class, 'show']);
         Route::post('/', [MenuItemController::class, 'store']);
         Route::put('/{id}', [MenuItemController::class, 'update']);
-
-
-
+        Route::delete('/{id}', [MenuItemController::class, 'destroy']);
     });
 
 
@@ -65,5 +63,7 @@ Route::prefix('admin')->group(function () {
     Route::get('/user-activity-logs', [UserActivityLogController::class, 'index']);
     Route::get('/user-activity-logs/{id}', [UserActivityLogController::class, 'show']);
     Route::get('/log-filter-options', [UserActivityLogController::class, 'getFilterOptions']);
+
+
 
 })->middleware(['auth:sanctum', 'role:admin']);
