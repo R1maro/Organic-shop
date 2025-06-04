@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Dashboard;
+namespace App\Http\Controllers\Website;
 
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
@@ -8,7 +8,6 @@ use App\Models\CartItem;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\PersonalAccessToken;
 
 class CartController extends Controller
@@ -20,7 +19,6 @@ class CartController extends Controller
      */
     public function getCart(Request $request)
     {
-        // Get user from token
         $user = $request->user();
 
         if (!$user) {
@@ -29,7 +27,6 @@ class CartController extends Controller
             ], 401);
         }
 
-        // Get active cart or create a new one
         $cart = Cart::with(['items.product' => function ($query) {
             $query->select('id', 'name', 'slug', 'final_price', 'price', 'discount', 'display_photo_index')
                 ->with('media');
@@ -49,7 +46,6 @@ class CartController extends Controller
             ]);
         }
 
-        // Extend cart expiration
         $cart->extendExpiration();
 
         return response()->json([
@@ -89,7 +85,6 @@ class CartController extends Controller
 
         $product = Product::findOrFail($request->product_id);
 
-        // Check if product is in stock
         if ($product->quantity < $request->quantity) {
             return response()->json([
                 'message' => 'Not enough stock available',
@@ -98,7 +93,6 @@ class CartController extends Controller
 
         DB::beginTransaction();
         try {
-            // Get active cart or create new one
             $cart = Cart::where('user_id', $user->id)
                 ->active()
                 ->latest()
@@ -110,21 +104,17 @@ class CartController extends Controller
                     'expires_at' => now()->addHours(24),
                 ]);
             } else {
-                // Extend cart expiration
                 $cart->extendExpiration();
             }
 
-            // Check if item already exists in cart
             $cartItem = CartItem::where('cart_id', $cart->id)
                 ->where('product_id', $product->id)
                 ->first();
 
             if ($cartItem) {
-                // Update existing item
                 $cartItem->quantity += $request->quantity;
                 $cartItem->save();
             } else {
-                // Create new item
                 CartItem::create([
                     'cart_id' => $cart->id,
                     'product_id' => $product->id,
@@ -134,7 +124,6 @@ class CartController extends Controller
 
             DB::commit();
 
-            // Reload cart with items
             $cart->load(['items.product' => function ($query) {
                 $query->select('id', 'name', 'slug', 'final_price', 'price', 'discount', 'display_photo_index')
                     ->with('media');
@@ -170,7 +159,6 @@ class CartController extends Controller
             'quantity' => 'required|integer|min:1',
         ]);
 
-        // Get user from token
         $user = $request->user();
 
         if (!$user) {
@@ -181,28 +169,23 @@ class CartController extends Controller
 
         $cartItem = CartItem::findOrFail($request->cart_item_id);
 
-        // Ensure item belongs to user's cart
         if ($cartItem->cart->user_id !== $user->id) {
             return response()->json([
                 'message' => 'Unauthorized access to cart item',
             ], 403);
         }
 
-        // Check product stock
         if ($cartItem->product->quantity < $request->quantity) {
             return response()->json([
                 'message' => 'Not enough stock available',
             ], 422);
         }
 
-        // Update item quantity
         $cartItem->quantity = $request->quantity;
         $cartItem->save();
 
-        // Extend cart expiration
         $cartItem->cart->extendExpiration();
 
-        // Reload cart with items
         $cart = $cartItem->cart->load(['items.product' => function ($query) {
             $query->select('id', 'name', 'slug', 'final_price', 'price', 'discount', 'display_photo_index')
                 ->with('media');
@@ -225,7 +208,6 @@ class CartController extends Controller
      */
     public function removeItem(Request $request, $cartItemId)
     {
-        // Get user from token
         $user = $request->user();
 
         if (!$user) {
@@ -236,23 +218,18 @@ class CartController extends Controller
 
         $cartItem = CartItem::findOrFail($cartItemId);
 
-        // Ensure item belongs to user's cart
         if ($cartItem->cart->user_id !== $user->id) {
             return response()->json([
                 'message' => 'Unauthorized access to cart item',
             ], 403);
         }
 
-        // Get cart before deleting item
         $cart = $cartItem->cart;
 
-        // Delete the item
         $cartItem->delete();
 
-        // Extend cart expiration
         $cart->extendExpiration();
 
-        // Reload cart with items
         $cart->load(['items.product' => function ($query) {
             $query->select('id', 'name', 'slug', 'final_price', 'price', 'discount', 'display_photo_index')
                 ->with('media');
@@ -274,7 +251,6 @@ class CartController extends Controller
      */
     public function clearCart(Request $request)
     {
-        // Get user from token
         $user = $request->user();
 
         if (!$user) {
@@ -283,17 +259,14 @@ class CartController extends Controller
             ], 401);
         }
 
-        // Get active cart
         $cart = Cart::where('user_id', $user->id)
             ->active()
             ->latest()
             ->first();
 
         if ($cart) {
-            // Delete all items in the cart
             CartItem::where('cart_id', $cart->id)->delete();
 
-            // Delete the cart itself
             $cart->delete();
         }
 
