@@ -1,10 +1,10 @@
 <?php
 
-use App\Http\Controllers\Dashboard\CartController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Website\SettingController;
-use App\Http\Controllers\Website\ProductController;
+use App\Http\Controllers\Website\CartController;
 use App\Http\Controllers\Website\MenuController;
+use App\Http\Controllers\Website\ProductController;
+use App\Http\Controllers\Website\SettingController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/products', [ProductController::class, 'getProducts']);
 Route::get('/categories', [SettingController::class, 'getCategoriesWithProducts']);
