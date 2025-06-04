@@ -1,160 +1,89 @@
-import config from "@/config/config";
 
 export interface CartItem {
     id: number;
     product_id: number;
     quantity: number;
     product: {
-        id: number;
         name: string;
-        slug: string;
-        final_price: number;
         price: number;
-        discount: number;
-        display_photo_url: string;
+        final_price: number;
+        formatted_price: string;
         formatted_final_price: string;
+        slug: string;
+        full_image_url: string;
     };
 }
 
 export interface Cart {
     id: number;
-    user_id: number;
-    expires_at: string;
     items: CartItem[];
 }
 
 export interface CartResponse {
-    message: string;
-    cart: Cart | null;
+    cart: Cart;
+    items_count: number;
     total: number;
     formatted_total: string;
-    items_count: number;
 }
 
-export const getCart = async (): Promise<CartResponse> => {
-    const token = localStorage.getItem('token');
-
-    if (!token) {
-        throw new Error('User not authenticated');
-    }
-
-    const response = await fetch(`${config.API_URL}/cart`, {
-        method: 'GET',
+async function fetchCartApi(url: string, options: RequestInit = {}) {
+    const response = await fetch(url, {
+        ...options,
+        credentials: 'same-origin',
         headers: {
+            ...options.headers,
+            'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-            'Accept': 'application/json'
-        }
+        },
     });
 
     if (!response.ok) {
-        throw new Error('Failed to fetch cart');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'An error occurred with the request');
     }
 
-    return await response.json();
-};
+    return response.json();
+}
 
-// Add item to cart
-export const addToCart = async (productId: number, quantity: number = 1): Promise<CartResponse> => {
-    const token = localStorage.getItem('token');
+export async function getCart(): Promise<CartResponse> {
+    return fetchCartApi('/api/cart');
+}
 
-    if (!token) {
-        throw new Error('User not authenticated');
-    }
-
-    const response = await fetch(`${config.API_URL}/cart/add`, {
+export async function addToCart(productId: number, quantity: number = 1): Promise<CartResponse> {
+    return fetchCartApi('/api/cart', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-            'Accept': 'application/json'
-        },
         body: JSON.stringify({
+            action: 'add',
             product_id: productId,
-            quantity: quantity
-        })
+            quantity
+        }),
     });
+}
 
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to add item to cart');
-    }
-
-    return await response.json();
-};
-
-// Update cart item
-export const updateCartItem = async (cartItemId: number, quantity: number): Promise<CartResponse> => {
-    const token = localStorage.getItem('token');
-
-    if (!token) {
-        throw new Error('User not authenticated');
-    }
-
-    const response = await fetch(`${config.API_URL}/cart/update`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-            'Accept': 'application/json'
-        },
+export async function updateCartItem(cartItemId: number, quantity: number): Promise<CartResponse> {
+    return fetchCartApi('/api/cart', {
+        method: 'POST',
         body: JSON.stringify({
+            action: 'update',
             cart_item_id: cartItemId,
-            quantity: quantity
-        })
+            quantity
+        }),
     });
+}
 
-    if (!response.ok) {
-        throw new Error('Failed to update cart item');
-    }
-
-    return await response.json();
-};
-
-// Remove cart item
-export const removeCartItem = async (cartItemId: number): Promise<CartResponse> => {
-    const token = localStorage.getItem('token');
-
-    if (!token) {
-        throw new Error('User not authenticated');
-    }
-
-    const response = await fetch(`${config.API_URL}/cart/remove/${cartItemId}`, {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-            'Accept': 'application/json'
-        }
+export async function removeCartItem(cartItemId: number): Promise<CartResponse> {
+    return fetchCartApi('/api/cart', {
+        method: 'POST',
+        body: JSON.stringify({
+            action: 'remove',
+            cart_item_id: cartItemId
+        }),
     });
+}
 
-    if (!response.ok) {
-        throw new Error('Failed to remove cart item');
-    }
-
-    return await response.json();
-};
-
-// Clear cart
-export const clearCart = async (): Promise<CartResponse> => {
-    const token = localStorage.getItem('token');
-
-    if (!token) {
-        throw new Error('User not authenticated');
-    }
-
-    const response = await fetch(`${config.API_URL}/cart/clear`, {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-            'Accept': 'application/json'
-        }
+export async function clearCart(): Promise<CartResponse> {
+    return fetchCartApi('/api/cart', {
+        method: 'POST',
+        body: JSON.stringify({ action: 'clear' }),
     });
-
-    if (!response.ok) {
-        throw new Error('Failed to clear cart');
-    }
-
-    return await response.json();
-};
+}

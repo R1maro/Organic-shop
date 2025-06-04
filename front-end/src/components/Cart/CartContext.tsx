@@ -38,7 +38,19 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     const [total, setTotal] = useState<number>(0);
     const [formattedTotal, setFormattedTotal] = useState<string>('$ 0');
 
+    useEffect(() => {
+        refreshCart();
 
+        const handleAuthChange = (event: Event) => {
+            refreshCart();
+        };
+
+        window.addEventListener('auth-state-change', handleAuthChange);
+
+        return () => {
+            window.removeEventListener('auth-state-change', handleAuthChange);
+        };
+    }, []);
 
     const handleCartResponse = (response: CartResponse) => {
         setCart(response.cart);
@@ -48,13 +60,17 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     };
 
     const refreshCart = async () => {
-
         setLoading(true);
         try {
             const response = await getCart();
             handleCartResponse(response);
         } catch (error) {
             console.error('Error fetching cart:', error);
+            // Clear cart data on error but don't show toast for auth errors
+            setCart(null);
+            setItemsCount(0);
+            setTotal(0);
+            setFormattedTotal('$ 0');
 
             if (error instanceof Error && !error.message.includes('authenticated')) {
                 toast.error('Failed to load shopping cart');
@@ -65,7 +81,6 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     };
 
     const addItem = async (productId: number, quantity: number = 1) => {
-
         setLoading(true);
         try {
             const response = await addToCart(productId, quantity);
@@ -84,7 +99,6 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     };
 
     const updateItem = async (cartItemId: number, quantity: number) => {
-
         setLoading(true);
         try {
             const response = await updateCartItem(cartItemId, quantity);
@@ -99,7 +113,6 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     };
 
     const removeItem = async (cartItemId: number) => {
-
         setLoading(true);
         try {
             const response = await removeCartItem(cartItemId);
@@ -114,7 +127,6 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     };
 
     const emptyCart = async () => {
-
         setLoading(true);
         try {
             const response = await clearCart();
@@ -127,7 +139,6 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
             setLoading(false);
         }
     };
-
 
     const value = {
         cart,
