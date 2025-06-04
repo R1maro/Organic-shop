@@ -37,7 +37,7 @@ async function Navbar() {
                     </Link>
 
 
-                    <div className="flex items-center">
+                    <div>
                         <CartIndicator />
                     </div>
                 </div>

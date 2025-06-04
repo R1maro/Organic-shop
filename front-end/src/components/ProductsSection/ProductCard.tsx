@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import config from "@/config/config";
 import { useCart } from '@/components/Cart/CartContext';
@@ -23,7 +23,7 @@ interface Product {
     formatted_final_price: string;
 }
 
-async function getProducts(): Promise<Product[]> {
+async function fetchProducts(): Promise<Product[]> {
     const res = await fetch(`${config.API_URL}/products`, {
         cache: 'no-store',
     });
@@ -36,10 +36,8 @@ async function getProducts(): Promise<Product[]> {
     return response.success ? response.data : [];
 }
 
-
-
 function SingleProductCard({product}: { product: Product }) {
-    const { addItem, loading } = useCart();
+    const { addItem } = useCart();
     const [isAdding, setIsAdding] = useState(false);
 
     const handleAddToCart = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -116,13 +114,41 @@ function SingleProductCard({product}: { product: Product }) {
     );
 }
 
-const ProductCard = async () => {
-    let products: Product[] = [];
-    try {
-        products = await getProducts();
-    } catch (error) {
-        console.error('Error loading products:', error);
-    }
+const ProductCard = () => {
+    const [products, setProducts] = useState<Product[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        let isMounted = true;
+
+        const loadProducts = async () => {
+            setLoading(true);
+            try {
+                const data = await fetchProducts();
+                if (isMounted) {
+                    setProducts(data);
+                    setError(null);
+                }
+            } catch (err) {
+                console.error('Error loading products:', err);
+                if (isMounted) {
+                    setError('Failed to load products');
+                }
+            } finally {
+                if (isMounted) {
+                    setLoading(false);
+                }
+            }
+        };
+
+        loadProducts();
+
+        // Cleanup function to prevent state updates if component unmounts
+        return () => {
+            isMounted = false;
+        };
+    }, []); // Empty dependency array means this effect runs once on mount
 
     return (
         <div>
@@ -130,9 +156,13 @@ const ProductCard = async () => {
                 Best-selling products
             </h2>
             <div className="container flex flex-wrap gap-5 justify-center">
-                {products.length > 0 ? (
+                {loading ? (
+                    <p>Loading products...</p>
+                ) : error ? (
+                    <p>{error}</p>
+                ) : products.length > 0 ? (
                     products.map((product) => (
-                        <SingleProductCard key={product.id} product={product}/>
+                        <SingleProductCard key={product.id} product={product} />
                     ))
                 ) : (
                     <p>No products available</p>
