@@ -3,6 +3,7 @@ import React, {useState} from "react";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
 import Logo from "@/components/Logo/Logo";
+import {dispatchLoginEvent} from "@/utils/website/authClient";
 
 const SignIn: React.FC = () => {
     const [email, setEmail] = useState("");
@@ -39,6 +40,7 @@ const SignIn: React.FC = () => {
             } else {
                 router.push("/");
             }
+            dispatchLoginEvent();
 
 
             router.refresh();
