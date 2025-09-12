@@ -41,14 +41,11 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     useEffect(() => {
         refreshCart();
 
-        const handleAuthChange = (event: Event) => {
-            refreshCart();
-        };
 
-        window.addEventListener('auth-state-change', handleAuthChange);
+        window.dispatchEvent(new Event('auth-state-change'));
 
         return () => {
-            window.removeEventListener('auth-state-change', handleAuthChange);
+            window.dispatchEvent(new Event('auth-state-change'));
         };
     }, []);
 
@@ -66,7 +63,6 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
             handleCartResponse(response);
         } catch (error) {
             console.error('Error fetching cart:', error);
-            // Clear cart data on error but don't show toast for auth errors
             setCart(null);
             setItemsCount(0);
             setTotal(0);
