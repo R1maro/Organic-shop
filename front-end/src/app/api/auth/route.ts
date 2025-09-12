@@ -14,7 +14,6 @@ export async function POST(request: Request) {
             );
         }
 
-
         const response = await fetch(`${config.API_URL}/login`, {
             method: 'POST',
             headers: {
@@ -33,17 +32,8 @@ export async function POST(request: Request) {
             );
         }
 
-
         cookies().set('token', data.access_token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            path: '/',
-            maxAge: 60 * 60 * 24, // 24 hours in seconds
-        });
-
-        cookies().set('auth_status', 'logged_in', {
-            httpOnly: false,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax',
             path: '/',
@@ -53,11 +43,9 @@ export async function POST(request: Request) {
         return NextResponse.json({
             success: true,
             user: data.user,
-            token: data.access_token,
             expires_at: data.expires_at
         });
     } catch (error) {
-
         if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
             return NextResponse.json(
                 { error: 'Unable to connect to the authentication server. Please check your connection.' },
@@ -98,7 +86,6 @@ export async function DELETE() {
         }
 
         cookies().delete('token');
-        cookies().delete('auth_status');
 
         return NextResponse.json({
             success: true,

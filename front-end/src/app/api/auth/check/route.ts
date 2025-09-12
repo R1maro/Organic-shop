@@ -7,15 +7,12 @@ export async function GET() {
         const cookieStore = cookies();
         const token = cookieStore.get('token')?.value;
 
-
         if (!token) {
             return NextResponse.json({
                 isAuthenticated: false,
                 user: null
             });
         }
-
-        console.log('API route: Calling backend auth-check');
 
         try {
             const response = await fetch(`${config.API_URL}/auth-check`, {
@@ -28,23 +25,23 @@ export async function GET() {
                 cache: 'no-store',
             });
 
-
-            let responseText = await response.text();
-
-            let data;
-            try {
-                data = JSON.parse(responseText);
-            } catch (e) {
-                console.error('Failed to parse response as JSON');
-                data = { error: 'Invalid JSON response' };
+            if (!response.ok) {
+                // Token is invalid or expired
+                cookies().delete('token');
+                return NextResponse.json({
+                    isAuthenticated: false,
+                    user: null
+                });
             }
 
+            const data = await response.json();
 
             return NextResponse.json({
-                isAuthenticated: data.authenticated,
-                user: data.user
+                isAuthenticated: data.authenticated || false,
+                user: data.user || null
             });
         } catch (error) {
+            console.error('Backend auth check failed:', error);
             return NextResponse.json({
                 isAuthenticated: false,
                 user: null,
@@ -52,6 +49,7 @@ export async function GET() {
             });
         }
     } catch (error) {
+        console.error('Auth check error:', error);
         return NextResponse.json(
             {
                 isAuthenticated: false,
