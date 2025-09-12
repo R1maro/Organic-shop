@@ -19,7 +19,7 @@ const ProfileButton = () => {
                 return;
             }
 
-            const response = await fetch('/api/user/profile', {
+            const response = await fetch('/api/auth/check', {
                 method: 'GET',
                 credentials: 'include',
                 headers: {

@@ -43,7 +43,7 @@ const SignIn: React.FC = () => {
                 throw new Error(data.error || "Authentication failed");
             }
 
-            localStorage.setItem('auth_status', 'logged_in');
+            // localStorage.setItem('auth_status', 'logged_in');
 
 
             dispatchLoginEvent();
