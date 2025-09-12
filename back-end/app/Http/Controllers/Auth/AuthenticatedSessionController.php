@@ -59,13 +59,18 @@ class AuthenticatedSessionController extends Controller
             $user = null;
 
             if ($token) {
-                if (strpos($token, 'Bearer ') === 0) {
-                    $token = substr($token, 7);
-                }
-
                 $tokenModel = \Laravel\Sanctum\PersonalAccessToken::findToken($token);
 
                 if ($tokenModel) {
+                    if ($tokenModel->expires_at && $tokenModel->expires_at->isPast()) {
+                        $tokenModel->delete();
+                        return response()->json([
+                            'authenticated' => false,
+                            'user' => null,
+                            'message' => 'Token expired'
+                        ], 401);
+                    }
+
                     $user = $tokenModel->tokenable;
                     if ($user && !$request->user()) {
                         Auth::login($user);
