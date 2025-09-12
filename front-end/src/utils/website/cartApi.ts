@@ -30,7 +30,7 @@ export interface CartResponse {
 async function fetchCartApi(url: string, options: RequestInit = {}) {
     const response = await fetch(url, {
         ...options,
-        credentials: 'same-origin',
+        credentials: 'include',
         headers: {
             ...options.headers,
             'Accept': 'application/json',
