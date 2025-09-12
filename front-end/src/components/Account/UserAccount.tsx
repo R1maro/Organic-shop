@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { User, Mail, Phone, MapPin, Calendar, Edit3, Save, X, Shield, LogOut, Settings, Package, Heart, CreditCard } from 'lucide-react';
+import {useRouter} from "next/navigation";
 
 const AccountPage = () => {
     const [isEditing, setIsEditing] = useState(false);
@@ -17,6 +18,8 @@ const AccountPage = () => {
     });
 
     const [editData, setEditData] = useState({ ...userData });
+    const router = useRouter();
+
 
     const handleSave = async () => {
         setLoading(true);
@@ -28,9 +31,28 @@ const AccountPage = () => {
             setIsEditing(false);
         } catch (error) {
             console.error('Failed to update profile:', error);
-            // Handle error (show toast, etc.)
         } finally {
             setLoading(false);
+        }
+    };
+    const handleLogout = async () => {
+        try {
+            const response = await fetch("/api/auth", {
+                method: "DELETE",
+            });
+
+            if (response.ok) {
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('auth_status');
+
+                router.push("/auth/signin");
+                router.refresh();
+            } else {
+                const data = await response.json();
+                console.error("Logout failed:", data.error);
+            }
+        } catch (error) {
+            console.error("An error occurred during logout:", error);
         }
     };
 
@@ -74,7 +96,9 @@ const AccountPage = () => {
                         </h1>
                         <p className="text-slate-400">Manage your profile and preferences</p>
                     </div>
-                    <button className="flex items-center gap-2 px-4 py-2 bg-red-500/20 text-red-400 rounded-full hover:bg-red-500/30 transition-all duration-300 border border-red-500/30">
+                    <button
+                        onClick={handleLogout}
+                        className="flex items-center gap-2 px-4 py-2 bg-red-500/20 text-red-400 rounded-full hover:bg-red-500/30 transition-all duration-300 border border-red-500/30">
                         <LogOut size={16} />
                         Sign Out
                     </button>
@@ -82,7 +106,7 @@ const AccountPage = () => {
 
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-9">
-                    {stats.map((stat, index) => (
+                    {stats.map((stat) => (
                         <div key={stat.label} className="relative group">
                             <div className="absolute inset-0 bg-gradient-to-r opacity-75 rounded-xl blur group-hover:blur-sm transition-all duration-300"
                                  style={{ background: `linear-gradient(135deg, ${stat.color.split(' ')[1]}, ${stat.color.split(' ')[3]})` }}></div>
