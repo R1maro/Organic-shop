@@ -19,7 +19,7 @@ class CartController extends Controller
      */
     public function getCart(Request $request)
     {
-        $user = $request->user();
+        $user = auth('sanctum')->user();
 
         if (!$user) {
             return response()->json([
