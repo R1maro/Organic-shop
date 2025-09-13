@@ -7,6 +7,10 @@ interface User {
     id: number;
     name: string;
     email: string;
+    address: string;
+    phone: string;
+    createdAt: string;
+    emailVerified: boolean;
     roles: Array<{
         id: number;
         slug: string;
@@ -55,7 +59,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
             const response = await fetch('/api/auth/check', {
                 method: 'GET',
-                credentials: 'include', // Important for cookies
+                credentials: 'include',
                 headers: {
                     'Accept': 'application/json',
                 },
@@ -94,7 +98,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
             const response = await fetch('/api/auth', {
                 method: 'POST',
-                credentials: 'include', // Important for cookies
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
@@ -136,7 +140,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
             const response = await fetch('/api/auth', {
                 method: 'DELETE',
-                credentials: 'include', // Important for cookies
+                credentials: 'include',
                 headers: {
                     'Accept': 'application/json',
                 },

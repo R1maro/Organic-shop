@@ -1,58 +1,89 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, Mail, Phone, MapPin, Calendar, Edit3, Save, X, Shield, LogOut, Settings, Package, Heart, CreditCard } from 'lucide-react';
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useAuth } from '@/context/AuthContext';
 
 const AccountPage = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
     const [userData, setUserData] = useState({
-        name: 'Alex Johnson',
-        email: 'alex.johnson@email.com',
-        phone: '+1 (555) 123-4567',
-        address: '123 Modern Street, Tech City, TC 12345',
-        createdAt: '2023-06-15',
+        name: '',
+        email: '',
+        phone: '',
+        address: '',
+        createdAt: '',
         isAdmin: false,
         emailVerified: true
     });
 
     const [editData, setEditData] = useState({ ...userData });
     const router = useRouter();
+    const { user, isAuthenticated, logout: authLogout, loading: authLoading } = useAuth();
 
+    useEffect(() => {
+        if (user) {
+            const newUserData = {
+                name: user.name || '',
+                email: user.email || '',
+                phone: user.phone || '',
+                address: user.address || '',
+                createdAt: user.createdAt || new Date().toISOString(),
+                isAdmin: user.roles?.some((role: any) => role.slug === 'admin') || false,
+                emailVerified: user.emailVerified ?? true
+            };
+            setUserData(newUserData);
+            setEditData(newUserData);
+        }
+    }, [user]);
+
+    // Redirect if not authenticated
+    useEffect(() => {
+        if (!authLoading && !isAuthenticated) {
+            router.push('/auth/signin');
+        }
+    }, [isAuthenticated, authLoading, router]);
 
     const handleSave = async () => {
         setLoading(true);
         try {
-            // Here you would make an API call to update the user data
-            // await updateUserProfile(editData);
+            const response = await fetch('/api/user/profile', {
+                method: 'PUT',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(editData),
+            });
 
-            setUserData({ ...editData });
-            setIsEditing(false);
+            if (response.ok) {
+                setUserData({ ...editData });
+                setIsEditing(false);
+            } else {
+                throw new Error('Failed to update profile');
+            }
         } catch (error) {
             console.error('Failed to update profile:', error);
         } finally {
             setLoading(false);
         }
     };
+
     const handleLogout = async () => {
         try {
-            const response = await fetch("/api/auth", {
-                method: "DELETE",
-            });
+            const success = await authLogout();
 
-            if (response.ok) {
-                localStorage.removeItem('authToken');
-                localStorage.removeItem('auth_status');
-
-                router.push("/auth/signin");
-                router.refresh();
+            if (success) {
+                // The AuthContext logout function already handles the redirect
+                // router.push("/auth/signin"); // This is handled by the context
             } else {
-                const data = await response.json();
-                console.error("Logout failed:", data.error);
+                console.error("Logout failed");
+                router.push("/auth/signin");
             }
         } catch (error) {
             console.error("An error occurred during logout:", error);
+            router.push("/auth/signin");
         }
     };
 
@@ -67,12 +98,15 @@ const AccountPage = () => {
         { label: 'Rewards', value: '2,340', icon: CreditCard, color: 'from-green-500 to-indigo-500' },
     ];
 
-    if (loading) {
+    // Show loading state while auth is loading or if user is not authenticated
+    if (authLoading || !isAuthenticated || loading) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
-                    <p className="text-white">Updating your profile...</p>
+                    <p className="text-white">
+                        {loading ? 'Updating your profile...' : 'Loading...'}
+                    </p>
                 </div>
             </div>
         );
@@ -141,9 +175,9 @@ const AccountPage = () => {
                                             <div className="flex items-center gap-2 mt-1">
                                                 {userData.emailVerified ? (
                                                     <span className="flex items-center gap-1 text-green-400 text-sm">
-                            <Shield size={12} />
-                            Verified Account
-                          </span>
+                                                        <Shield size={12} />
+                                                        Verified Account
+                                                    </span>
                                                 ) : (
                                                     <span className="text-yellow-400 text-sm">Pending Verification</span>
                                                 )}
@@ -216,7 +250,7 @@ const AccountPage = () => {
                                                 className="w-full px-4 py-3 bg-slate-700/50 text-white rounded-lg border border-slate-600/50 focus:border-purple-500/50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all duration-300"
                                             />
                                         ) : (
-                                            <p className="text-white font-medium">{userData.phone}</p>
+                                            <p className="text-white font-medium">{userData.phone || 'Not provided'}</p>
                                         )}
                                     </div>
 
@@ -227,11 +261,11 @@ const AccountPage = () => {
                                             Member Since
                                         </label>
                                         <p className="text-white font-medium">
-                                            {new Date(userData.createdAt).toLocaleDateString('en-US', {
+                                            {userData.createdAt ? new Date(userData.createdAt).toLocaleDateString('en-US', {
                                                 year: 'numeric',
                                                 month: 'long',
                                                 day: 'numeric'
-                                            })}
+                                            }) : 'Unknown'}
                                         </p>
                                     </div>
                                 </div>
@@ -250,7 +284,7 @@ const AccountPage = () => {
                                             className="w-full px-4 py-3 bg-slate-700/50 text-white rounded-lg border border-slate-600/50 focus:border-purple-500/50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all duration-300 resize-none"
                                         />
                                     ) : (
-                                        <p className="text-white font-medium">{userData.address}</p>
+                                        <p className="text-white font-medium">{userData.address || 'Not provided'}</p>
                                     )}
                                 </div>
 
@@ -306,14 +340,14 @@ const AccountPage = () => {
                                 <div className="flex items-center justify-between">
                                     <span className="text-slate-400">Email Verified</span>
                                     <span className={`px-2 py-1 rounded-full text-xs ${userData.emailVerified ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'}`}>
-                    {userData.emailVerified ? 'Verified' : 'Pending'}
-                  </span>
+                                        {userData.emailVerified ? 'Verified' : 'Pending'}
+                                    </span>
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <span className="text-slate-400">Two-Factor Auth</span>
                                     <span className="px-2 py-1 rounded-full text-xs bg-red-500/20 text-red-400">
-                    Disabled
-                  </span>
+                                        Disabled
+                                    </span>
                                 </div>
                                 <button className="w-full px-4 py-2 bg-gradient-to-r from-green-600/20 to-emerald-600/20 text-green-400 rounded-lg hover:from-green-600/30 hover:to-emerald-600/30 transition-all duration-300 border border-green-600/30 text-sm">
                                     Enable 2FA
