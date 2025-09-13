@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import Logo from "@/components/Logo/Logo";
-import { dispatchLoginEvent } from "@/utils/website/authClient";
+import { useAuth } from "@/context/AuthContext";
 
 const SignIn: React.FC = () => {
     const [email, setEmail] = useState("");
@@ -12,6 +12,7 @@ const SignIn: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
     const searchParams = useSearchParams();
+    const { login, checkAuthStatus } = useAuth();
 
     useEffect(() => {
         const errorParam = searchParams.get('error');
@@ -29,36 +30,25 @@ const SignIn: React.FC = () => {
         setError("");
 
         try {
-            const response = await fetch("/api/auth", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ email, password }),
-            });
+            const success = await login(email, password);
 
-            const data = await response.json();
+            if (success) {
+                await checkAuthStatus();
 
-            if (!response.ok) {
-                throw new Error(data.error || "Authentication failed");
-            }
+                const response = await fetch('/api/auth/check', {
+                    credentials: 'include'
+                });
+                const { user } = await response.json();
 
-            // localStorage.setItem('auth_status', 'logged_in');
+                const isAdmin = user?.roles?.some((role: any) => role.slug === "admin");
 
-
-            dispatchLoginEvent();
-
-
-            const isAdmin = data.user?.roles?.some((role: any) => role.slug === "admin");
-
-            if (isAdmin) {
-                setTimeout(() => {
+                if (isAdmin) {
                     router.replace("/dashboard");
-                }, 500);
+                } else {
+                    router.replace("/account");
+                }
             } else {
-                setTimeout(() => {
-                    router.replace("/");
-                }, 500);
+                throw new Error("Authentication failed");
             }
         } catch (err) {
             setError(err instanceof Error ? err.message : "An error occurred during login");
