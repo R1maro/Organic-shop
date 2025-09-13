@@ -2,43 +2,23 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useAuth } from '@/context/AuthContext';
+
 
 const ProfileButton = () => {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
+    const { isAuthenticated, isAdmin, user } = useAuth();
 
     const handleProfileClick = async (e: React.MouseEvent) => {
         e.preventDefault();
         setLoading(true);
 
         try {
-            const authStatus = localStorage.getItem('auth_status');
-
-            if (authStatus !== 'logged_in') {
+            if (!isAuthenticated || !user) {
                 router.push('/auth/signin');
                 return;
             }
-
-            const response = await fetch('/api/auth/check', {
-                method: 'GET',
-                credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (!response.ok) {
-                if (response.status === 401) {
-                    localStorage.removeItem('auth_status');
-                    router.push('/auth/signin?error=session_expired');
-                    return;
-                }
-                throw new Error('Failed to fetch user profile');
-            }
-
-            const data = await response.json();
-
-            const isAdmin = data.user?.roles?.some((role: any) => role.slug === "admin");
 
             if (isAdmin) {
                 router.push('/dashboard');
@@ -48,13 +28,7 @@ const ProfileButton = () => {
 
         } catch (error) {
             console.error('Profile navigation error:', error);
-
-            const authStatus = localStorage.getItem('auth_status');
-            if (authStatus === 'logged_in') {
-                router.push('/account');
-            } else {
-                router.push('/auth/signin');
-            }
+            router.push('/auth/signin');
         } finally {
             setLoading(false);
         }
