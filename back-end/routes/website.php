@@ -23,7 +23,7 @@ Route::prefix('settings')->group(function () {
 Route::prefix('cart')->group(function () {
     Route::get('/', [CartController::class, 'getCart']);
     Route::post('/add', [CartController::class, 'addItem']);
-    Route::put('/update', [CartController::class, 'updateItem']);
+    Route::post('/update', [CartController::class, 'updateItem']);
     Route::delete('/remove/{cartItemId}', [CartController::class, 'removeItem']);
     Route::delete('/clear', [CartController::class, 'clearCart']);
 });
