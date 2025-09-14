@@ -74,7 +74,7 @@ export async function updateCartItem(cartItemId: number, quantity: number): Prom
 
 export async function removeCartItem(cartItemId: number): Promise<CartResponse> {
     return fetchCartApi('/api/cart', {
-        method: 'POST',
+        method: 'DELETE',
         body: JSON.stringify({
             action: 'remove',
             cart_item_id: cartItemId
@@ -84,7 +84,7 @@ export async function removeCartItem(cartItemId: number): Promise<CartResponse> 
 
 export async function clearCart(): Promise<CartResponse> {
     return fetchCartApi('/api/cart', {
-        method: 'POST',
+        method: 'DELETE',
         body: JSON.stringify({ action: 'clear' }),
     });
 }
