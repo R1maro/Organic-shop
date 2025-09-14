@@ -7,6 +7,7 @@ use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\PersonalAccessToken;
 
@@ -17,7 +18,7 @@ class CartController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getCart(Request $request)
+    public function getCart()
     {
         $user = auth('sanctum')->user();
 
@@ -159,7 +160,7 @@ class CartController extends Controller
             'quantity' => 'required|integer|min:1',
         ]);
 
-        $user = $request->user();
+        $user = Auth::guard('sanctum')->user();
 
         if (!$user) {
             return response()->json([
@@ -206,9 +207,9 @@ class CartController extends Controller
      * @param  int  $cartItemId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function removeItem(Request $request, $cartItemId)
+    public function removeItem($cartItemId)
     {
-        $user = $request->user();
+        $user = Auth::guard('sanctum')->user();
 
         if (!$user) {
             return response()->json([
@@ -251,7 +252,7 @@ class CartController extends Controller
      */
     public function clearCart(Request $request)
     {
-        $user = $request->user();
+        $user = Auth::guard('sanctum')->user();
 
         if (!$user) {
             return response()->json([
