@@ -112,14 +112,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 throw new Error(data.error || 'Authentication failed');
             }
 
-            // Set user data from response
             if (data.user) {
                 setUser(data.user);
                 setIsAuthenticated(true);
                 setIsAdmin(data.user.roles?.some((role: any) => role.slug === 'admin') || false);
             }
 
-            // Dispatch login event for other components
             window.dispatchEvent(new Event('user-login'));
 
             return true;
