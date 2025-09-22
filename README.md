@@ -101,7 +101,7 @@ Home Page
 
 Product Details
 
-<img width="1869" height="919" alt="Annotation 2025-09-22 133719" src="https://github.com/user-attachments/assets/cc2480d8-0847-4334-9d96-27bcfb8317ba" />
+`<img width="1869" height="919" alt="Annotation 2025-09-22 133719" src="https://github.com/user-attachments/assets/cc2480d8-0847-4334-9d96-27bcfb8317ba" />`
 
 
 
