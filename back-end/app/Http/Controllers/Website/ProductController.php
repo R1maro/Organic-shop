@@ -24,7 +24,6 @@ class ProductController extends Controller
                 ->take(8)
                 ->get()
                 ->map(function($product) {
-                    // Add a full_image_url attribute to each product
                     $media = $product->getMedia('product_image');
                     if (!$media->isEmpty()) {
                         $index = $product->display_photo_index;
