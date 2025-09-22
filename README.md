@@ -104,11 +104,13 @@ Product Details
 <img width="1869" height="919" alt="Annotation 2025-09-22 133719" src="https://github.com/user-attachments/assets/cc2480d8-0847-4334-9d96-27bcfb8317ba" />
 
 
-Blog
 
-<img width="1895" height="950" alt="Annotation 2025-09-22 133834" src="https://github.com/user-attachments/assets/44552736-9220-4b65-b70e-10b6619f58e5" />
+## Blog
 
-<img width="1863" height="945" alt="Annotation 2025-09-22 133856" src="https://github.com/user-attachments/assets/7abf2a8f-f136-44cc-a75c-71cbbe763f00" />
+![Annotation 1](https://github.com/user-attachments/assets/44552736-9220-4b65-b70e-10b6619f58e5)
+
+![Annotation 2](https://github.com/user-attachments/assets/7abf2a8f-f136-44cc-a75c-71cbbe763f00)
+
 
 
 
