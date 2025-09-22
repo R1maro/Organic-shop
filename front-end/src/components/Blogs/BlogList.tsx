@@ -4,6 +4,7 @@ import {getBlogs} from '@/utils/dashboard/blog';
 import {BlogApiListResponse, BlogApiResponse, MediaUrls} from "@/types/blog";
 import config from "@/config/config";
 import BlogActions from "@/components/Blogs/BlogActions";
+import Image from "next/image";
 
 interface BlogListProps {
     page?: number;
@@ -63,10 +64,13 @@ async function BlogList({
                                 <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                     {blog.featured_image && isMediaUrls(blog.featured_image) ? (
                                         <div className="relative h-20 w-20">
-                                            <img
+                                            <Image
                                                 src={`${config.PUBLIC_URL}${blog.featured_image.original}`}
                                                 alt={blog.title}
-                                                className="h-full w-full object-cover rounded-md"
+                                                width={100}
+                                                height={100}
+                                                className="object-cover rounded-md"
+                                                sizes="80px"
                                             />
                                         </div>
                                     ) : (

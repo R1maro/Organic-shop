@@ -1,11 +1,11 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import config from '@/config/config';
 
 export default function Logo({ className = 'logo' }) {
-    const [logoUrl, setLogoUrl] = useState(null);
+    const [logoUrl, setLogoUrl] = useState<string | null>(null);
 
     useEffect(() => {
         async function fetchLogo() {
@@ -21,11 +21,19 @@ export default function Logo({ className = 'logo' }) {
         fetchLogo();
     }, []);
 
+    if (!logoUrl) return null;
+
     return (
-        <img
-            className={className}
-            src={logoUrl ? `${config.PUBLIC_URL}${logoUrl}` : ''}
-            alt="Logo"
-        />
+        <div className={className} style={{ position: 'relative', width: 160, height: 60 }}>
+            <Image
+                src={`${config.PUBLIC_URL}${logoUrl}`}
+                alt="Logo"
+                width={66}
+                height={66}
+                className="object-contain"
+                priority
+                sizes="160px"
+            />
+        </div>
     );
 }

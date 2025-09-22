@@ -3,6 +3,8 @@
 import React from 'react';
 import { useCart } from './CartContext';
 import Link from 'next/link';
+import Image from "next/image";
+
 
 const CartPage = () => {
     const { cart, loading, itemsCount, formattedTotal, updateItem, removeItem, emptyCart } = useCart();
@@ -72,12 +74,15 @@ const CartPage = () => {
                                 <tr key={item.id} className="border-b">
                                     <td className="py-4">
                                         <div className="flex items-center">
-                                            <img
+                                            <Image
                                                 src={item.product.display_photo_url || "https://i.postimg.cc/sgs5xf0d/img.png"}
                                                 alt={item.product.name}
-                                                className="w-16 h-16 object-cover mr-4"
+                                                width={100}
+                                                height={100}
+                                                className="object-cover rounded"
+                                                sizes="64px"
                                             />
-                                            <span>{item.product.name}</span>
+                                            <span className="m-5">{item.product.name}</span>
                                         </div>
                                     </td>
                                     <td className="py-4">

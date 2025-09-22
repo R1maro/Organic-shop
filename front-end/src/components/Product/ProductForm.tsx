@@ -2,6 +2,8 @@
 import {useState, useEffect} from 'react';
 import {ProductFormProps} from "@/types/product";
 import config from "@/config/config";
+import Image from "next/image";
+
 
 
 export default function ProductForm({
@@ -321,13 +323,18 @@ export default function ProductForm({
                                     <div
                                         className={`w-full h-32 object-cover rounded-md cursor-pointer ${
                                             index === displayPhotoIndex ? 'ring-4 ring-blue-500' : ''
+                                            
                                         }`}
+                                        onClick={() => setDisplayPhotoIndex(index)}
                                     >
-                                        <img
+                                        <Image
                                             src={src}
                                             alt={`Preview ${index}`}
-                                            className="w-32 h-32 object-cover rounded-md cursor-pointer"
-                                            onClick={() => setDisplayPhotoIndex(index)}
+                                            width={200}
+                                            height={200}
+                                            className="object-cover rounded-md"
+                                            sizes="128px"
+                                            priority
                                         />
                                         {index === displayPhotoIndex && (
                                             <span className="absolute bottom-0 left-5 bg-blue-500 text-white px-2 py-1 rounded-md text-xs">

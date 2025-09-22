@@ -7,13 +7,16 @@ interface ReorderMenuItemsModalProps {
     onClose: () => void;
     onReordered: () => void;
 }
+type MenuItemWithOrder = MenuItem & { order: number };
 
 export default function ReorderMenuItemsModal({
                                                   isOpen,
                                                   onClose,
                                                   onReordered
                                               }: ReorderMenuItemsModalProps) {
-    const [groupedItems, setGroupedItems] = useState<Record<string, MenuItem[]>>({});
+
+    const [groupedItems, setGroupedItems] =
+        useState<Record<string, MenuItemWithOrder[]>>({});
     const [isLoading, setIsLoading] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -31,30 +34,36 @@ export default function ReorderMenuItemsModal({
         try {
             const items = await getMenuItems();
 
-            const grouped = items.reduce((groups: Record<string, MenuItem[]>, item) => {
-                const groupKey = item.parent_id === null ? 'Main Menu' :
-                    items.find(parent => parent.id === item.parent_id)?.name || 'Other';
+            const grouped = items.reduce((groups: Record<string, MenuItemWithOrder[]>, item) => {
+                const groupKey =
+                    item.parent_id === null
+                        ? "Main Menu"
+                        : items.find(parent => parent.id === item.parent_id)?.name || "Other";
 
-                if (!groups[groupKey]) {
-                    groups[groupKey] = [];
-                }
-                groups[groupKey].push(item);
+                if (!groups[groupKey]) groups[groupKey] = [];
+
+                // ensure order is a number (temporary large fallback for initial sort)
+                const safeOrder = item.order ?? Number.MAX_SAFE_INTEGER;
+                groups[groupKey].push({ ...item, order: safeOrder });
                 return groups;
             }, {});
 
             Object.keys(grouped).forEach(key => {
                 grouped[key].sort((a, b) => a.order - b.order);
+                // reindex to 1..n so all orders are defined and compact
+                grouped[key] = grouped[key].map((item, idx) => ({ ...item, order: idx + 1 }));
             });
 
             setGroupedItems(grouped);
             setActiveGroup(Object.keys(grouped)[0] || null);
         } catch (error) {
-            console.error('Error fetching menu items:', error);
-            setError('Failed to load menu items');
+            console.error("Error fetching menu items:", error);
+            setError("Failed to load menu items");
         } finally {
             setIsLoading(false);
         }
     };
+
 
     if (!isOpen) return null;
 

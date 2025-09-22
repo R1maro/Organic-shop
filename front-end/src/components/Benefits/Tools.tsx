@@ -1,5 +1,7 @@
 import { IconDisplay } from '@/components/Settings/IconSelector';
 import config from "@/config/config";
+import Image from "next/image";
+
 
 interface Benefit {
     id: number;
@@ -53,10 +55,12 @@ export default async function BenefitsSectionServer() {
                                         <IconDisplay iconName={benefit.value} size={40}/>
                                     </div>
                                 ) : benefit.image_url ? (
-                                    <img
+                                    <Image
                                         src={`${config.PUBLIC_URL}${benefit.image_url}`}
                                         alt={benefit.label}
-                                        className="h-16 w-16 object-contain"
+                                        width={64}   // h-16 = 64px
+                                        height={64}  // w-16 = 64px
+                                        className="object-contain"
                                     />
                                 ) : (
                                     <div

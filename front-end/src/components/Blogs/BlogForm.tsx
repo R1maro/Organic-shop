@@ -3,6 +3,8 @@ import {useState, useEffect} from 'react';
 import {BlogFormProps} from "@/types/blog";
 import ImageUploadAdapter from '@/utils/dashboard/ImageUploadAdapter';
 import config from "@/config/config";
+import NextImage from "next/image";
+
 
 import {CKEditor} from '@ckeditor/ckeditor5-react';
 import {
@@ -316,10 +318,14 @@ export default function BlogForm({
                             className="cursor-pointer border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center"
                         >
                             {featuredImage ? (
-                                <img
+                                <NextImage
                                     src={featuredImage}
                                     alt="Preview"
-                                    className="w-50 h-50 object-cover rounded-lg"
+                                    width= {450}
+                                    height={450}
+                                    className="object-cover rounded-lg"
+                                    sizes="10px"
+                                    priority
                                 />
                             ) : (
                                 <div className="text-center">

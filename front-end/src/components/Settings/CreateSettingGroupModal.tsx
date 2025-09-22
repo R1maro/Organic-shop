@@ -1,14 +1,14 @@
 'use client';
 import React, { useState, useEffect } from "react";
 import config from "@/config/config";
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 
 interface CreateSettingGroupModalProps {
     isOpen: boolean;
     onClose: () => void;
 }
 
-export default ({isOpen, onClose}: CreateSettingGroupModalProps) => {
+const CreateSettingGroupModal: React.FC<CreateSettingGroupModalProps> = ({ isOpen, onClose }) => {
     const [name, setName] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -21,7 +21,7 @@ export default ({isOpen, onClose}: CreateSettingGroupModalProps) => {
 
     if (!mounted || !isOpen) return null;
 
-    const handleSubmit = async (e : React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
         setError('');
@@ -29,9 +29,7 @@ export default ({isOpen, onClose}: CreateSettingGroupModalProps) => {
         try {
             const response = await fetch(`${config.API_URL}/admin/setting-groups`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name }),
             });
 
@@ -41,10 +39,9 @@ export default ({isOpen, onClose}: CreateSettingGroupModalProps) => {
             }
 
             setName('');
-
             router.refresh();
             onClose();
-        } catch (err:any) {
+        } catch (err: any) {
             setError(err.message || 'Failed to create group');
         } finally {
             setLoading(false);
@@ -68,10 +65,7 @@ export default ({isOpen, onClose}: CreateSettingGroupModalProps) => {
 
                 <form onSubmit={handleSubmit} className="p-6">
                     <div className="mb-4">
-                        <label
-                            className="mb-2.5 block text-black dark:text-white"
-                            htmlFor="groupName"
-                        >
+                        <label htmlFor="groupName" className="mb-2.5 block text-black dark:text-white">
                             Group Name
                         </label>
                         <input
@@ -86,9 +80,7 @@ export default ({isOpen, onClose}: CreateSettingGroupModalProps) => {
                     </div>
 
                     {error && (
-                        <div className="mb-4 rounded-md bg-danger bg-opacity-10 p-4 text-danger">
-                            {error}
-                        </div>
+                        <div className="mb-4 rounded-md bg-danger bg-opacity-10 p-4 text-danger">{error}</div>
                     )}
 
                     <div className="flex items-center justify-end gap-4 mt-6">
@@ -118,4 +110,6 @@ export default ({isOpen, onClose}: CreateSettingGroupModalProps) => {
             </div>
         </div>
     );
-}
+};
+
+export default CreateSettingGroupModal;

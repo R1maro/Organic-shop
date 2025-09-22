@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import config from "@/config/config";
 import { IconField } from '@/components/Settings/IconField';
+import Image from "next/image";
 
 interface SettingFormProps {
     types: string[];
@@ -198,11 +199,17 @@ export default function SettingForm({
                         {previewImage && (
                             <div className="mt-2">
                                 <p className="text-sm font-medium mb-2">Image Preview:</p>
-                                <img
-                                    src={previewImage}
-                                    alt="Preview"
-                                    className="w-32 h-32 object-cover rounded-md"
-                                />
+                                <div className="relative w-32 h-32">
+                                    <Image
+                                        src={previewImage}
+                                        alt="Preview"
+                                        width={250}
+                                        height={250}
+                                        className="object-cover rounded-md"
+                                        sizes="128px"
+                                        priority
+                                    />
+                                </div>
                             </div>
                         )}
                     </div>
