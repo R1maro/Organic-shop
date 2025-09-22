@@ -86,7 +86,9 @@ export default function SettingsGroupsView({ groups, search }: SettingsGroupsVie
 
                 {filteredGroups.length === 0 && (
                     <div className="col-span-full p-6 text-center">
-                        <p className="text-gray-500 dark:text-gray-400">No setting groups found matching "{searchTerm}"</p>
+                        <p className="text-gray-500 dark:text-gray-400">
+                            No setting groups found matching &quot;{searchTerm}&quot;
+                        </p>
                     </div>
                 )}
             </div>

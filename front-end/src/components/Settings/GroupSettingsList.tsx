@@ -4,6 +4,8 @@ import config from "@/config/config";
 import {getSettings} from '@/utils/dashboard/setting';
 import {SettingCreateUpdateData} from "@/types/setting";
 import {IconDisplay} from '@/components/Settings/IconSelector';
+import Image from "next/image";
+
 
 interface GroupSettingsListProps {
     groupName: string;
@@ -18,11 +20,17 @@ export default async function GroupSettingsList({groupName, page = 1, search}: G
     const renderSettingValue = (setting: SettingCreateUpdateData) => {
         switch(setting.type) {
             case 'image':
+                if (!setting.value) {
+                    return <span className="text-gray-500">No image</span>;
+                }
                 return (
-                    <img
+                    <Image
                         src={`${config.PUBLIC_URL}${setting.value}`}
                         alt={setting.label}
-                        className="h-20 w-20 object-cover rounded-md"
+                        width={85}
+                        height={85}
+                        className="object-cover rounded-md"
+                        sizes="80px"
                     />
                 );
             case 'icon':

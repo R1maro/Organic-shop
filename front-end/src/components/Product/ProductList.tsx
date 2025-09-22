@@ -1,6 +1,8 @@
 import Link from "next/link";
 import Pagination from "@/components/Pagination/Pagination";
 import {getProducts} from '@/utils/dashboard/product';
+import Image from "next/image";
+
 
 
 async function ProductList({page = 1, categoryId,}: {
@@ -48,10 +50,13 @@ async function ProductList({page = 1, categoryId,}: {
                             <tr key={product.id}>
                                 <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                     {product.display_photo_url ? (
-                                        <img
+                                        <Image
                                             src={product.display_photo_url}
                                             alt={product.name}
-                                            className="h-20 w-20 object-cover rounded-md"
+                                            width={100}
+                                            height={100}
+                                            className="object-cover rounded-md"
+                                            sizes="80px"
                                         />
                                     ) : (
                                         <span>No Image</span>

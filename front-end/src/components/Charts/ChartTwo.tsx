@@ -60,7 +60,9 @@ const options: ApexOptions = {
     fontSize: "14px",
 
     markers: {
-      radius: 99,
+      size: 12,
+      strokeWidth: 0,
+      shape: "circle",
     },
   },
   fill: {

@@ -6,6 +6,8 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import config from "@/config/config";
 import { useCart } from '@/components/Cart/CartContext';
+import Image from "next/image";
+
 
 interface Product {
     id: number;
@@ -64,18 +66,21 @@ function SingleProductCard({product}: { product: Product }) {
         <div className="card my-10">
             <div className="card-img">
                 {product.full_image_url ? (
-                    <img
+                    <Image
                         src={product.full_image_url}
                         alt={product.name}
                         width={200}
                         height={200}
+                        className="object-cover"
+                        priority
                     />
                 ) : (
-                    <img
+                    <Image
                         src="https://i.postimg.cc/sgs5xf0d/img.png"
                         alt="Default product image"
                         width={500}
                         height={500}
+                        className="object-cover"
                     />
                 )}
             </div>

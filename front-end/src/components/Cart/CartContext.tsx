@@ -1,6 +1,14 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, {
+    createContext,
+    useContext,
+    useState,
+    useEffect,
+    ReactNode,
+    useCallback,
+    useMemo,
+} from 'react';
 import { Cart, CartResponse, getCart, addToCart, updateCartItem, removeCartItem, clearCart } from '@/utils/website/cartApi';
 import { toast } from 'react-hot-toast';
 
@@ -38,25 +46,15 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     const [total, setTotal] = useState<number>(0);
     const [formattedTotal, setFormattedTotal] = useState<string>('$ 0');
 
-    useEffect(() => {
-        refreshCart();
-
-
-        window.dispatchEvent(new Event('auth-state-change'));
-
-        return () => {
-            window.dispatchEvent(new Event('auth-state-change'));
-        };
-    }, []);
-
-    const handleCartResponse = (response: CartResponse) => {
+    // ✨ stabilize: used by multiple callbacks
+    const handleCartResponse = useCallback((response: CartResponse) => {
         setCart(response.cart);
         setItemsCount(response.items_count);
         setTotal(response.total);
         setFormattedTotal(response.formatted_total);
-    };
+    }, []);
 
-    const refreshCart = async () => {
+    const refreshCart = useCallback(async () => {
         setLoading(true);
         try {
             const response = await getCart();
@@ -74,9 +72,18 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [handleCartResponse]);
 
-    const addItem = async (productId: number, quantity: number = 1) => {
+    useEffect(() => {
+        refreshCart();
+
+        window.dispatchEvent(new Event('auth-state-change'));
+        return () => {
+            window.dispatchEvent(new Event('auth-state-change'));
+        };
+    }, [refreshCart]); // ✨ include refreshCart
+
+    const addItem = useCallback(async (productId: number, quantity: number = 1) => {
         setLoading(true);
         try {
             const response = await addToCart(productId, quantity);
@@ -92,9 +99,9 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [handleCartResponse]);
 
-    const updateItem = async (cartItemId: number, quantity: number) => {
+    const updateItem = useCallback(async (cartItemId: number, quantity: number) => {
         setLoading(true);
         try {
             const response = await updateCartItem(cartItemId, quantity);
@@ -106,9 +113,9 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [handleCartResponse]);
 
-    const removeItem = async (cartItemId: number) => {
+    const removeItem = useCallback(async (cartItemId: number) => {
         setLoading(true);
         try {
             const response = await removeCartItem(cartItemId);
@@ -120,9 +127,9 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [handleCartResponse]);
 
-    const emptyCart = async () => {
+    const emptyCart = useCallback(async () => {
         setLoading(true);
         try {
             const response = await clearCart();
@@ -134,9 +141,9 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [handleCartResponse]);
 
-    const value = {
+    const value = useMemo<CartContextType>(() => ({
         cart,
         loading,
         itemsCount,
@@ -146,8 +153,8 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         updateItem,
         removeItem,
         emptyCart,
-        refreshCart
-    };
+        refreshCart,
+    }), [cart, loading, itemsCount, total, formattedTotal, addItem, updateItem, removeItem, emptyCart, refreshCart]);
 
     return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };

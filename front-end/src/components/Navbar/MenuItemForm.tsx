@@ -297,7 +297,7 @@ export default function MenuItemForm({ initialData, isEdit = false }: MenuItemFo
                                 className="w-full rounded border border-stroke bg-white py-3 px-4 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
                             />
                             <p className="mt-1 text-xs text-gray-500">
-                                For internal links, use relative paths like '/products'. For external links, use the full URL including 'https://'.
+                                {"For internal links, use relative paths like '/products'. For external links, use the full URL including 'https://'."}
                             </p>
                         </div>
 
@@ -531,7 +531,7 @@ export default function MenuItemForm({ initialData, isEdit = false }: MenuItemFo
                                         className="mr-2 h-5 w-5"
                                     />
                                     <label htmlFor="delete-strategy-promote" className="text-black dark:text-white">
-                                        Move child items to this item's parent
+                                        {"Move child items to this item's parent"}
                                     </label>
                                 </div>
                             </div>
