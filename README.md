@@ -90,23 +90,17 @@ NEXT_PUBLIC_API_URL=http://localhost:8000/api
 Also you have a config for api url(in config/Config.ts)
 
 
-📸 Screenshots
-Home Page
+## 📸 Screenshots
 
-<img width="1920" height="796" alt="Annotation 2025-09-22 133443" src="https://github.com/user-attachments/assets/8c865400-7baa-4c69-8ed1-2da1a6fa019d" />
+### Home Page
+<img alt="Home Screenshot" src="https://github.com/user-attachments/assets/8c865400-7baa-4c69-8ed1-2da1a6fa019d" />
 
+<img alt="Second Screenshot" src="https://github.com/user-attachments/assets/f0f5277a-267a-405d-bd1c-b372a9be5deb" />
 
-<img width="1894" height="903" alt="image" src="https://github.com/user-attachments/assets/f0f5277a-267a-405d-bd1c-b372a9be5deb" />
+### Product Details
+<img alt="Product Screenshot" src="https://github.com/user-attachments/assets/cc2480d8-0847-4334-9d96-27bcfb8317ba" />
 
-
-Product Details
-
-`<img width="1869" height="919" alt="Annotation 2025-09-22 133719" src="https://github.com/user-attachments/assets/cc2480d8-0847-4334-9d96-27bcfb8317ba" />`
-
-
-
-## Blog
-
+### Blog
 ![Annotation 1](https://github.com/user-attachments/assets/44552736-9220-4b65-b70e-10b6619f58e5)
 
 ![Annotation 2](https://github.com/user-attachments/assets/7abf2a8f-f136-44cc-a75c-71cbbe763f00)
