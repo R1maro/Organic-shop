@@ -14,6 +14,7 @@ RUN composer install --no-dev --prefer-dist --optimize-autoloader --no-interacti
 
 COPY . .
 
-EXPOSE 8080
-CMD ["php", "-S", "0.0.0.0:8080", "-t", "public"]
+EXPOSE 8000
+ENTRYPOINT [ "sh", "-lc" ]
+CMD [ "php -S 0.0.0.0:${PORT:-8000} -t public" ]
 
