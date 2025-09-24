@@ -20,12 +20,11 @@ return new class extends Migration {
             $table->softDeletes();
         });
 
-        // Seed default groups
         $defaultGroups = Setting::getGroups();
         foreach ($defaultGroups as $group) {
             DB::table('setting_groups')->insert([
                 'name' => $group,
-                'is_default' => true,
+                'is_default' => DB::raw('true'),
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
