@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Product;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class ProductSeeder extends Seeder
 {
@@ -32,7 +33,7 @@ class ProductSeeder extends Seeder
                 'discount' => 9000,
                 'quantity' => rand(1, 100),
                 'shipping_time' =>  "7 Day",
-                'status' => 1,
+                'status' => DB::raw('TRUE'),
                 'category_id' => 1,
             ]);
             $product->clearMediaCollection('product_image');
