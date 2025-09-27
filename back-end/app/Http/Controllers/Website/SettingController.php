@@ -15,7 +15,7 @@ class SettingController extends Controller
         $cacheKey = 'settings_main_page';
         return Cache::remember($cacheKey, now()->addHours(2), function () {
 
-            $settings = Setting::where('is_public', true)->get();
+            $settings = Setting::query()->whereTrue('is_public')->get();
 
             return $settings->map(function ($setting) {
                 $data = $setting->toArray();
@@ -38,7 +38,7 @@ class SettingController extends Controller
         return Cache::remember($cacheKey, now()->addHours(2), function () {
             $categories = Category::with(['products' => function ($query) {
                 $query->take(6);
-            }])->where('is_active', true)->get();
+            }])->whereTrue('is_active')->get();
 
             return $categories->map(function ($category) {
                 $data = $category->toArray();
