@@ -19,10 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [
-        'https://freshoil.ir',
-        'https://www.freshoil.ir',
-    ],
+    'allowed_origins' => ['https://freshoil.ir', 'https://www.freshoil.ir', 'http://localhost:3000'],
 
     'allowed_origins_patterns' => [],
 
