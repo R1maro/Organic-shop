@@ -38,7 +38,7 @@ class SettingController extends Controller
         return Cache::remember($cacheKey, now()->addHours(2), function () {
             $categories = Category::with(['products' => function ($query) {
                 $query->take(6);
-            }])->whereTrue('is_active')->get();
+            }])->where('is_active')->get();
 
             return $categories->map(function ($category) {
                 $data = $category->toArray();
