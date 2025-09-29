@@ -12,7 +12,7 @@ interface Config {
 
 
 const apiUrl = "https://western-jemima-freshoil-daafab46.koyeb.app/api";
-const publicUrl = "https://western-jemima-freshoil-daafab46.koyeb.app";
+const publicUrl = "https://western-jemima-freshoil-daafab46.koyeb.app/";
 
 
 const config: Config = {
