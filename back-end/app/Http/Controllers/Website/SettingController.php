@@ -15,7 +15,7 @@ class SettingController extends Controller
         $cacheKey = 'settings_main_page';
         return Cache::remember($cacheKey, now()->addHours(2), function () {
 
-            $settings = Setting::query()->whereTrue('is_public')->get();
+            $settings = Setting::query()->where('is_public' , true)->get();
 
             return $settings->map(function ($setting) {
                 $data = $setting->toArray();

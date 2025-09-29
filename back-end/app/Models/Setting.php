@@ -68,7 +68,7 @@ class Setting extends Model implements HasMedia
     public static function getSliderImagesWithMedia(): Collection
     {
         $sliderImages = self::where('key', 'like', 'slider_image_%')
-            ->whereTrue('is_public')
+            ->where('is_public', true)
             ->get();
 
         return $sliderImages->map(function ($setting) {
@@ -95,7 +95,7 @@ class Setting extends Model implements HasMedia
     public static function getBenefits(): Collection
     {
         $benefitSettings = self::where('key', 'like', 'benefit_%')
-            ->whereTrue('is_public')
+            ->where('is_public' , true)
             ->get();
 
         return $benefitSettings->map(function ($setting) {
@@ -126,7 +126,7 @@ class Setting extends Model implements HasMedia
     public static function getSliderAutoPlay(): Collection
     {
         return self::where('key', 'like', 'slider_autoplay_speed')
-            ->whereTrue('is_public')
+            ->where('is_public' , true)
             ->get(['key', 'value']);
 
     }
