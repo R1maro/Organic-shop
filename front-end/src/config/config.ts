@@ -4,8 +4,12 @@ interface Config {
   APP_NAME: string;
 }
 
-const apiUrl = "https://api.freshoil.ir/api";
-const publicUrl = "https://api.freshoil.ir/";
+const apiUrl = "western-jemima-freshoil-daafab46.koyeb.app/api";
+const publicUrl = "western-jemima-freshoil-daafab46.koyeb.app";
+
+
+// const apiUrl = "http://localhost:8000/api";
+// const publicUrl = "http://localhost:8000";
 
 const config: Config = {
   API_URL: apiUrl,
