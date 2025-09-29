@@ -16,7 +16,7 @@ class MenuController extends Controller
     public function getMenuItems(): JsonResponse
     {
         try {
-            $menuItems = MenuItem::where('is_active', 1)
+            $menuItems = MenuItem::whereRaw('is_active = true')
                 ->orderBy('order', 'asc')
                 ->get(['id', 'name', 'icon' , 'url', 'order']);
 
