@@ -20,7 +20,7 @@ return new class extends Migration {
             $table->unsignedInteger('final_price')->default(0);
             $table->unsignedInteger('quantity')->default(0);
             $table->string('shipping_time');
-            $table->boolean('status')->default(1);
+            $table->boolean('status')->default(true);
             $table->integer('display_photo_index')->default(0);
             $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
             $table->timestamps();

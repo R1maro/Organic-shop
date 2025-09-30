@@ -18,7 +18,7 @@ class ProductController extends Controller
     public function getProducts(): JsonResponse
     {
         try {
-            $products = Product::active()
+            $products = Product::whereRaw('status = true')
                 ->with('category')
                 ->orderBy('created_at', 'desc')
                 ->take(8)
