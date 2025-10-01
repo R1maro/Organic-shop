@@ -6,7 +6,7 @@ export function SearchButton() {
     const [searchActive, setSearchActive] = useState<boolean>(false);
 
     return (
-        <div className={`search-container ${searchActive ? "search-active" : ""}`}>
+        <div className={`search-container  ${searchActive ? "search-active" : ""}`}>
       <span className="search" onClick={() => setSearchActive(!searchActive)}>
         <svg
             fill="none"

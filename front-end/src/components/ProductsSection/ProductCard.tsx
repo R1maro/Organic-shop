@@ -108,7 +108,7 @@ function SingleProductCard({product}: { product: Product }) {
                 <p className="card-description">
                     Shipping time: {product.shipping_time}
                 </p>
-                <div className="flex flex-col sm:flex-row gap-2">
+                <div className="flex flex-row gap-2">
                     <Link href={`/products/${product.slug}`} className="card-button">
                         View details
                     </Link>
