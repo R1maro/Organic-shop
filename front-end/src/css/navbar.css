@@ -112,9 +112,12 @@ a {
     align-items: center;
     gap: 5px;
     position: absolute;
-    right: 6.3%;
+    right: 6.2%;
     transition: transform 0.5s ease-in-out;
+
+
 }
+
 
 .search-container .search-input {
     width: 0;
@@ -140,4 +143,57 @@ a {
     border-radius: 7px;
     pointer-events: auto;
 }
+
+@media screen and (max-width : 1654px){
+
+    .search-container{
+        right: 7.5%;
+    }
+
+}
+@media screen and (max-width : 1300px){
+
+    .search-container{
+        right: 9.5%;
+    }
+
+}
+@media screen and (max-width : 1024px){
+
+    .search-container{
+        right: 10.5%;
+    }
+
+}
+@media screen and (max-width : 954px){
+
+    .search-container{
+        right: 11.5%;
+    }
+
+}
+@media screen and (max-width : 800px){
+
+    .search-container{
+        right: 12.5%;
+    }
+
+}
+
+@media screen and (max-width: 500px){
+    .search-container.search-active .search-input {
+        width: 185px;
+    }
+    .search-container{
+        right: 27%;
+    }
+    .search-container.search-active {
+        right: 56%;
+    }
+    .logo{
+        display: none;
+    }
+
+}
+
 
