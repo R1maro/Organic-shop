@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import config from "@/config/config";
 
 export async function getServerSideAuth() {
     const cookieStore = cookies();
@@ -9,7 +10,7 @@ export async function getServerSideAuth() {
     }
 
     try {
-        const response = await fetch("http://localhost:8000/api/auth-check", {
+        const response = await fetch(`${config.API_URL}/auth-check`, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 Accept: "application/json",
