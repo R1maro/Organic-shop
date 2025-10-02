@@ -40,6 +40,14 @@ async function fetchProducts(): Promise<Product[]> {
     return response.success ? response.data : [];
 }
 
+function ensureProtocol(url: string): string {
+    if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+        return url;
+    }
+    return `https://${url}`;
+}
+
 
 
 function SingleProductCard({product}: { product: Product }) {
@@ -67,7 +75,7 @@ function SingleProductCard({product}: { product: Product }) {
             <div className="card-img">
                 {product.full_image_url ? (
                     <Image
-                        src={product.full_image_url}
+                        src={ensureProtocol(product.full_image_url)}
                         alt={product.name}
                         width={200}
                         height={200}
@@ -155,11 +163,10 @@ const ProductCard = () => {
 
         loadProducts();
 
-        // Cleanup function to prevent state updates if component unmounts
         return () => {
             isMounted = false;
         };
-    }, []); // Empty dependency array means this effect runs once on mount
+    }, []);
 
     return (
         <div>
