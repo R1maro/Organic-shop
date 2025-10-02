@@ -9,6 +9,11 @@ const nextConfig = {
                 pathname: '/storage/**',
             },
             {
+                protocol: 'http',
+                hostname: 'western-jemima-freshoil-daafab46.koyeb.app',
+                pathname: '/storage/**',
+            },
+            {
                 protocol: 'https',
                 hostname: 'western-jemima-freshoil-daafab46.koyeb.app',
                 pathname: '/storage/**',
