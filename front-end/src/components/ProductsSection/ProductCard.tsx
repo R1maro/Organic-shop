@@ -42,10 +42,10 @@ async function fetchProducts(): Promise<Product[]> {
 
 function ensureProtocol(url: string): string {
     if (!url) return '';
-    if (url.startsWith('http://') || url.startsWith('https://')) {
-        return url;
-    }
-    return `https://${url}`;
+
+    const urlWithoutProtocol = url.replace(/^https?:\/\//, '');
+
+    return `https://${urlWithoutProtocol}`;
 }
 
 
@@ -69,6 +69,7 @@ function SingleProductCard({product}: { product: Product }) {
             setIsAdding(false);
         }
     };
+    console.log(product.full_image_url)
 
     return (
         <div className="card my-10">
