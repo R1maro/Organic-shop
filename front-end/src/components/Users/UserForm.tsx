@@ -10,7 +10,6 @@ interface UserFormProps {
 
 export default function UserForm({action, initialData, roles}: UserFormProps) {
 
-    console.log(initialData?.roles)
     return (
         <form action={action}>
             <div className="space-y-6">

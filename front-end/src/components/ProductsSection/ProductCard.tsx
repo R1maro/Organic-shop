@@ -69,7 +69,6 @@ function SingleProductCard({product}: { product: Product }) {
             setIsAdding(false);
         }
     };
-    console.log(product.full_image_url)
 
     return (
         <div className="card my-10">

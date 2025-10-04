@@ -1,4 +1,3 @@
-// src/app/(site)/auth/signin/SignInClient.tsx
 'use client';
 import React, {useState, useEffect} from "react";
 import Link from "next/link";
@@ -82,7 +81,9 @@ export default function SignInClient() {
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
                                             placeholder="Enter your email"
-                                            className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                            required
+                                            disabled={loading}
+                                            className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed"
                                         />
                                         <span className="absolute right-4 top-4">
                        <svg
@@ -113,7 +114,9 @@ export default function SignInClient() {
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
                                             placeholder="6+ Characters, 1 Capital letter"
-                                            className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                            required
+                                            disabled={loading}
+                                            className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed"
                                         />
                                         <span className="absolute right-4 top-4">
                        <svg
