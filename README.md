@@ -93,7 +93,8 @@ Also you have a config for api url(in config/Config.ts)
 ## 📸 Screenshots
 
 ### Home Page
-<img alt="Home Screenshot" src="https://github.com/user-attachments/assets/8c865400-7baa-4c69-8ed1-2da1a6fa019d" />
+<img width="1748" height="958" alt="Screenshot (30)" src="https://github.com/user-attachments/assets/6095011a-8696-4d6e-a064-9cdefa4c89c2" />
+
 
 <img alt="Second Screenshot" src="https://github.com/user-attachments/assets/f0f5277a-267a-405d-bd1c-b372a9be5deb" />
 
