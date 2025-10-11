@@ -9,7 +9,7 @@ interface User {
     email: string;
     address: string;
     phone: string;
-    createdAt: string;
+    created_at: string;
     emailVerified: boolean;
     roles: Array<{
         id: number;
@@ -27,6 +27,7 @@ interface AuthContextType {
     login: (email: string, password: string) => Promise<boolean>;
     logout: () => Promise<boolean>;
     checkAuthStatus: () => Promise<boolean>;
+    refreshUser: () => Promise<void>;
     clearError: () => void;
 }
 
@@ -88,6 +89,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             return false;
         } finally {
             setLoading(false);
+        }
+    }, []);
+
+    const refreshUser = useCallback(async (): Promise<void> => {
+        try {
+            const response = await fetch('/api/auth/check', {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'Accept': 'application/json',
+                },
+                cache: 'no-store',
+            });
+
+            const data = await response.json();
+
+            if (data.isAuthenticated && data.user) {
+                setUser(data.user);
+                setIsAdmin(data.user.roles?.some((role: any) => role.slug === 'admin') || false);
+            }
+        } catch (error) {
+            console.error('Refresh user error:', error);
         }
     }, []);
 
@@ -222,6 +245,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         login,
         logout,
         checkAuthStatus,
+        refreshUser,
         clearError,
     };
 

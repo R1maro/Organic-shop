@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { User, Mail, Phone, MapPin, Calendar, Edit3, Save, X, Shield, LogOut, Settings, Package, Heart, CreditCard } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Calendar, Edit3, Save, Shield, LogOut, Settings, Package, Heart, CreditCard } from 'lucide-react';
 import { useRouter } from "next/navigation";
 import { useAuth } from '@/context/AuthContext';
+import { toast } from 'react-hot-toast';
 
 interface OrderStats {
     orders_count: number;
@@ -25,33 +26,23 @@ const AccountPage = () => {
     });
     const [statsLoading, setStatsLoading] = useState(true);
 
-    const [userData, setUserData] = useState({
+    const [editData, setEditData] = useState({
         name: '',
         email: '',
         phone: '',
         address: '',
-        createdAt: '',
-        isAdmin: false,
-        emailVerified: true
     });
-
-    const [editData, setEditData] = useState({ ...userData });
     const router = useRouter();
-    const { user, isAuthenticated, logout: authLogout, loading: authLoading } = useAuth();
+    const { user, isAuthenticated, logout: authLogout, loading: authLoading, refreshUser } = useAuth();
 
     useEffect(() => {
         if (user) {
-            const newUserData = {
+            setEditData({
                 name: user.name || '',
                 email: user.email || '',
                 phone: user.phone || '',
                 address: user.address || '',
-                createdAt: user.createdAt || new Date().toISOString(),
-                isAdmin: user.roles?.some((role: any) => role.slug === 'admin') || false,
-                emailVerified: user.emailVerified ?? true
-            };
-            setUserData(newUserData);
-            setEditData(newUserData);
+            });
         }
     }, [user]);
 
@@ -89,6 +80,23 @@ const AccountPage = () => {
     }, [isAuthenticated, authLoading, router]);
 
     const handleSave = async () => {
+        // Validation
+        if (!editData.name.trim()) {
+            toast.error('Name is required');
+            return;
+        }
+
+        if (!editData.email.trim()) {
+            toast.error('Email is required');
+            return;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(editData.email)) {
+            toast.error('Please enter a valid email address');
+            return;
+        }
+
         setLoading(true);
         try {
             const response = await fetch('/api/user/profile', {
@@ -100,14 +108,23 @@ const AccountPage = () => {
                 body: JSON.stringify(editData),
             });
 
+            const data = await response.json();
+
             if (response.ok) {
-                setUserData({ ...editData });
                 setIsEditing(false);
+                toast.success('Profile updated successfully!');
+
+                await refreshUser();
             } else {
-                throw new Error('Failed to update profile');
+                throw new Error(data.error || 'Failed to update profile');
             }
         } catch (error) {
             console.error('Failed to update profile:', error);
+            if (error instanceof Error) {
+                toast.error(error.message);
+            } else {
+                toast.error('Failed to update profile. Please try again.');
+            }
         } finally {
             setLoading(false);
         }
@@ -130,7 +147,14 @@ const AccountPage = () => {
     };
 
     const handleCancel = () => {
-        setEditData({ ...userData });
+        if (user) {
+            setEditData({
+                name: user.name || '',
+                email: user.email || '',
+                phone: user.phone || '',
+                address: user.address || '',
+            });
+        }
         setIsEditing(false);
     };
 
@@ -155,7 +179,8 @@ const AccountPage = () => {
         },
     ];
 
-    if (authLoading || !isAuthenticated || loading) {
+
+    if (authLoading || !isAuthenticated  || !user) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
                 <div className="text-center">
@@ -167,6 +192,9 @@ const AccountPage = () => {
             </div>
         );
     }
+
+    const isAdmin = user.roles?.some((role) => role.slug === 'admin') || false;
+    const emailVerified = user.emailVerified ?? true;
 
     return (
         <div className="min-h-screen mt-15 bg-gradient-to-br from-slate-900 via-green-100 to-slate-900">
@@ -231,180 +259,190 @@ const AccountPage = () => {
                                         <User className="text-white" size={32}/>
                                     </div>
                                     <div>
-                                        <h2 className="text-2xl font-bold text-white">{userData.name}</h2>
+                                        <h2 className="text-2xl font-bold text-white">{user.name}</h2>
                                         <div className="flex items-center gap-2 mt-1">
-                                            {userData.emailVerified ? (
+                                            {emailVerified ? (
                                                 <span className="flex items-center gap-1 text-green-400 text-sm">
-                                                        <Shield size={12} />
+                                                        <Shield size={12}/>
                                                         Verified Account
                                                     </span>
-                                                ) : (
-                                                    <span className="text-yellow-400 text-sm">Pending Verification</span>
-                                                )}
-                                                {userData.isAdmin && (
-                                                    <span className="px-2 py-1 bg-purple-500/20 text-purple-400 rounded-full text-xs">Admin</span>
-                                                )}
-                                            </div>
+                                            ) : (
+                                                <span className="text-yellow-400 text-sm">Pending Verification</span>
+                                            )}
+                                            {isAdmin && (
+                                                <span
+                                                    className="px-2 py-1 bg-purple-500/20 text-purple-400 rounded-full text-xs">Admin</span>
+                                            )}
                                         </div>
                                     </div>
+                                </div>
+                                {!isEditing && (
                                     <button
-                                        onClick={() => setIsEditing(!isEditing)}
+                                        onClick={() => setIsEditing(true)}
                                         className="flex items-center gap-2 px-4 py-2 bg-slate-700/50 text-slate-300 rounded-full hover:bg-slate-600/50 transition-all duration-300 border border-slate-600/50"
                                     >
-                                        {isEditing ? <X size={16} /> : <Edit3 size={16} />}
-                                        {isEditing ? 'Cancel' : 'Edit'}
+                                        <Edit3 size={16}/>
+                                        Edit
                                     </button>
-                                </div>
-                            </div>
-
-                            {/* Profile Details */}
-                            <div className="p-8 space-y-6">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    {/* Name Field */}
-                                    <div className="space-y-2">
-                                        <label className="flex items-center gap-2 text-slate-400 text-sm">
-                                            <User size={16} />
-                                            Full Name
-                                        </label>
-                                        {isEditing ? (
-                                            <input
-                                                type="text"
-                                                value={editData.name}
-                                                onChange={(e) => setEditData({ ...editData, name: e.target.value })}
-                                                className="w-full px-4 py-3 bg-slate-700/50 text-white rounded-lg border border-slate-600/50 focus:border-purple-500/50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all duration-300"
-                                            />
-                                        ) : (
-                                            <p className="text-white font-medium">{userData.name}</p>
-                                        )}
-                                    </div>
-
-                                    {/* Email Field */}
-                                    <div className="space-y-2">
-                                        <label className="flex items-center gap-2 text-slate-400 text-sm">
-                                            <Mail size={16} />
-                                            Email Address
-                                        </label>
-                                        {isEditing ? (
-                                            <input
-                                                type="email"
-                                                value={editData.email}
-                                                onChange={(e) => setEditData({ ...editData, email: e.target.value })}
-                                                className="w-full px-4 py-3 bg-slate-700/50 text-white rounded-lg border border-slate-600/50 focus:border-purple-500/50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all duration-300"
-                                            />
-                                        ) : (
-                                            <p className="text-white font-medium">{userData.email}</p>
-                                        )}
-                                    </div>
-
-                                    {/* Phone Field */}
-                                    <div className="space-y-2">
-                                        <label className="flex items-center gap-2 text-slate-400 text-sm">
-                                            <Phone size={16} />
-                                            Phone Number
-                                        </label>
-                                        {isEditing ? (
-                                            <input
-                                                type="tel"
-                                                value={editData.phone}
-                                                onChange={(e) => setEditData({ ...editData, phone: e.target.value })}
-                                                className="w-full px-4 py-3 bg-slate-700/50 text-white rounded-lg border border-slate-600/50 focus:border-purple-500/50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all duration-300"
-                                            />
-                                        ) : (
-                                            <p className="text-white font-medium">{userData.phone || 'Not provided'}</p>
-                                        )}
-                                    </div>
-
-                                    {/* Member Since */}
-                                    <div className="space-y-2">
-                                        <label className="flex items-center gap-2 text-slate-400 text-sm">
-                                            <Calendar size={16} />
-                                            Member Since
-                                        </label>
-                                        <p className="text-white font-medium">
-                                            {userData.createdAt ? new Date(userData.createdAt).toLocaleDateString('en-US', {
-                                                year: 'numeric',
-                                                month: 'long',
-                                                day: 'numeric'
-                                            }) : 'Unknown'}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                {/* Address Field */}
-                                <div className="space-y-2">
-                                    <label className="flex items-center gap-2 text-slate-400 text-sm">
-                                        <MapPin size={16} />
-                                        Address
-                                    </label>
-                                    {isEditing ? (
-                                        <textarea
-                                            value={editData.address}
-                                            onChange={(e) => setEditData({ ...editData, address: e.target.value })}
-                                            rows={3}
-                                            className="w-full px-4 py-3 bg-slate-700/50 text-white rounded-lg border border-slate-600/50 focus:border-purple-500/50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all duration-300 resize-none"
-                                        />
-                                    ) : (
-                                        <p className="text-white font-medium">{userData.address || 'Not provided'}</p>
-                                    )}
-                                </div>
-
-                                {/* Save Button */}
-                                {isEditing && (
-                                    <div className="flex gap-3 pt-4">
-                                        <button
-                                            onClick={handleSave}
-                                            disabled={loading}
-                                            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-cyan-600 text-white rounded-lg hover:from-purple-700 hover:to-cyan-700 transition-all duration-300 font-medium disabled:opacity-50"
-                                        >
-                                            <Save size={16} />
-                                            {loading ? 'Saving...' : 'Save Changes'}
-                                        </button>
-                                        <button
-                                            onClick={handleCancel}
-                                            disabled={loading}
-                                            className="px-6 py-3 bg-slate-700/50 text-slate-300 rounded-lg hover:bg-slate-600/50 transition-all duration-300 font-medium border border-slate-600/50 disabled:opacity-50"
-                                        >
-                                            Cancel
-                                        </button>
-                                    </div>
                                 )}
                             </div>
                         </div>
+
+                        {/* Profile Details */}
+                        <div className="p-8 space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Name Field */}
+                                <div className="space-y-2">
+                                    <label className="flex items-center gap-2 text-slate-400 text-sm">
+                                        <User size={16}/>
+                                        Full Name
+                                    </label>
+                                    {isEditing ? (
+                                        <input
+                                            type="text"
+                                            value={editData.name}
+                                            onChange={(e) => setEditData({...editData, name: e.target.value})}
+                                            className="w-full px-4 py-3 bg-slate-700/50 text-white rounded-lg border border-slate-600/50 focus:border-purple-500/50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all duration-300"
+                                            placeholder="Enter your full name"
+                                        />
+                                    ) : (
+                                        <p className="text-white font-medium">{user.name}</p>
+                                    )}
+                                </div>
+
+                                {/* Email Field */}
+                                <div className="space-y-2">
+                                    <label className="flex items-center gap-2 text-slate-400 text-sm">
+                                        <Mail size={16}/>
+                                        Email Address
+                                    </label>
+                                    {isEditing ? (
+                                        <input
+                                            type="email"
+                                            value={editData.email}
+                                            onChange={(e) => setEditData({...editData, email: e.target.value})}
+                                            placeholder="Enter your email"
+                                            className="w-full px-4 py-3 bg-slate-700/50 text-white rounded-lg border border-slate-600/50 focus:border-purple-500/50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all duration-300"
+                                        />
+                                    ) : (
+                                        <p className="text-white font-medium">{user.email}</p>
+                                    )}
+                                </div>
+
+                                {/* Phone Field */}
+                                <div className="space-y-2">
+                                    <label className="flex items-center gap-2 text-slate-400 text-sm">
+                                        <Phone size={16}/>
+                                        Phone Number
+                                    </label>
+                                    {isEditing ? (
+                                        <input
+                                            type="tel"
+                                            value={editData.phone}
+                                            onChange={(e) => setEditData({...editData, phone: e.target.value})}
+                                            placeholder="Enter your phone number"
+                                            className="w-full px-4 py-3 bg-slate-700/50 text-white rounded-lg border border-slate-600/50 focus:border-purple-500/50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all duration-300"
+                                        />
+                                    ) : (
+                                        <p className="text-white font-medium">{user.phone || 'Not provided'}</p>
+                                    )}
+                                </div>
+
+                                {/* Member Since */}
+                                <div className="space-y-2">
+                                    <label className="flex items-center gap-2 text-slate-400 text-sm">
+                                        <Calendar size={16}/>
+                                        Member Since
+                                    </label>
+                                    <p className="text-white font-medium">
+                                        {user.created_at  ? new Date(user.created_at).toLocaleDateString('en-US', {
+                                            year: 'numeric',
+                                            month: 'long',
+                                            day: 'numeric'
+                                        }) : 'Unknown'}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Address Field */}
+                            <div className="space-y-2">
+                                <label className="flex items-center gap-2 text-slate-400 text-sm">
+                                    <MapPin size={16}/>
+                                    Address
+                                </label>
+                                {isEditing ? (
+                                    <textarea
+                                        value={editData.address}
+                                        onChange={(e) => setEditData({...editData, address: e.target.value})}
+                                        rows={3}
+                                        className="w-full px-4 py-3 bg-slate-700/50 text-white rounded-lg border border-slate-600/50 focus:border-purple-500/50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all duration-300 resize-none"
+                                    />
+                                ) : (
+                                    <p className="text-white font-medium">{user.address || 'Not provided'}</p>
+                                )}
+                            </div>
+
+                            {/* Save Button */}
+                            {isEditing && (
+                                <div className="flex gap-3 pt-4">
+                                    <button
+                                        onClick={handleSave}
+                                        disabled={loading}
+                                        className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-cyan-600 text-white rounded-lg hover:from-purple-700 hover:to-cyan-700 transition-all duration-300 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        <Save size={16} />
+                                        {loading ? 'Saving...' : 'Save Changes'}
+                                    </button>
+                                    <button
+                                        onClick={handleCancel}
+                                        disabled={loading}
+                                        className="px-6 py-3 bg-slate-700/50 text-slate-300 rounded-lg hover:bg-slate-600/50 transition-all duration-300 font-medium border border-slate-600/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Sidebar */}
+                <div className="space-y-6">
+                    {/* Quick Actions */}
+                    <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-6">
+                        <h3 className="text-white font-bold text-lg mb-4">Quick Actions</h3>
+                        <div className="space-y-3">
+                            <button
+                                className="w-full flex items-center gap-3 p-3 bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 rounded-lg transition-all duration-300 border border-slate-600/30">
+                                <Package size={18}/>
+                                Order History
+                            </button>
+                            <button
+                                className="w-full flex items-center gap-3 p-3 bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 rounded-lg transition-all duration-300 border border-slate-600/30">
+                                <Heart size={18}/>
+                                Wishlist
+                            </button>
+                            <button
+                                className="w-full flex items-center gap-3 p-3 bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 rounded-lg transition-all duration-300 border border-slate-600/30">
+                                <Settings size={18}/>
+                                Settings
+                            </button>
+                        </div>
                     </div>
 
-                    {/* Sidebar */}
-                    <div className="space-y-6">
-                        {/* Quick Actions */}
-                        <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-6">
-                            <h3 className="text-white font-bold text-lg mb-4">Quick Actions</h3>
-                            <div className="space-y-3">
-                                <button className="w-full flex items-center gap-3 p-3 bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 rounded-lg transition-all duration-300 border border-slate-600/30">
-                                    <Package size={18} />
-                                    Order History
-                                </button>
-                                <button className="w-full flex items-center gap-3 p-3 bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 rounded-lg transition-all duration-300 border border-slate-600/30">
-                                    <Heart size={18} />
-                                    Wishlist
-                                </button>
-                                <button className="w-full flex items-center gap-3 p-3 bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 rounded-lg transition-all duration-300 border border-slate-600/30">
-                                    <Settings size={18} />
-                                    Settings
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Security Status */}
-                        <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-6">
-                            <h3 className="text-white font-bold text-lg mb-4">Account Security</h3>
-                            <div className="space-y-4">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-slate-400">Email Verified</span>
-                                    <span className={`px-2 py-1 rounded-full text-xs ${userData.emailVerified ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'}`}>
-                                        {userData.emailVerified ? 'Verified' : 'Pending'}
+                    {/* Security Status */}
+                    <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-6">
+                        <h3 className="text-white font-bold text-lg mb-4">Account Security</h3>
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <span className="text-slate-400">Email Verified</span>
+                                <span
+                                    className={`px-2 py-1 rounded-full text-xs ${user.emailVerified ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'}`}>
+                                        {user.emailVerified ? 'Verified' : 'Pending'}
                                     </span>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <span className="text-slate-400">Two-Factor Auth</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                            <span className="text-slate-400">Two-Factor Auth</span>
                                     <span className="px-2 py-1 rounded-full text-xs bg-red-500/20 text-red-400">
                                         Disabled
                                     </span>
