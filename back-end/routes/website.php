@@ -4,6 +4,7 @@ use App\Http\Controllers\Website\CartController;
 use App\Http\Controllers\Website\MenuController;
 use App\Http\Controllers\Website\ProductController;
 use App\Http\Controllers\Website\SettingController;
+use App\Http\Controllers\Website\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/products', [ProductController::class, 'getProducts']);
@@ -27,4 +28,8 @@ Route::prefix('cart')->middleware('auth:sanctum')->group(function () {
     Route::delete('/remove/{cartItemId}', [CartController::class, 'removeItem']);
     Route::delete('/clear', [CartController::class, 'clearCart']);
     Route::post('/checkout', [CartController::class, 'checkout']);
+});
+
+Route::prefix('user')->middleware('auth:sanctum')->group(function () {
+    Route::get('/orders/stats', [UserController::class, 'getOrderStats']);
 });
