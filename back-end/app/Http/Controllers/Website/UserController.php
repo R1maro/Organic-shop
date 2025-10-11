@@ -35,7 +35,7 @@ class UserController extends Controller
     public function updateProfile(Request $request)
     {
         try {
-            $user = Auth::user();
+            $user = Auth::guard('sanctum')->user();
 
             if (!$user) {
                 return response()->json([
