@@ -18,18 +18,22 @@ Route::prefix('settings')->group(function () {
     Route::get('/slider_autoplay_speed', [SettingController::class, 'getSliderAutoPlay']);
 
 
-
 });
+Route::middleware('auth:sanctum')->group(function () {
 
-Route::prefix('cart')->middleware('auth:sanctum')->group(function () {
-    Route::get('/', [CartController::class, 'getCart']);
-    Route::post('/add', [CartController::class, 'addItem']);
-    Route::post('/update', [CartController::class, 'updateItem']);
-    Route::delete('/remove/{cartItemId}', [CartController::class, 'removeItem']);
-    Route::delete('/clear', [CartController::class, 'clearCart']);
-    Route::post('/checkout', [CartController::class, 'checkout']);
-});
+    Route::prefix('cart')->group(function () {
+        Route::get('/', [CartController::class, 'getCart']);
+        Route::post('/add', [CartController::class, 'addItem']);
+        Route::post('/update', [CartController::class, 'updateItem']);
+        Route::delete('/remove/{cartItemId}', [CartController::class, 'removeItem']);
+        Route::delete('/clear', [CartController::class, 'clearCart']);
+        Route::post('/checkout', [CartController::class, 'checkout']);
+    });
 
-Route::prefix('user')->middleware('auth:sanctum')->group(function () {
-    Route::get('/orders/stats', [UserController::class, 'getOrderStats']);
+    Route::prefix('user')->group(function () {
+        Route::get('/orders/stats', [UserController::class, 'getOrderStats']);
+//        Route::get('/profile', [UserController::class, 'getProfile']);
+        Route::put('/profile', [UserController::class, 'updateProfile']);
+    });
+
 });
