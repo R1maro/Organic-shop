@@ -1,4 +1,3 @@
-
 export interface CartItem {
     id: number;
     product_id: number;
@@ -40,7 +39,7 @@ async function fetchCartApi(url: string, options: RequestInit = {}) {
 
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'An error occurred with the request');
+        throw new Error(errorData.error || errorData.message || 'An error occurred with the request');
     }
 
     return response.json();
@@ -88,3 +87,20 @@ export async function clearCart(): Promise<CartResponse> {
         body: JSON.stringify({ action: 'clear' }),
     });
 }
+
+export const checkoutCart = async (): Promise<{ message: string; order: any }> => {
+    const response = await fetch('/api/cart/checkout', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.error || 'Failed to checkout');
+    }
+
+    return data;
+};
