@@ -68,4 +68,18 @@ class User extends Authenticatable
     {
         return $this->roles->flatMap->permissions->unique('id');
     }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+    public function deliveredOrders()
+    {
+        return $this->orders()->where('status', 'delivered');
+    }
+
+    public function pendingOrders()
+    {
+        return $this->orders()->where('status', 'pending');
+    }
 }
