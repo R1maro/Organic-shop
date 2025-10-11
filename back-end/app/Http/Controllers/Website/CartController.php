@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Website;
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\CartItem;
+use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -278,5 +280,85 @@ class CartController extends Controller
             'formatted_total' => '$ 0',
             'items_count' => 0
         ]);
+    }
+    /**
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function checkout()
+    {
+        $user = Auth::guard('sanctum')->user();
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'User not authenticated',
+            ], 401);
+        }
+
+        $cart = Cart::with(['items.product'])
+            ->where('user_id', $user->id)
+            ->active()
+            ->latest()
+            ->first();
+
+        if (!$cart || $cart->items->isEmpty()) {
+            return response()->json([
+                'message' => 'Cart is empty',
+            ], 422);
+        }
+
+
+        foreach ($cart->items as $item) {
+            if ($item->product->quantity < $item->quantity) {
+                return response()->json([
+                    'message' => "Not enough stock for {$item->product->name}",
+                ], 422);
+            }
+        }
+
+        DB::beginTransaction();
+        try {
+            // Create the order
+            $order = Order::create([
+                'user_id' => $user->id,
+                'total_price' => $cart->total,
+                'status' => 'pending',
+                'payment_status' => 'pending',
+            ]);
+
+            // Create order items from cart items
+            foreach ($cart->items as $cartItem) {
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $cartItem->product_id,
+                    'quantity' => $cartItem->quantity,
+                    'unit_price' => $cartItem->product->final_price,
+                ]);
+            }
+
+            // Clear the cart after creating the order
+            CartItem::where('cart_id', $cart->id)->delete();
+            $cart->delete();
+
+            DB::commit();
+
+            // Load order with items and products
+            $order->load(['items.product' => function ($query) {
+                $query->select('id', 'name', 'slug', 'final_price', 'price', 'discount', 'display_photo_index')
+                    ->with('media');
+            }]);
+
+            return response()->json([
+                'message' => 'Order created successfully',
+                'order' => $order,
+            ], 201);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Failed to create order',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }
