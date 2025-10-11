@@ -5,9 +5,26 @@ import { User, Mail, Phone, MapPin, Calendar, Edit3, Save, X, Shield, LogOut, Se
 import { useRouter } from "next/navigation";
 import { useAuth } from '@/context/AuthContext';
 
+interface OrderStats {
+    orders_count: number;
+    pending_orders: number;
+    completed_orders: number;
+    total_spent: number;
+    formatted_total_spent: string;
+}
+
 const AccountPage = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [orderStats, setOrderStats] = useState<OrderStats>({
+        orders_count: 0,
+        pending_orders: 0,
+        completed_orders: 0,
+        total_spent: 0,
+        formatted_total_spent: '$0'
+    });
+    const [statsLoading, setStatsLoading] = useState(true);
+
     const [userData, setUserData] = useState({
         name: '',
         email: '',
@@ -37,6 +54,32 @@ const AccountPage = () => {
             setEditData(newUserData);
         }
     }, [user]);
+
+    useEffect(() => {
+        const fetchOrderStats = async () => {
+            if (!isAuthenticated) return;
+
+            setStatsLoading(true);
+            try {
+                const response = await fetch('/api/user/orders/stats', {
+                    credentials: 'include',
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setOrderStats(data);
+                } else {
+                    console.error('Failed to fetch order stats');
+                }
+            } catch (error) {
+                console.error('Error fetching order stats:', error);
+            } finally {
+                setStatsLoading(false);
+            }
+        };
+
+        fetchOrderStats();
+    }, [isAuthenticated]);
 
     // Redirect if not authenticated
     useEffect(() => {
@@ -76,7 +119,6 @@ const AccountPage = () => {
 
             if (success) {
                 // The AuthContext logout function already handles the redirect
-                // router.push("/auth/signin"); // This is handled by the context
             } else {
                 console.error("Logout failed");
                 router.push("/auth/signin");
@@ -93,12 +135,26 @@ const AccountPage = () => {
     };
 
     const stats = [
-        { label: 'Orders', value: '24', icon: Package, color: 'from-green-500 to-cyan-500' },
-        { label: 'Wishlist', value: '12', icon: Heart, color: 'from-green-400 to-rose-500' },
-        { label: 'Rewards', value: '2,340', icon: CreditCard, color: 'from-green-500 to-indigo-500' },
+        {
+            label: 'Orders',
+            value: statsLoading ? '...' : orderStats.orders_count.toString(),
+            icon: Package,
+            color: 'from-green-500 to-cyan-500'
+        },
+        {
+            label: 'Wishlist',
+            value: '12',
+            icon: Heart,
+            color: 'from-green-400 to-rose-500'
+        },
+        {
+            label: 'Total Spent',
+            value: statsLoading ? '...' : orderStats.formatted_total_spent,
+            icon: CreditCard,
+            color: 'from-green-500 to-indigo-500'
+        },
     ];
 
-    // Show loading state while auth is loading or if user is not authenticated
     if (authLoading || !isAuthenticated || loading) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
@@ -142,16 +198,18 @@ const AccountPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-9">
                     {stats.map((stat) => (
                         <div key={stat.label} className="relative group">
-                            <div className="absolute inset-0 bg-gradient-to-r opacity-75 rounded-xl blur group-hover:blur-sm transition-all duration-300"
-                                 style={{ background: `linear-gradient(135deg, ${stat.color.split(' ')[1]}, ${stat.color.split(' ')[3]})` }}></div>
-                            <div className="relative bg-slate-800/50 backdrop-blur-xl p-6 rounded-xl border border-slate-700/50 hover:border-slate-600/50 transition-all duration-300">
+                            <div
+                                className="absolute inset-0 bg-gradient-to-r opacity-75 rounded-xl blur group-hover:blur-sm transition-all duration-300"
+                                style={{background: `linear-gradient(135deg, ${stat.color.split(' ')[1]}, ${stat.color.split(' ')[3]})`}}></div>
+                            <div
+                                className="relative bg-slate-800/50 backdrop-blur-xl p-6 rounded-xl border border-slate-700/50 hover:border-slate-600/50 transition-all duration-300">
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <p className="text-slate-400 text-sm">{stat.label}</p>
                                         <p className="text-3xl font-bold text-white mt-1">{stat.value}</p>
                                     </div>
                                     <div className={`p-3 rounded-full bg-gradient-to-r ${stat.color}`}>
-                                        <stat.icon className="text-white" size={24} />
+                                        <stat.icon className="text-white" size={24}/>
                                     </div>
                                 </div>
                             </div>
@@ -159,22 +217,24 @@ const AccountPage = () => {
                     ))}
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* Profile Card */}
-                    <div className="lg:col-span-2">
-                        <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 overflow-hidden">
-                            {/* Profile Header */}
-                            <div className="relative p-8 bg-gradient-to-r from-purple-600/20 to-cyan-600/20">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full flex items-center justify-center">
-                                            <User className="text-white" size={32} />
-                                        </div>
-                                        <div>
-                                            <h2 className="text-2xl font-bold text-white">{userData.name}</h2>
-                                            <div className="flex items-center gap-2 mt-1">
-                                                {userData.emailVerified ? (
-                                                    <span className="flex items-center gap-1 text-green-400 text-sm">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Profile Card */}
+                <div className="lg:col-span-2">
+                    <div
+                        className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 overflow-hidden">
+                        {/* Profile Header */}
+                        <div className="relative p-8 bg-gradient-to-r from-purple-600/20 to-cyan-600/20">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <div
+                                        className="w-20 h-20 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full flex items-center justify-center">
+                                        <User className="text-white" size={32}/>
+                                    </div>
+                                    <div>
+                                        <h2 className="text-2xl font-bold text-white">{userData.name}</h2>
+                                        <div className="flex items-center gap-2 mt-1">
+                                            {userData.emailVerified ? (
+                                                <span className="flex items-center gap-1 text-green-400 text-sm">
                                                         <Shield size={12} />
                                                         Verified Account
                                                     </span>
