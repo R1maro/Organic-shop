@@ -20,10 +20,11 @@ Route::prefix('settings')->group(function () {
 
 });
 
-Route::prefix('cart')->group(function () {
+Route::prefix('cart')->middleware('auth:sanctum')->group(function () {
     Route::get('/', [CartController::class, 'getCart']);
     Route::post('/add', [CartController::class, 'addItem']);
     Route::post('/update', [CartController::class, 'updateItem']);
     Route::delete('/remove/{cartItemId}', [CartController::class, 'removeItem']);
     Route::delete('/clear', [CartController::class, 'clearCart']);
+    Route::post('/checkout', [CartController::class, 'checkout']);
 });
