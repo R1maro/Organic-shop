@@ -9,7 +9,7 @@ import React, {
     useCallback,
     useMemo,
 } from 'react';
-import { Cart, CartResponse, getCart, addToCart, updateCartItem, removeCartItem, clearCart } from '@/utils/website/cartApi';
+import { Cart, CartResponse, getCart, addToCart, updateCartItem, removeCartItem, clearCart, checkoutCart } from '@/utils/website/cartApi';
 import { toast } from 'react-hot-toast';
 
 interface CartContextType {
@@ -23,6 +23,7 @@ interface CartContextType {
     removeItem: (cartItemId: number) => Promise<void>;
     emptyCart: () => Promise<void>;
     refreshCart: () => Promise<void>;
+    checkout: () => Promise<any>; // Add this line
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -46,7 +47,6 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     const [total, setTotal] = useState<number>(0);
     const [formattedTotal, setFormattedTotal] = useState<string>('$ 0');
 
-    // ✨ stabilize: used by multiple callbacks
     const handleCartResponse = useCallback((response: CartResponse) => {
         setCart(response.cart);
         setItemsCount(response.items_count);
@@ -81,7 +81,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         return () => {
             window.dispatchEvent(new Event('auth-state-change'));
         };
-    }, [refreshCart]); // ✨ include refreshCart
+    }, [refreshCart]);
 
     const addItem = useCallback(async (productId: number, quantity: number = 1) => {
         setLoading(true);
@@ -143,6 +143,33 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         }
     }, [handleCartResponse]);
 
+    // Add checkout function
+    const checkout = useCallback(async () => {
+        setLoading(true);
+        try {
+            const response = await checkoutCart();
+
+            // Clear cart state after successful checkout
+            setCart(null);
+            setItemsCount(0);
+            setTotal(0);
+            setFormattedTotal('$ 0');
+
+            toast.success('Order created successfully!');
+            return response.order;
+        } catch (error) {
+            console.error('Error during checkout:', error);
+            if (error instanceof Error) {
+                toast.error(error.message);
+            } else {
+                toast.error('Failed to create order');
+            }
+            throw error;
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
     const value = useMemo<CartContextType>(() => ({
         cart,
         loading,
@@ -154,7 +181,8 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         removeItem,
         emptyCart,
         refreshCart,
-    }), [cart, loading, itemsCount, total, formattedTotal, addItem, updateItem, removeItem, emptyCart, refreshCart]);
+        checkout, // Add this line
+    }), [cart, loading, itemsCount, total, formattedTotal, addItem, updateItem, removeItem, emptyCart, refreshCart, checkout]);
 
     return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };

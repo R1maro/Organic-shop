@@ -1,13 +1,16 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useCart } from './CartContext';
 import Link from 'next/link';
 import Image from "next/image";
+import { useRouter } from 'next/navigation';
 
 
 const CartPage = () => {
-    const { cart, loading, itemsCount, formattedTotal, updateItem, removeItem, emptyCart } = useCart();
+    const { cart, loading, itemsCount, formattedTotal, updateItem, removeItem, emptyCart , checkout  } = useCart();
+    const router = useRouter();
+    const [isCheckingOut, setIsCheckingOut] = useState(false);
 
     if (loading) {
         return (
@@ -38,6 +41,21 @@ const CartPage = () => {
             </div>
         );
     }
+
+    const handleCheckout = async () => {
+        if (isCheckingOut) return;
+
+        setIsCheckingOut(true);
+        try {
+            const order = await checkout();
+            router.push(`/orders/${order.id}`);
+        } catch (error) {
+
+            console.error('Checkout failed:', error);
+        } finally {
+            setIsCheckingOut(false);
+        }
+    };
 
     const handleQuantityChange = async (cartItemId: number, newQuantity: number) => {
         if (newQuantity < 1) return;
@@ -140,12 +158,13 @@ const CartPage = () => {
                                 <span>{formattedTotal}</span>
                             </div>
                         </div>
-                        <Link
-                            href="/checkout"
-                            className="block w-full bg-blue-500 text-white text-center py-2 px-4 rounded mt-6 hover:bg-blue-600"
+                        <button
+                            onClick={handleCheckout}
+                            disabled={isCheckingOut || loading}
+                            className="block w-full bg-blue-500 text-white text-center py-2 px-4 rounded mt-6 hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
                         >
-                            Proceed to Checkout
-                        </Link>
+                            {isCheckingOut ? 'Processing...' : 'Proceed to Checkout'}
+                        </button>
                     </div>
                 </div>
             </div>
