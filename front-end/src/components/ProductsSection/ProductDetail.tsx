@@ -2,17 +2,15 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import { useCart } from '@/components/Cart/CartContext';
 import { ProductDetail as ProductDetailType } from '@/types/product';
-import { ShoppingCart, Heart, Share2, Truck, ShieldCheck, RotateCcw, ChevronLeft, Plus, Minus, Star } from 'lucide-react';
+import { ShoppingCart, Heart, Share2, Truck, ShieldCheck, RotateCcw, Plus, Minus, Star } from 'lucide-react';
 
 interface ProductDetailProps {
     product: ProductDetailType;
 }
 
 export default function ProductDetail({ product }: ProductDetailProps) {
-    const router = useRouter();
     const { addItem } = useCart();
 
     const [selectedImage, setSelectedImage] = useState(0);
