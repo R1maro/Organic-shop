@@ -49,4 +49,48 @@ class ProductController extends Controller
             ], '500');
         }
     }
+    public function show($slug)
+    {
+        try {
+            $product = Product::where('slug', $slug)
+                ->with('category')
+                ->firstOrFail();
+
+            // Get all image URLs (not just thumbnails)
+            $allImages = $product->getMedia('product_image')->map(function ($media) {
+                return [
+                    'id' => $media->id,
+                    'url' => $media->getFullUrl(),
+                    'thumb' => $media->getFullUrl('thumb') ?: $media->getFullUrl(),
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'slug' => $product->slug,
+                    'description' => $product->description,
+                    'price' => $product->price,
+                    'discount' => $product->discount,
+                    'final_price' => $product->final_price,
+                    'quantity' => $product->quantity,
+                    'shipping_time' => $product->shipping_time,
+                    'status' => $product->status,
+                    'category_id' => $product->category_id,
+                    'category_name' => $product->category->name ?? null,
+                    'formatted_price' => $product->formatted_price,
+                    'formatted_final_price' => $product->formatted_final_price,
+                    'display_photo_url' => $product->display_photo_url,
+                    'images' => $allImages,
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Product not found'
+            ], 404);
+        }
+    }
 }

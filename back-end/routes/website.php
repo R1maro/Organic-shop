@@ -8,6 +8,7 @@ use App\Http\Controllers\Website\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/products', [ProductController::class, 'getProducts']);
+Route::get('/products/{slug}', [ProductController::class, 'show']);
 Route::get('/categories', [SettingController::class, 'getCategoriesWithProducts']);
 Route::get('/menu-items', [MenuController::class, 'getMenuItems']);
 Route::prefix('settings')->group(function () {
