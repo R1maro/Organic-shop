@@ -96,3 +96,13 @@ export interface ProductFormProps {
   action: FormAction;
   initialData?: ProductFormData;
 }
+export interface ProductImage {
+  id: number;
+  url: string;
+  thumb: string;
+}
+
+export interface ProductDetail extends Product {
+  category_name: string | null;
+  images: ProductImage[];
+}
