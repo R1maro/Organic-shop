@@ -73,14 +73,13 @@ const CartPage = () => {
     };
 
     return (
-        <div className="container mx-auto p-4 mt-35">
-            <h1 className="text-2xl font-bold mb-6">Shopping Cart</h1>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2">
-                    <div className="bg-white rounded-lg shadow-md p-6 mb-4">
+        <div className="container mx-auto p-4">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-25">
+                <div className="relative lg:col-span-2">
+                    <div className="bg-white/65 backdrop-blur-xl rounded-lg shadow-md p-6 mb-4">
                         <table className="w-full">
                             <thead>
-                            <tr className="border-b">
+                            <tr className="border-b border-gray-400">
                                 <th className="text-left py-4">Product</th>
                                 <th className="text-center py-4">Quantity</th>
                                 <th className="text-right py-4">Price</th>
@@ -146,7 +145,7 @@ const CartPage = () => {
                     </div>
                 </div>
                 <div>
-                    <div className="bg-white rounded-lg shadow-md p-6">
+                    <div className="bg-white/65 backdrop-blur-xl relative rounded-lg shadow-md p-6">
                         <h2 className="text-lg font-semibold mb-4">Order Summary</h2>
                         <div className="flex justify-between mb-2">
                             <span>Items ({itemsCount}):</span>
