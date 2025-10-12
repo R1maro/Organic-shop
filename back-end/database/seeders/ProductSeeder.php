@@ -4,47 +4,55 @@ namespace Database\Seeders;
 
 use App\Models\Product;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Arr;
 
 class ProductSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-
-        $productImages = [
-            'product_image_1' => public_path('images/benefit_1.webp'),
-            'product_image_2' => public_path('images/benefit_2.webp'),
-            'product_image_3' => public_path('images/benefit_3.webp'),
-            'product_image_4' => public_path('images/benefit_1.webp'),
-            'product_image_5' => public_path('images/benefit_2.webp'),
-            'product_image_6' => public_path('images/benefit_3.webp'),
+        $allImages = [
+            public_path('images/benefit_1.webp'),
+            public_path('images/benefit_2.webp'),
+            public_path('images/benefit_3.webp'),
+            public_path('images/benefit_1.webp'),
+            public_path('images/benefit_2.webp'),
+            public_path('images/benefit_3.webp'),
         ];
 
+        $productNames = [
+            'Product A',
+            'Product B',
+            'Product C',
+            'Product D',
+            'Product E',
+            'Product F',
+        ];
 
+        $photosPerProduct = 3;
 
-        foreach ($productImages as $key => $imagePath) {
-            $product = Product::firstOrCreate([
-                'name' => $key,
-                'price' => rand(10000, 1000000),
-                'description' => 'Best quality product',
-                'discount' => 9000,
-                'quantity' => rand(1, 100),
-                'shipping_time' =>  "7 Day",
-                'status' => DB::raw('TRUE'),
-                'category_id' => 1,
-            ]);
+        foreach ($productNames as $name) {
+            $product = Product::firstOrCreate(
+                ['name' => $name],
+                [
+                    'price'         => rand(10000, 1000000),
+                    'description'   => 'Best quality product',
+                    'discount'      => 9000,
+                    'quantity'      => rand(1, 100),
+                    'shipping_time' => '7 Day',
+                    'status'        => true,
+                    'category_id'   => 1,
+                ]
+            );
+
             $product->clearMediaCollection('product_image');
 
-            $product->addMedia($imagePath)
-                ->preservingOriginal()
-                ->toMediaCollection('product_image');
+            $selected = Arr::random($allImages, min($photosPerProduct, count($allImages)));
 
-
+            foreach ((array) $selected as $path) {
+                $product->addMedia($path)
+                    ->preservingOriginal()
+                    ->toMediaCollection('product_image');
+            }
         }
-
-
     }
 }
