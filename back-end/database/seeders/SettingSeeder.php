@@ -117,9 +117,11 @@ class SettingSeeder extends Seeder
     protected function addSliderImages()
     {
         $sliderImages = [
-            'slider_image_1' => public_path('images/slider_1.webp'),
-            'slider_image_2' => public_path('images/slider_2.webp'),
-            'slider_image_3' => public_path('images/slider_3.webp'),
+            'slider_image_A' => public_path('images/slider_1.webp'),
+            'slider_image_B' => public_path('images/slider_2.webp'),
+            'slider_image_C' => public_path('images/slider_3.webp'),
+            'slider_image_D' => public_path('images/slider_1.webp'),
+            'slider_image_E' => public_path('images/slider_2.webp'),
         ];
 
         foreach ($sliderImages as $key => $imagePath) {
@@ -149,9 +151,10 @@ class SettingSeeder extends Seeder
     protected function addBenefitImages()
     {
         $benefitImages = [
-            'benefit_image_1' => public_path('images/benefit_1.webp'),
-            'benefit_image_2' => public_path('images/benefit_2.webp'),
-            'benefit_image_3' => public_path('images/benefit_3.webp'),
+            'Benefit_A' => public_path('images/benefit_1.webp'),
+            'Benefit_B' => public_path('images/benefit_2.webp'),
+            'Benefit_C' => public_path('images/benefit_3.webp'),
+            'Benefit_D' => public_path('images/benefit_1.webp'),
         ];
 
         foreach ($benefitImages as $key => $imagePath) {
