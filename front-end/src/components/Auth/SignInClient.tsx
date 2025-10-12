@@ -45,7 +45,7 @@ export default function SignInClient() {
     return (
         <div>
             <div
-                className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                className="rounded-sm relative border border-stroke shadow-default dark:border-strokedark">
                 <div className="flex flex-wrap items-center min-h-screen">
                     <div className="hidden w-full xl:block xl:w-1/2">
                         <div className="px-26 py-17.5 text-center">
