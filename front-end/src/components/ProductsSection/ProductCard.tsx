@@ -170,7 +170,7 @@ const ProductCard = () => {
 
     return (
         <div>
-            <h2 className="text-title-xl2 font-bold text-center mb-5">
+            <h2 className="text-title-xl2 text-gray-500 font-bold text-center mb-5">
                 Best-selling products
             </h2>
             <div className="container flex flex-wrap gap-5 justify-center">

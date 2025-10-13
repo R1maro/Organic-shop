@@ -15,7 +15,6 @@ const CartPage = () => {
     if (loading) {
         return (
             <div className="container mx-auto p-4">
-                <h1 className="text-2xl font-bold mb-6">Shopping Cart</h1>
                 <div className="flex justify-center items-center h-64">
                     <p>Loading your cart...</p>
                 </div>
@@ -26,9 +25,8 @@ const CartPage = () => {
     if (!cart || itemsCount === 0) {
         return (
             <div className="container mx-auto p-4">
-                <h1 className="text-2xl font-bold mb-6">Shopping Cart</h1>
-                <div className="bg-white rounded-lg shadow-md p-6 mb-4">
-                    <p className="text-center">Your cart is empty.</p>
+                <div className="bg-white/55 backdrop-blur-xl rounded-lg shadow-md p-6 mb-4 mt-15 ">
+                    <p className="text-center mb-10">Your cart is empty...</p>
                     <div className="flex justify-center mt-4">
                         <Link
                             href="/products"
@@ -76,7 +74,7 @@ const CartPage = () => {
         <div className="container mx-auto p-4">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-25">
                 <div className="relative lg:col-span-2">
-                    <div className="bg-white/65 backdrop-blur-xl rounded-lg shadow-md p-6 mb-4">
+                    <div className="bg-white/55 backdrop-blur-xl rounded-lg shadow-md p-6 mb-4">
                         <table className="w-full">
                             <thead>
                             <tr className="border-b border-gray-400">

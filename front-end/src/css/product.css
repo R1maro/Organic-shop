@@ -9,17 +9,21 @@
     --small-font-size: .875rem;
 }
 
-
 .card {
     width: 320px;
     height: 400px;
-    background-color: var(--dark-color);
+    background: rgba(110, 190, 130, 0.1); /* lightgreen tint with transparency */
+    backdrop-filter: blur(12px);           /* blur effect behind the card */
+    -webkit-backdrop-filter: blur(12px);   /* Safari support */
+
+    border: 1px solid rgba(50, 150, 150, 0.1); /* subtle border */
     border-radius: 1rem;
     padding: 4rem 2rem 0;
-    color: var(--white-color);
-    overflow-y: hidden;
+    color: var(--dark-color);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* soft shadow for depth */
     z-index: 1;
 }
+
 
 .card-img, .card-data, .card-title, .card-price, .card-description {
     transition: .5s;
