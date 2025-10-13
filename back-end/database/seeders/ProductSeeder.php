@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Product;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 
 class ProductSeeder extends Seeder
 {
@@ -40,7 +41,7 @@ class ProductSeeder extends Seeder
                     'quantity'      => rand(1, 100),
                     'shipping_time' => '7 Day',
                     'status'        => true,
-                    'category_id'   => 1,
+                    'category_id'   => DB::raw('true'),
                 ]
             );
 
