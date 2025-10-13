@@ -40,8 +40,8 @@ class ProductSeeder extends Seeder
                     'discount'      => 9000,
                     'quantity'      => rand(1, 100),
                     'shipping_time' => '7 Day',
-                    'status'        => true,
-                    'category_id'   => DB::raw('true'),
+                    'status'        => DB::raw('true'),
+                    'category_id'   => 1,
                 ]
             );
 
