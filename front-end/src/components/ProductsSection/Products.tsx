@@ -1,21 +1,8 @@
 import React from 'react';
 import { Heart, ShoppingCart, Eye } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import {  Product  } from '@/types/product';
 
-interface Product {
-    id: number;
-    name: string;
-    slug: string;
-    description: string;
-    price: number;
-    discount: number;
-    formatted_price: string;
-    formatted_final_price: string;
-    full_image_url: string;
-    category: {
-        name: string;
-    };
-}
 
 interface ProductCardProps {
     product: Product;
