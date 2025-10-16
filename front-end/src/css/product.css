@@ -1,29 +1,26 @@
 
+
 :root {
     --first-color: #FFCF50;
     --white-color: #E9EAEC;
-    --dark-color: #626F47;
+    --dark-color: #626D45;
 
     --h1-font-size: 1.5rem;
     --h2-font-size: 1.25rem;
     --small-font-size: .875rem;
 }
 
+
 .card {
     width: 320px;
     height: 400px;
-    background: rgba(110, 190, 130, 0.1); /* lightgreen tint with transparency */
-    backdrop-filter: blur(12px);           /* blur effect behind the card */
-    -webkit-backdrop-filter: blur(12px);   /* Safari support */
-
-    border: 1px solid rgba(50, 150, 150, 0.1); /* subtle border */
+    background-color: var(--dark-color);
     border-radius: 1rem;
     padding: 4rem 2rem 0;
-    color: var(--dark-color);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* soft shadow for depth */
+    color: var(--white-color);
+    overflow-y: hidden;
     z-index: 1;
 }
-
 
 .card-img, .card-data, .card-title, .card-price, .card-description {
     transition: .5s;
