@@ -7,10 +7,14 @@ use App\Http\Controllers\Website\SettingController;
 use App\Http\Controllers\Website\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/products', [ProductController::class, 'getProducts']);
-Route::get('/products/{slug}', [ProductController::class, 'show']);
+
 Route::get('/categories', [SettingController::class, 'getCategoriesWithProducts']);
 Route::get('/menu-items', [MenuController::class, 'getMenuItems']);
+Route::prefix('products')->group(function () {
+    Route::get('/', [ProductController::class, 'getProducts']);
+    Route::get('/last', [ProductController::class, 'getLastProducts']);
+    Route::get('/{slug}', [ProductController::class, 'show']);
+});
 Route::prefix('settings')->group(function () {
     Route::get('/', [SettingController::class, 'getPublicSettings']);
     Route::get('/logo', [SettingController::class, 'getLogo']);
@@ -20,6 +24,8 @@ Route::prefix('settings')->group(function () {
 
 
 });
+
+
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('cart')->group(function () {
@@ -36,5 +42,6 @@ Route::middleware('auth:sanctum')->group(function () {
 //        Route::get('/profile', [UserController::class, 'getProfile']);
         Route::put('/profile', [UserController::class, 'updateProfile']);
     });
+
 
 });
