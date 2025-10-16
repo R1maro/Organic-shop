@@ -46,16 +46,21 @@ const ProductsPage = () => {
     });
 
     if (loading) {
-        // return <LoadingSpinner />;
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-green-100 to-slate-900 flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto mb-4"></div>
+                    <p className="text-white">
+                        {loading ? 'Getting Products...' : 'Loading...'}
+                    </p>
+                </div>
+            </div>
+        );
     }
 
     return (
         <div className="min-h-screen mt-15 bg-gradient-to-br from-slate-900 via-green-100 to-slate-900">
-            {/* Background Elements */}
-            <div className="absolute inset-0 overflow-hidden">
-                <div className="absolute -top-40 -right-40 w-80 h-80 bg-green-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
-                <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-green-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-1000"></div>
-            </div>
+
 
             <div className="relative container mx-auto px-4 py-8">
                 {/* Header */}
