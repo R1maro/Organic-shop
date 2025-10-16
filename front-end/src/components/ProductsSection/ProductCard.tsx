@@ -28,7 +28,7 @@ interface Product {
 }
 
 async function fetchProducts(): Promise<Product[]> {
-    const res = await fetch(`${config.API_URL}/products`, {
+    const res = await fetch(`${config.API_URL}/products/last`, {
         cache: 'no-store',
     });
 
