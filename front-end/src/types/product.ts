@@ -15,6 +15,7 @@ export interface Product {
   image_urls: string;
   display_photo_url: string;
   display_photo_index: number;
+  full_image_url: string | null;
   category: {
     id: number;
     name: string;
