@@ -36,8 +36,13 @@ Cookie-based secure authentication
 📱 Responsive Design
 
 Mobile-friendly and desktop-ready UI
+<br/>
+<br/>
+<br/>
 
 🛠️ Tech Stack
+<br/>
+<br/>
 Backend (Laravel)
 
 PHP 8+
@@ -59,50 +64,86 @@ Next.js 14
 TailwindCSS
 
 Fetch for API requests
+<br/>
+<br/>
+<br/>
 
 📂 Project Structure
+<br/>
+<br/>
 freshoil/
+<br/>
 │── backend/   # Laravel backend (API)
+<br/>
 │── frontend/  # Next.js frontend
 
 🚀 Getting Started
+<br/>
+<br/>
 Backend
+<br/>
 cd backend
+<br/>
 cp .env.example .env
+<br/>
 composer install
+<br/>
 php artisan key:generate
+<br/>
 php artisan migrate --seed
+<br/>
 php artisan serve
+<br/>
 
 Frontend
+<br/>
 cd frontend
+<br/>
 cp .env.example .env
+<br/>
 npm install
+<br/>
 npm run dev
+<br/>
 
 ⚙️ Environment Variables
+<br/>
 
 Laravel (.env)
+<br/>
 
 APP_NAME=FreshOil
+<br/>
 APP_ENV=local
+<br/>
 APP_KEY=base64:************
+<br/>
 APP_URL=http://localhost:8000
+<br/>
 
 DB_CONNECTION=mysql
+<br/>
 DB_HOST=127.0.0.1
+<br/>
 DB_PORT=3306
+<br/>
 DB_DATABASE=freshoil
+<br/>
 DB_USERNAME=root
+<br/>
 DB_PASSWORD=
+<br/>
 
 
 Next.js (.env.local)
+<br/>
 
 NEXT_PUBLIC_API_URL=http://localhost:8000/api
+<br/>
 
 
 Also note: there’s a separate config for the API URL in config/Config.ts.
+<br/>
 
 
 
