@@ -1,62 +1,72 @@
-# 🛍️ FreshOil Shop
+🛍️ FreshOil Shop
 
-A **free e-commerce project** built with **Laravel** (backend) and **Next.js** (frontend).  
+A free e-commerce project built with Laravel (backend) and Next.js (frontend).
 Fast, modern, and API-driven architecture designed for performance and scalability.
-
----
 
 ## ✨ Features
 
 - 🛒 **Product Management**
-  - Add new products  
-  - Upload multiple images per product  
-  - Manage pricing and stock  
+  - Add new products
+  - Upload multiple images per product
+  - Manage pricing and stock
 
 - 🖼️ **Built-in Blog**
-  - Publish blog posts with text and images  
-  - Simple content management system  
+  - Publish blog posts with text and images
+  - Simple content management system
 
-- ⚡ **API-first Architecture**
-  - Fully decoupled backend (Laravel API) and frontend (Next.js)  
-  - Optimized for speed and flexibility  
+- 🧾 **Activity & Change Logging**
+  - Log all status updates and changes made by users (who/what/when, before/after)
 
-- 🔐 **Authentication & Security**
-  - User registration and login  
-  - JWT-based secure authentication  
+- 💖 **Wishlist**
+  - Users can save products to a personal wishlist for quick access later
 
-- 📱 **Responsive Design**
-  - Mobile-friendly and desktop-ready UI  
 
----
+⚡ API-first Architecture
 
-## 🛠️ Tech Stack
+Fully decoupled backend (Laravel API) and frontend (Next.js)
 
-### Backend (Laravel)
-- PHP 8+  
-- Laravel 10  
-- PostgreSQL / MySQL  
-- JWT Authentication  
-- File storage for images  
+Optimized for speed and flexibility
 
-### Frontend (Next.js)
-- React 18  
-- Next.js 14  
-- TailwindCSS  
-- Axios for API requests  
+🔐 Authentication & Security
 
----
+User registration and login
 
-## 📂 Project Structure
+Cookie-based secure authentication
 
+📱 Responsive Design
+
+Mobile-friendly and desktop-ready UI
+
+🛠️ Tech Stack
+Backend (Laravel)
+
+PHP 8+
+
+Laravel 10
+
+PostgreSQL / MySQL
+
+Sanctum Authentication
+
+File storage for images
+
+Frontend (Next.js)
+
+React 18
+
+Next.js 14
+
+TailwindCSS
+
+Fetch for API requests
+
+📂 Project Structure
 freshoil/
-│── backend/ # Laravel backend (API)
-│── frontend/ # Next.js frontend
+│── backend/   # Laravel backend (API)
+│── frontend/  # Next.js frontend
 
-
-## 🚀 Getting Started
-
-### Backend
-```bash
+🚀 Getting Started
+Backend
 cd backend
 cp .env.example .env
 composer install
@@ -64,15 +74,16 @@ php artisan key:generate
 php artisan migrate --seed
 php artisan serve
 
-### Fronend
+Frontend
 cd frontend
 cp .env.example .env
 npm install
 npm run dev
 
-
 ⚙️ Environment Variables
-Laravel
+
+Laravel (.env)
+
 APP_NAME=FreshOil
 APP_ENV=local
 APP_KEY=base64:************
@@ -85,29 +96,23 @@ DB_DATABASE=freshoil
 DB_USERNAME=root
 DB_PASSWORD=
 
-Next.js
+
+Next.js (.env.local)
+
 NEXT_PUBLIC_API_URL=http://localhost:8000/api
-Also you have a config for api url(in config/Config.ts)
 
 
-## 📸 Screenshots
-
-### Home Page
-<img width="1748" height="958" alt="Screenshot (30)" src="https://github.com/user-attachments/assets/6095011a-8696-4d6e-a064-9cdefa4c89c2" />
+Also note: there’s a separate config for the API URL in config/Config.ts.
 
 
-<img alt="Second Screenshot" src="https://github.com/user-attachments/assets/f0f5277a-267a-405d-bd1c-b372a9be5deb" />
 
-### Product Details
+
+📸 Screenshots
+Home Page
+<img width="1748" height="958" alt="Screenshot (30)" src="https://github.com/user-attachments/assets/6095011a-8696-4d6e-a064-9cdefa4c89c2" /> <img alt="Second Screenshot" src="https://github.com/user-attachments/assets/f0f5277a-267a-405d-bd1c-b372a9be5deb" />
+Product Details
 <img alt="Product Screenshot" src="https://github.com/user-attachments/assets/cc2480d8-0847-4334-9d96-27bcfb8317ba" />
-
-### Blog
-![Annotation 1](https://github.com/user-attachments/assets/44552736-9220-4b65-b70e-10b6619f58e5)
-
-![Annotation 2](https://github.com/user-attachments/assets/7abf2a8f-f136-44cc-a75c-71cbbe763f00)
-
-
-
+Blog
 
 🤝 Contributing
 
@@ -121,8 +126,4 @@ Have a feature idea? → Submit a pull request.
 
 MIT License © 2025 FreshOil
 
-
----
-
 ⭐⭐⭐ If you found it interesting and useful, please give it a star. Thank you. ⭐⭐⭐
-
