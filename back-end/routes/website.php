@@ -5,6 +5,7 @@ use App\Http\Controllers\Website\MenuController;
 use App\Http\Controllers\Website\ProductController;
 use App\Http\Controllers\Website\SettingController;
 use App\Http\Controllers\Website\UserController;
+use App\Http\Controllers\Website\WishListController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -44,4 +45,11 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
 
+    Route::prefix('wishlist')->group(function () {
+        Route::get('/', [WishlistController::class, 'index']);
+        Route::post('/toggle/{product}', [WishlistController::class, 'toggle']);
+        Route::get('/check/{product}', [WishlistController::class, 'check']);
+
+
+    });
 });
