@@ -82,4 +82,14 @@ class User extends Authenticatable
     {
         return $this->orders()->where('status', 'pending');
     }
+    public function wishlist()
+    {
+        return $this->belongsToMany(Product::class, 'wishlists')
+            ->withTimestamps();
+    }
+
+    public function hasInWishlist($productId)
+    {
+        return $this->wishlist()->where('product_id', $productId)->exists();
+    }
 }

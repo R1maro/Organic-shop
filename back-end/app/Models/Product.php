@@ -112,4 +112,9 @@ class Product extends Model implements HasMedia
     {
         return "$ " . number_format($this->final_price, 0, '.', ',');
     }
+    public function wishlistedBy()
+    {
+        return $this->belongsToMany(User::class, 'wishlists')
+            ->withTimestamps();
+    }
 }
