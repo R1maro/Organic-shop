@@ -25,9 +25,9 @@ class MenuItemSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'name' => 'About Us',
-                'url' => '/about',
-                'icon' => 'User',
+                'name' => 'Products',
+                'url' => '/products',
+                'icon' => 'Barcode',
                 'order' => 2,
                 'parent_id' => null,
                 'is_active' => DB::raw('TRUE'),
