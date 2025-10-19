@@ -3,7 +3,6 @@ import config from '@/config/config';
 
 
 
-
 export async function getProductBySlug(slug: string): Promise<ProductDetail | null> {
     try {
         const res = await fetch(`${config.API_URL}/products/${slug}`, {
@@ -41,3 +40,38 @@ export async function getProducts(): Promise<Product[] | null> {
     }
 }
 
+export async function toggle(productId: number) {
+
+    const response = await fetch(`api/wishlist/toggle/${productId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+        },
+        credentials: 'include',
+    });
+
+    if (!response.ok) {
+        throw new Error('Failed to toggle wishlist');
+    }
+
+    return response.json();
+}
+
+export async function getAll() {
+
+    const response = await fetch('/api/wishlist', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+        },
+        credentials: 'include',
+    });
+
+    if (!response.ok) {
+        throw new Error('Failed to fetch wishlist');
+    }
+
+    return response.json();
+}

@@ -20,6 +20,7 @@ export interface Product {
     id: number;
     name: string;
   };
+  in_wishlist?: boolean;
 }
 
 export interface ProductApiData {
