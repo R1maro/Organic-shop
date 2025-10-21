@@ -3,6 +3,7 @@ import {Heart, ShoppingCart, Eye} from 'lucide-react';
 import {useRouter} from 'next/navigation';
 import {Product} from '@/types/product';
 import {toggle} from "@/utils/website/productService";
+import {toast} from "react-hot-toast";
 
 
 interface ProductCardProps {
@@ -30,11 +31,11 @@ const Products: React.FC<ProductCardProps> = ({product, viewMode}) => {
             const response = await toggle(product.id);
             setInWishlist(response.in_wishlist);
 
-            // Optional: Show success message
-            console.log(response.message);
+            toast.success(response.message);
+
         } catch (error: any) {
-            console.error('Failed to update wishlist:', error);
-            // Optional: Show error message
+            toast.error(error.message);
+
         } finally {
             setIsLoading(false);
         }
