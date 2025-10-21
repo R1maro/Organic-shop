@@ -29,6 +29,7 @@ async function getBenefits() {
     }
 }
 
+
 export default async function BenefitsSectionServer() {
     const benefits = await getBenefits();
 
