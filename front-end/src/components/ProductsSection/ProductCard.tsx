@@ -40,13 +40,13 @@ async function fetchProducts(): Promise<Product[]> {
     return response.success ? response.data : [];
 }
 
-function ensureProtocol(url: string): string {
-    if (!url) return '';
-
-    const urlWithoutProtocol = url.replace(/^https?:\/\//, '');
-
-    return `https://${urlWithoutProtocol}`;
-}
+// function ensureProtocol(url: string): string {
+//     if (!url) return '';
+//
+//     const urlWithoutProtocol = url.replace(/^https?:\/\//, '');
+//
+//     return `https://${urlWithoutProtocol}`;
+// }
 
 
 
@@ -75,7 +75,7 @@ function SingleProductCard({product}: { product: Product }) {
             <div className="card-img">
                 {product.full_image_url ? (
                     <Image
-                        src={ensureProtocol(product.full_image_url)}
+                        src={/*ensureProtocol*/(product.full_image_url)}
                         alt={product.name}
                         width={200}
                         height={200}
