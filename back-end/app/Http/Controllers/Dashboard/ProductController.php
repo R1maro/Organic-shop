@@ -135,15 +135,113 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
-        $categoryId = $product->category_id;
+        try {
+            $categoryId = $product->category_id;
 
-        $product->delete();
-        $product->clearMediaCollection('product_image');
+            UserActivityLogger::deleted($product);
+            $product->delete();
 
+            // NOTE: media is intentionally NOT cleared here — only on forceDelete.
+            // Otherwise restoring a soft-deleted product would lose its images.
 
-        $this->clearProductCaches($categoryId);
-        Cache::forget('product_' . $product->id);
-        return response()->json(['message' => 'Product deleted successfully.']);
+            $this->clearProductCaches($categoryId);
+            Cache::forget('product_' . $product->id);
+
+            return response()->json(['message' => 'Product deleted successfully.']);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Something went wrong',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Get a list of trashed products.
+     */
+    public function trashed()
+    {
+        try {
+            $trashedProducts = Product::onlyTrashed()
+                ->with(['category', 'media'])
+                ->orderBy('deleted_at', 'desc')
+                ->get();
+
+            return ProductResource::collection($trashedProducts);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Failed to fetch trashed products',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Restore a soft-deleted product.
+     */
+    public function restore(int $id)
+    {
+        try {
+            $product = Product::withTrashed()->findOrFail($id);
+
+            if (!$product->trashed()) {
+                return response()->json([
+                    'error' => 'Product is not deleted',
+                ], 422);
+            }
+
+            $product->restore();
+
+            $this->clearProductCaches($product->category_id);
+            Cache::forget('product_' . $product->id);
+
+            UserActivityLogger::updated($product);
+
+            return response()->json([
+                'message' => 'Product restored successfully',
+                'data' => new ProductResource($product->load(['category', 'media'])),
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['error' => 'Product not found'], 404);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Failed to restore product',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Permanently delete a soft-deleted product (and its media).
+     */
+    public function forceDelete(int $id)
+    {
+        try {
+            $product = Product::withTrashed()->findOrFail($id);
+
+            if (!$product->trashed()) {
+                return response()->json([
+                    'error' => 'Please soft delete the product first',
+                ], 422);
+            }
+
+            $categoryId = $product->category_id;
+
+            $product->clearMediaCollection('product_image');
+            $product->forceDelete();
+
+            $this->clearProductCaches($categoryId);
+            Cache::forget('product_' . $id);
+
+            return response()->json(['message' => 'Product permanently deleted']);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['error' => 'Product not found'], 404);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Failed to permanently delete product',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     private function clearProductCaches($categoryId)
@@ -201,6 +299,8 @@ class ProductController extends Controller
             return response()->json(['error' => 'Failed to delete image.'], 500);
         }
     }
+
+
 
 
 }
