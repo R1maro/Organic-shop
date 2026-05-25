@@ -22,23 +22,36 @@ class WishListController extends Controller
 
     public function toggle(Product $product)
     {
-        $user = auth()->user();
-
-        if ($user->hasInWishlist($product->id)) {
-            $user->wishlist()->detach($product->id);
-            $inWishlist = false;
-            $message = 'Product removed from wishlist';
-        } else {
-            $user->wishlist()->attach($product->id);
-            $inWishlist = true;
-            $message = 'Product added to wishlist';
+        if (!auth()->check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please login first!',
+            ], 401);
         }
+        try {
+            $user = auth()->user();
 
-        return response()->json([
-            'success' => true,
-            'message' => $message,
-            'in_wishlist' => $inWishlist
-        ]);
+            if ($user->hasInWishlist($product->id)) {
+                $user->wishlist()->detach($product->id);
+                $inWishlist = false;
+                $message = 'Product removed from wishlist';
+            } else {
+                $user->wishlist()->attach($product->id);
+                $inWishlist = true;
+                $message = 'Product added to wishlist';
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'in_wishlist' => $inWishlist
+            ]);
+        }catch (\Exception $e){
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     public function check(Product $product)
