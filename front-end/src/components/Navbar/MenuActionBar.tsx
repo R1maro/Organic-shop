@@ -4,7 +4,13 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import ReorderMenuItemsModal from "@/components/Navbar/ReorderMenuItemsModal";
-import TrashedMenuItemsModal from "@/components/Navbar/TrashedMenuItemsModal";
+import TrashBinModal from "@/components/TrashBin/TrashBinModal";
+import {
+    getTrashedMenuItems,
+    restoreMenuItem,
+    forceDeleteMenuItem,
+    MenuItem,
+} from "@/utils/dashboard/menu";
 
 interface MenuActionBarProps {
     initialSearch?: string;
@@ -35,7 +41,6 @@ export default function MenuActionBar({ initialSearch }: MenuActionBarProps) {
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(e.target.value);
     };
-
 
     const handleMenuItemsReordered = () => {
         setIsReorderModalOpen(false);
@@ -69,7 +74,6 @@ export default function MenuActionBar({ initialSearch }: MenuActionBarProps) {
                     </svg>
                     Add Menu Item
                 </Link>
-
 
                 <button
                     onClick={() => setIsReorderModalOpen(true)}
@@ -133,10 +137,26 @@ export default function MenuActionBar({ initialSearch }: MenuActionBarProps) {
                 onReordered={handleMenuItemsReordered}
             />
 
-            <TrashedMenuItemsModal
+            <TrashBinModal<MenuItem>
                 isOpen={isTrashedModalOpen}
                 onClose={() => setIsTrashedModalOpen(false)}
+                title="Trashed Menu Items"
+                itemLabel="menu item"
+                fetchItems={getTrashedMenuItems}
+                restoreItem={restoreMenuItem}
+                forceDeleteItem={forceDeleteMenuItem}
                 onRestored={handleMenuItemRestored}
+                columns={[
+                    {
+                        header: 'Name',
+                        accessor: (item) => item.name,
+                    },
+                    {
+                        header: 'URL',
+                        accessor: (item) => item.url,
+                        cellClassName: 'text-sm truncate max-w-xs',
+                    },
+                ]}
             />
         </div>
     );

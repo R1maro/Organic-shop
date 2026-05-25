@@ -23,7 +23,7 @@ interface CartContextType {
     removeItem: (cartItemId: number) => Promise<void>;
     emptyCart: () => Promise<void>;
     refreshCart: () => Promise<void>;
-    checkout: () => Promise<any>; // Add this line
+    checkout: () => Promise<any>;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -143,13 +143,11 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         }
     }, [handleCartResponse]);
 
-    // Add checkout function
     const checkout = useCallback(async () => {
         setLoading(true);
         try {
             const response = await checkoutCart();
 
-            // Clear cart state after successful checkout
             setCart(null);
             setItemsCount(0);
             setTotal(0);
@@ -181,7 +179,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         removeItem,
         emptyCart,
         refreshCart,
-        checkout, // Add this line
+        checkout,
     }), [cart, loading, itemsCount, total, formattedTotal, addItem, updateItem, removeItem, emptyCart, refreshCart, checkout]);
 
     return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
