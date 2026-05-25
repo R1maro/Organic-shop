@@ -1,5 +1,6 @@
 import {apiClient} from "@/lib/apiClient";
-import {ProductCreateUpdateData, ProductsResponse, SingleProductResponse} from "@/types/product";
+import {ProductCreateUpdateData, ProductsResponse, SingleProductResponse , Product} from "@/types/product";
+import config from "@/config/config";
 
 export async function getProducts(page: number = 1, categoryId?: string) {
     let endpoint = `/admin/products?page=${page}`;
@@ -78,8 +79,3 @@ export async function apiUpdateProduct(
     });
 }
 
-export async function apiDeleteProduct(id: string) {
-    return apiClient(`/admin/products/${id}`, {
-        method: 'DELETE',
-    });
-}

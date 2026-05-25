@@ -41,8 +41,7 @@ export async function getProducts(): Promise<Product[] | null> {
 }
 
 export async function toggle(productId: number) {
-
-    const response = await fetch(`api/wishlist/toggle/${productId}`, {
+    const response = await fetch(`/api/wishlist/toggle/${productId}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -51,12 +50,19 @@ export async function toggle(productId: number) {
         credentials: 'include',
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-        throw new Error('Failed to toggle wishlist');
+        if (response.status === 401) {
+            throw new Error('Please login first!');
+        }
+
+        throw new Error(data.error || data.message || 'Failed to toggle wishlist');
     }
 
-    return response.json();
+    return data;
 }
+
 
 export async function getAll() {
 
