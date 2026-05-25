@@ -40,6 +40,12 @@ Route::prefix('admin')->group(function () {
 
     Route::apiResource('categories', CategoryController::class);
 
+    Route::prefix('products')->group(function () {
+        Route::get('/trashed', [ProductController::class, 'trashed']);
+        Route::patch('/{id}/restore', [ProductController::class, 'restore']);
+        Route::delete('/{id}/force', [ProductController::class, 'forceDelete']);
+    });
+
     Route::apiResource('products', ProductController::class);
     Route::delete('products/{product}/image', [ProductController::class, 'deleteImage']);
 
