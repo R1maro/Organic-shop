@@ -7,8 +7,8 @@ import ProductCard from "@/components/ProductsSection/ProductCard";
 
 export const metadata: Metadata = {
     title:
-        "Next.js E-commerce Dashboard | TailAdmin - Next.js Dashboard Template",
-    description: "This is Next.js Home for TailAdmin Dashboard Template",
+        "Next.js E-commerce Shop | TailAdmin - Next.js Shop Template",
+    description: "This is Next.js shop for TailAdmin Template",
 };
 
 const fallbackSlides = [
